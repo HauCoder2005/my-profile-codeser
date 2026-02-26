@@ -1,0 +1,75 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Subtle animated background (works for both light/dark) */
+.bg-ambient {
+  background-image:
+    radial-gradient(800px circle at 10% 10%, rgba(99, 102, 241, 0.18), transparent 40%),
+    radial-gradient(900px circle at 90% 20%, rgba(236, 72, 153, 0.14), transparent 40%),
+    radial-gradient(700px circle at 30% 90%, rgba(34, 197, 94, 0.12), transparent 40%);
+  background-size: 200% 200%;
+}
+
+:root {
+  --font-sans: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+html,
+body {
+  font-family: var(--font-sans);
+}
+
+/* ===== About card motion effects ===== */
+/* ===== About card scanline (fixed) ===== */
+.scanline {
+  position: absolute;
+  left: -40%;
+  top: -20%;
+  width: 180%;
+  height: 2px;
+
+  /* thin bright line with soft edges */
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.18),
+      rgba(99, 102, 241, 0.35),
+      rgba(255, 255, 255, 0.18),
+      transparent);
+
+  filter: blur(0.6px);
+  opacity: 0.45;
+  transform: skewY(-8deg);
+  mix-blend-mode: screen;
+
+  animation: scanDownThin 3.2s linear infinite;
+}
+
+.dark .scanline {
+  opacity: 0.28;
+}
+
+@keyframes scanDownThin {
+  0% {
+    transform: translateY(-40px) skewY(-8deg);
+  }
+
+  100% {
+    transform: translateY(520px) skewY(-8deg);
+  }
+}
