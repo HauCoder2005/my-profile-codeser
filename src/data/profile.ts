@@ -183,7 +183,7 @@ export const projects: ProjectItem[] = [
     ],
     tags: ["Company", "Website", "UI/UX", "Frontend"],
     repoUrl: "https://github.com/HauCoder2005/company-LinhLoanSG",
-    liveUrl: "#",
+    liveUrl: "https://haucoder2005.github.io/company-LinhLoanSG/",
     imageHint: ">> Thêm ảnh/screenshot giao diện dự án tại đây <<",
   },
   {
