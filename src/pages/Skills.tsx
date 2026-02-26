@@ -7,13 +7,45 @@ import { skillCategories } from "../data/profile";
 import { ExpandMore } from "@mui/icons-material";
 import { BubbleFloatBg } from "../components/BubbleFloatBg";
 
+function useBubbleCount() {
+  const [count, setCount] = React.useState(38);
+
+  React.useEffect(() => {
+    const calc = () => {
+      const w = window.innerWidth;
+      if (w < 480) return 26;
+      if (w < 768) return 38;
+      return 52;
+    };
+    const apply = () => setCount(calc());
+    apply();
+    window.addEventListener("resize", apply);
+    return () => window.removeEventListener("resize", apply);
+  }, []);
+
+  return count;
+}
+
 export default function Skills() {
   const [openIndex, setOpenIndex] = React.useState<number>(0);
+  const [paused, setPaused] = React.useState(false);
+  const bubbleCount = useBubbleCount();
+
+  const onToggle = (idx: number) => {
+    // pause bubbles briefly to keep accordion animation smooth
+    setPaused(true);
+    window.setTimeout(() => setPaused(false), 380);
+
+    setOpenIndex((cur) => (cur === idx ? -1 : idx));
+  };
 
   return (
     <div className="relative">
-      {/* Background bubbles (no deps) */}
-<BubbleFloatBg className="z-0 opacity-100 dark:opacity-95" count={60} />
+      <BubbleFloatBg
+        className="z-0 opacity-100 dark:opacity-95"
+        count={bubbleCount}
+        paused={paused}
+      />
 
       <motion.div
         variants={container(0.04)}
@@ -36,7 +68,7 @@ export default function Skills() {
               <GlassCard key={cat.title} delayIndex={idx} className="p-0">
                 <button
                   type="button"
-                  onClick={() => setOpenIndex((cur) => (cur === idx ? -1 : idx))}
+                  onClick={() => onToggle(idx)}
                   className="w-full text-left p-5 sm:p-6 md:p-7"
                 >
                   <motion.div

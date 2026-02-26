@@ -185,12 +185,22 @@ body {
   }
 }
 
-@keyframes bubble-float-y {
+@keyframes bubble-float-x {
   from {
-    transform: translate3d(0, calc(var(--by, 18px) * -1), 0);
+    transform: translate3d(calc(var(--bx, 16px) * -1), 0, 0);
   }
 
   to {
-    transform: translate3d(0, var(--by, 18px), 0);
+    transform: translate3d(var(--bx, 16px), 0, 0);
+  }
+}
+
+@keyframes bubble-float-y {
+  from {
+    transform: translate3d(0, calc(var(--by, 16px) * -1), 0);
+  }
+
+  to {
+    transform: translate3d(0, var(--by, 16px), 0);
   }
 }
