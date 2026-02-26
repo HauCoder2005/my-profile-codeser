@@ -3,10 +3,102 @@ import { motion } from "framer-motion";
 import { container, itemUp } from "../utils/motion";
 import { profile } from "../data/profile";
 import { GlassCard } from "../components/GlassCard";
-import { SectionHeading } from "../components/SectionHeading";
 import { Verified, Psychology, Engineering } from "@mui/icons-material";
 
+function TypeTitleLoop({
+  text,
+  className = "",
+  typingSpeed = 55,
+  deletingSpeed = 35,
+  holdMs = 950,
+}: {
+  text: string;
+  className?: string;
+  typingSpeed?: number;
+  deletingSpeed?: number;
+  holdMs?: number;
+}) {
+  const [txt, setTxt] = React.useState("");
+  const [mode, setMode] = React.useState<"type" | "hold" | "delete">("type");
+
+  React.useEffect(() => {
+    let t: number;
+
+    if (mode === "type") {
+      if (txt.length < text.length) {
+        t = window.setTimeout(
+          () => setTxt(text.slice(0, txt.length + 1)),
+          typingSpeed
+        );
+      } else {
+        t = window.setTimeout(() => setMode("hold"), holdMs);
+      }
+    } else if (mode === "hold") {
+      t = window.setTimeout(() => setMode("delete"), holdMs);
+    } else {
+      if (txt.length > 0) {
+        t = window.setTimeout(() => setTxt(txt.slice(0, -1)), deletingSpeed);
+      } else {
+        setMode("type");
+      }
+    }
+
+    return () => window.clearTimeout(t);
+  }, [txt, mode, text, typingSpeed, deletingSpeed, holdMs]);
+
+  return (
+    <span className={["inline-flex items-end gap-2 max-w-full", className].join(" ")}>
+      <span className="break-words sm:whitespace-nowrap">{txt}</span>
+      <span className="inline-block w-[10px] h-[22px] sm:h-[26px] rounded-sm bg-slate-900/60 dark:bg-white/60 animate-pulse align-[-5px]" />
+    </span>
+  );
+}
+
 export default function About() {
+  const [active, setActive] = React.useState(0);
+
+  React.useEffect(() => {
+    const id = window.setInterval(() => {
+      setActive((x) => (x + 1) % 3);
+    }, 2200);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const cards = [
+    {
+      icon: Verified,
+      title: "Chuẩn hoá",
+      desc: "Code rõ ràng, module gọn, naming thống nhất.",
+      glow: "from-indigo-500/25 via-transparent to-fuchsia-500/18",
+      activeBg:
+        "from-indigo-500/10 via-white/0 to-fuchsia-500/10 dark:from-indigo-500/12 dark:to-fuchsia-500/10",
+      activeBorder: "border-indigo-300/50 dark:border-indigo-300/20",
+    },
+    {
+      icon: Psychology,
+      title: "Tư duy hệ thống",
+      desc: "Thiết kế CSDL, flow, API boundary.",
+      glow: "from-cyan-500/22 via-transparent to-indigo-500/18",
+      activeBg:
+        "from-cyan-500/10 via-white/0 to-indigo-500/10 dark:from-cyan-500/10 dark:to-indigo-500/10",
+      activeBorder: "border-cyan-300/45 dark:border-cyan-300/18",
+    },
+    {
+      icon: Engineering,
+      title: "Thực chiến",
+      desc: "Build project end-to-end, có demo.",
+      glow: "from-emerald-500/20 via-transparent to-cyan-500/18",
+      activeBg:
+        "from-emerald-500/10 via-white/0 to-cyan-500/10 dark:from-emerald-500/10 dark:to-cyan-500/10",
+      activeBorder: "border-emerald-300/45 dark:border-emerald-300/18",
+    },
+  ] as const;
+
+  const loopTitle = React.useMemo(() => {
+    const alias = (profile.alias ?? "codeser").toLowerCase();
+    return `Tôi là Huỳnh Hậu <${alias}/>`;
+  }, []);
+
   return (
     <motion.div
       variants={container(0.04)}
@@ -14,16 +106,30 @@ export default function About() {
       animate="show"
       className="grid gap-6"
     >
-      <SectionHeading
-        eyebrow="INTRO"
-        title="Mình là Huỳnh Hậu (codeser)"
-        subtitle="Một người đang rèn kỹ năng mỗi ngày để tiến gần hơn tới mục tiêu: Software Engineer."
-      />
+      {/* HEADER: đúng thứ tự INTRO -> title chạy -> subtitle */}
+      <motion.div variants={itemUp(0)} className="grid gap-3">
+        <div className="text-[11px] md:text-xs font-extrabold tracking-[0.25em] uppercase text-slate-500 dark:text-slate-400">
+          INTRO
+        </div>
+
+        <div className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-950 dark:text-white">
+          <TypeTitleLoop
+            text={loopTitle}
+            typingSpeed={55}
+            deletingSpeed={35}
+            holdMs={950}
+          />
+        </div>
+
+        <div className="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">
+          Một người đang rèn kỹ năng mỗi ngày để tiến gần hơn tới mục tiêu:{" "}
+          <b>Software Engineer</b>.
+        </div>
+      </motion.div>
 
       <div className="grid md:grid-cols-12 gap-6">
         <motion.div variants={itemUp(0)} className="md:col-span-7">
           <GlassCard>
-            {/* BODY TEXT: tăng size trên mobile */}
             <div className="space-y-4 text-base md:text-base text-slate-700 dark:text-slate-200 leading-relaxed">
               <p>
                 Mình theo đuổi con đường trở thành <b>Kỹ sư Phần mềm</b> theo đúng
@@ -44,42 +150,66 @@ export default function About() {
               </p>
             </div>
 
-            {/* GRID: mobile 1 -> sm 2 -> lg 3 */}
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {[
-                {
-                  icon: Verified,
-                  title: "Chuẩn hoá",
-                  desc: "Code rõ ràng, module gọn, naming thống nhất.",
-                },
-                {
-                  icon: Psychology,
-                  title: "Tư duy hệ thống",
-                  desc: "Thiết kế CSDL, flow, API boundary.",
-                },
-                {
-                  icon: Engineering,
-                  title: "Thực chiến",
-                  desc: "Build project end-to-end, có demo.",
-                },
-              ].map((it, idx) => {
+              {cards.map((it, idx) => {
                 const Icon = it.icon;
+                const isActive = active === idx;
+
                 return (
                   <motion.div
                     key={it.title}
                     variants={itemUp(0.06 + idx * 0.04)}
-                    className="rounded-2xl border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5 p-4"
+                    animate={
+                      isActive
+                        ? { scale: [1, 1.06, 1], y: [0, -6, 0] }
+                        : { scale: 1, y: 0 }
+                    }
+                    transition={
+                      isActive
+                        ? { duration: 0.9, ease: "easeInOut" }
+                        : { duration: 0.25 }
+                    }
+                    className={[
+                      "relative overflow-hidden rounded-2xl border p-4",
+                      "transition-all duration-500",
+                      isActive
+                        ? `bg-gradient-to-br ${it.activeBg} ${it.activeBorder}`
+                        : "bg-white/60 dark:bg-white/5 border-slate-200/60 dark:border-white/10 opacity-90",
+                      isActive
+                        ? "shadow-[0_18px_60px_rgba(2,6,23,0.16)] dark:shadow-[0_20px_70px_rgba(0,0,0,0.45)]"
+                        : "shadow-sm",
+                    ].join(" ")}
+                    style={{ transformOrigin: "center" }}
                   >
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-900/5 dark:bg-white/10 border border-slate-200/60 dark:border-white/10">
-                      <Icon />
+                    <div
+                      className={[
+                        "pointer-events-none absolute -inset-10 opacity-0 transition-opacity duration-500",
+                        isActive ? "opacity-100" : "opacity-0",
+                      ].join(" ")}
+                    >
+                      <div
+                        className={[
+                          "absolute inset-0 bg-gradient-to-br",
+                          it.glow,
+                          "blur-2xl",
+                        ].join(" ")}
+                      />
                     </div>
 
-                    <div className="mt-2 text-base font-extrabold">
+                    <div className="relative inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-900/5 dark:bg-white/10 border border-slate-200/60 dark:border-white/10 transition-transform duration-500">
+                      <motion.div
+                        animate={isActive ? { scale: 1.12, rotate: 2 } : { scale: 1, rotate: 0 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Icon />
+                      </motion.div>
+                    </div>
+
+                    <div className="relative mt-2 text-base font-extrabold text-slate-900 dark:text-slate-100">
                       {it.title}
                     </div>
 
-                    {/* DESC: tăng size trên mobile */}
-                    <div className="mt-1 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <div className="relative mt-1 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                       {it.desc}
                     </div>
                   </motion.div>
@@ -117,7 +247,6 @@ export default function About() {
               Mình thích “đúng bản chất” hơn là “đúng trend”.
             </h3>
 
-            {/* tăng size trên mobile */}
             <p className="mt-3 text-base md:text-base text-slate-700 dark:text-slate-200 leading-relaxed">
               Với mình, nền tảng là thứ quyết định đường dài: kiến trúc rõ ràng,
               dữ liệu chuẩn, API gọn, UI mượt — rồi mới tới fancy feature. Mình

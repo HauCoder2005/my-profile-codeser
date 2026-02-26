@@ -91,6 +91,11 @@ export default function Home() {
     },
   ];
 
+  // unified pill style (match ROLE box vibe)
+  const pillBase =
+    "rounded-2xl px-4 py-2 text-xs font-extrabold border border-slate-200/60 dark:border-white/10 " +
+    "bg-white/60 dark:bg-white/5 backdrop-blur-xl";
+
   return (
     <motion.div
       variants={container(0.05)}
@@ -132,11 +137,27 @@ export default function Home() {
               </div>
             </motion.div>
 
-            <div className="mt-4 inline-flex flex-wrap items-center gap-2">
-              <span className="rounded-full px-4 py-1.5 text-xs font-extrabold border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5">
+            {/* pills: make uniform + full width on mobile */}
+            <div className="mt-4 grid grid-cols-1 sm:flex sm:flex-wrap items-start gap-2">
+              <span
+                className={[
+                  pillBase,
+                  "w-full sm:w-auto",
+                  "text-slate-800 dark:text-slate-100",
+                  "break-words",
+                ].join(" ")}
+              >
                 {profile.headline}
               </span>
-              <span className="rounded-full px-4 py-1.5 text-xs font-extrabold border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5">
+
+              <span
+                className={[
+                  pillBase,
+                  "w-full sm:w-auto",
+                  "text-slate-800 dark:text-slate-100",
+                  "break-words",
+                ].join(" ")}
+              >
                 {profile.location}
               </span>
             </div>
@@ -203,7 +224,6 @@ export default function Home() {
         </motion.div>
       </div>
 
-      {/* About me + scanline + moving gradient text */}
       <GlassCard delayIndex={2} className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
           <div className="scanline" aria-hidden="true" />

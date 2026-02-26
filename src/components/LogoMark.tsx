@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Code } from "@mui/icons-material";
 
 export function LogoMark() {
   return (
@@ -11,15 +10,21 @@ export function LogoMark() {
       className="flex items-center gap-2"
     >
       <span
-        className="inline-flex h-10 w-10 items-center justify-center rounded-2xl
+        className="inline-flex h-10 w-[72px] items-center justify-center rounded-2xl
                    bg-gradient-to-br from-indigo-500/90 to-fuchsia-500/90
                    shadow-md animate-floaty"
+        aria-label="codeser mark"
       >
-        <Code className="text-white" />
+        <span className="text-white font-black font-mono text-[14px] leading-none">
+          {"<cs/>"}
+        </span>
       </span>
+
       <div className="leading-tight">
         <div className="text-sm font-extrabold tracking-wide">codeser</div>
-        <div className="text-[11px] text-slate-600 dark:text-slate-300">profile</div>
+        <div className="text-[11px] text-slate-600 dark:text-slate-300">
+          profile
+        </div>
       </div>
     </motion.div>
   );
