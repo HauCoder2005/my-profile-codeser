@@ -46,10 +46,24 @@ function TypeTitleLoop({
     return () => window.clearTimeout(t);
   }, [txt, mode, text, typingSpeed, deletingSpeed, holdMs]);
 
+  const Cursor = (
+    <span className="inline-block w-[10px] h-[22px] sm:h-[26px] rounded-sm bg-slate-900/60 dark:bg-white/60 animate-pulse align-[-5px]" />
+  );
+
+  // FIX: reserve height bằng placeholder invisible, chữ chạy đặt absolute => không đẩy layout bên dưới
   return (
-    <span className={["inline-flex items-end gap-2 max-w-full", className].join(" ")}>
-      <span className="break-words sm:whitespace-nowrap">{txt}</span>
-      <span className="inline-block w-[10px] h-[22px] sm:h-[26px] rounded-sm bg-slate-900/60 dark:bg-white/60 animate-pulse align-[-5px]" />
+    <span className={["relative inline-block max-w-full align-bottom", className].join(" ")}>
+      {/* placeholder giữ chỗ theo full text */}
+      <span className="invisible inline-flex items-end gap-2 max-w-full">
+        <span className="break-words sm:whitespace-nowrap">{text}</span>
+        {Cursor}
+      </span>
+
+      {/* layer chữ chạy */}
+      <span className="absolute inset-0 inline-flex items-end gap-2 max-w-full">
+        <span className="break-words sm:whitespace-nowrap">{txt}</span>
+        {Cursor}
+      </span>
     </span>
   );
 }
