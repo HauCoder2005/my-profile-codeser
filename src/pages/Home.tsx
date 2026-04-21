@@ -1,5 +1,5 @@
-import React, { useMemo, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useMemo } from "react";
+import { motion } from "framer-motion";
 import {
   ArrowForward,
   NorthEast,
@@ -12,6 +12,29 @@ import { container, itemUp } from "../utils/motion";
 import { GlassCard } from "../components/GlassCard";
 import { TagPill } from "../components/TagPill";
 import { profile, projects, techVisuals } from "../data/profile";
+
+function handleShowcasePointerMove(event: React.MouseEvent<HTMLDivElement>) {
+  const card = event.currentTarget;
+  const rect = card.getBoundingClientRect();
+  const offsetX = event.clientX - rect.left;
+  const offsetY = event.clientY - rect.top;
+  const rotateY = ((offsetX / rect.width) - 0.5) * 8;
+  const rotateX = (0.5 - offsetY / rect.height) * 8;
+
+  card.style.setProperty("--pointer-x", `${offsetX}px`);
+  card.style.setProperty("--pointer-y", `${offsetY}px`);
+  card.style.setProperty("--rotate-x", `${rotateX.toFixed(2)}deg`);
+  card.style.setProperty("--rotate-y", `${rotateY.toFixed(2)}deg`);
+}
+
+function handleShowcasePointerLeave(event: React.MouseEvent<HTMLDivElement>) {
+  const card = event.currentTarget;
+
+  card.style.setProperty("--rotate-x", "0deg");
+  card.style.setProperty("--rotate-y", "0deg");
+  card.style.setProperty("--pointer-x", "50%");
+  card.style.setProperty("--pointer-y", "50%");
+}
 
 function TechWall() {
   return (
@@ -47,16 +70,6 @@ function TechWall() {
 }
 
 export default function Home() {
-  const featuredRef = useRef<HTMLDivElement | null>(null);
-
-  const featuredScroll = useScroll({
-    target: featuredRef,
-    offset: ["start end", "end start"],
-  });
-
-  const featuredY = useTransform(featuredScroll.scrollYProgress, [0, 1], [44, -28]);
-  const featuredRotate = useTransform(featuredScroll.scrollYProgress, [0, 1], [-3, 3]);
-
   const metrics = [
     { label: "Core", value: "Backend Architecture" },
     { label: "UI", value: "React / Next Interface" },
@@ -186,6 +199,93 @@ export default function Home() {
       </div>
 
       <GlassCard delayIndex={3} className="overflow-hidden">
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <div className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
+            Featured Work
+          </div>
+          <Link
+            to="/projects"
+            className="inline-flex w-fit items-center gap-2 border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-xs font-extrabold uppercase tracking-[0.16em] dark:border-white/10"
+          >
+            Xem toàn bộ projects
+            <NorthEast fontSize="small" />
+          </Link>
+        </div>
+
+        <div className="grid items-stretch gap-4 md:grid-cols-2">
+          {featuredProjects.map((project, idx) => (
+            <motion.div
+              key={project.name}
+              variants={itemUp(0.08 + idx * 0.04)}
+              className="showcase-card h-full"
+              onMouseMove={handleShowcasePointerMove}
+              onMouseLeave={handleShowcasePointerLeave}
+            >
+              <div className="showcase-card-inner h-full">
+                <div className="showcase-glow" aria-hidden="true" />
+                <div className="showcase-grid" aria-hidden="true" />
+                <div className="showcase-header flex items-start justify-between gap-4">
+                  <div>
+                    <div className="showcase-title text-lg font-black uppercase tracking-[0.16em]">
+                      {project.name}
+                    </div>
+                    <div className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">
+                      {project.role}
+                    </div>
+                  </div>
+                  <div className="showcase-index text-[11px] font-extrabold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                    0{idx + 1}
+                  </div>
+                </div>
+
+                <div className="showcase-body mt-4 grid gap-3">
+                  {project.description.map((line) => (
+                    <div
+                      key={line}
+                      className="border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-sm leading-relaxed dark:border-white/10"
+                    >
+                      {line}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="showcase-tags mt-4 flex flex-wrap gap-2">
+                  {project.tags.map((tag) => (
+                    <TagPill key={tag}>{tag}</TagPill>
+                  ))}
+                </div>
+
+                <div className="showcase-actions mt-auto flex flex-wrap gap-2 pt-5">
+                  {project.repoUrl && (
+                    <a
+                      href={project.repoUrl}
+                      target={project.repoUrl === "#" ? "_self" : "_blank"}
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-xs font-extrabold uppercase tracking-[0.16em] dark:border-white/10"
+                    >
+                      <GitHub fontSize="small" />
+                      Repo
+                    </a>
+                  )}
+                  {project.liveUrl && (
+                    <a
+                      href={project.liveUrl}
+                      target={project.liveUrl === "#" ? "_self" : "_blank"}
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-xs font-extrabold uppercase tracking-[0.16em] dark:border-white/10"
+                    >
+                      <Launch fontSize="small" />
+                      Live
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </GlassCard>
+
+      <GlassCard delayIndex={3} className="overflow-hidden">
         <div className="scanline" aria-hidden="true" />
         <div className="relative grid gap-6 md:grid-cols-2">
           <div className="grid content-start gap-4">
@@ -245,103 +345,6 @@ export default function Home() {
           </div>
         </div>
       </GlassCard>
-
-      <div ref={featuredRef}>
-        <GlassCard delayIndex={4} className="overflow-hidden">
-          <div className="grid gap-6 lg:grid-cols-[0.76fr_1.24fr]">
-            <div className="grid content-start gap-4">
-              <div className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
-                Featured Work
-              </div>
-              <div className="text-2xl font-black uppercase leading-tight sm:text-3xl">
-                Hai dự án tiêu biểu để kéo nhịp phần home lên rõ hơn
-              </div>
-              <div className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
-                Mình đưa `Shopping Now` và `Cinema Booking System` xuống ngay dưới hero để người xem thấy ngay chiều sâu về marketplace, booking flow, thanh toán và tổ chức module.
-              </div>
-              <Link
-                to="/projects"
-                className="inline-flex w-fit items-center gap-2 border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-sm font-extrabold uppercase tracking-[0.16em] dark:border-white/10"
-              >
-                Xem toàn bộ projects
-                <NorthEast fontSize="small" />
-              </Link>
-            </div>
-
-            <div className="grid gap-4 lg:grid-cols-2">
-              {featuredProjects.map((project, idx) => (
-                <motion.div
-                  key={project.name}
-                  variants={itemUp(0.08 + idx * 0.04)}
-                  style={{
-                    y: featuredY,
-                    rotate: featuredRotate,
-                  }}
-                  className="showcase-card"
-                >
-                  <div className="showcase-card-inner">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <div className="text-lg font-black uppercase tracking-[0.16em]">
-                          {project.name}
-                        </div>
-                        <div className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">
-                          {project.role}
-                        </div>
-                      </div>
-                      <div className="text-[11px] font-extrabold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
-                        0{idx + 1}
-                      </div>
-                    </div>
-
-                    <div className="mt-4 grid gap-3">
-                      {project.description.map((line) => (
-                        <div
-                          key={line}
-                          className="border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-sm leading-relaxed dark:border-white/10"
-                        >
-                          {line}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
-                        <TagPill key={tag}>{tag}</TagPill>
-                      ))}
-                    </div>
-
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      {project.repoUrl && (
-                        <a
-                          href={project.repoUrl}
-                          target={project.repoUrl === "#" ? "_self" : "_blank"}
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-2 border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-xs font-extrabold uppercase tracking-[0.16em] dark:border-white/10"
-                        >
-                          <GitHub fontSize="small" />
-                          Repo
-                        </a>
-                      )}
-                      {project.liveUrl && (
-                        <a
-                          href={project.liveUrl}
-                          target={project.liveUrl === "#" ? "_self" : "_blank"}
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-2 border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-xs font-extrabold uppercase tracking-[0.16em] dark:border-white/10"
-                        >
-                          <Launch fontSize="small" />
-                          Live
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </GlassCard>
-      </div>
 
       <GlassCard delayIndex={5}>
         <div className="mb-5 flex items-center justify-between gap-4">

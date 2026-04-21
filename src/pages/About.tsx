@@ -38,9 +38,6 @@ export default function About() {
         <div className="text-3xl font-black uppercase leading-tight sm:text-4xl md:text-5xl">
           {profile.fullName} / {profile.alias}
         </div>
-        <div className="max-w-3xl text-sm leading-relaxed text-slate-700 dark:text-slate-200 md:text-base">
-          Backend-first engineer đang phát triển đồng thời tư duy hệ thống, data flow và giao diện hiện đại để tạo ra sản phẩm hoàn chỉnh hơn.
-        </div>
       </motion.div>
 
       <div className="grid gap-6 md:grid-cols-2">
