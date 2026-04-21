@@ -25,6 +25,8 @@ export const profile = {
   alias: "codeser",
   headline: "Software Engineer • Backend-first • Full-stack capable",
   location: "TP. Hồ Chí Minh, Việt Nam",
+  goal:
+    "Xây dựng hệ thống có cấu trúc rõ ràng, hiệu năng tốt và trải nghiệm gọn gàng từ backend tới frontend.",
   shortBio: [
     "Backend mạnh với Java Spring Boot, NestJS và Node.js theo từng bài toán.",
     "Frontend tập trung ReactJS, NextJS, TypeScript và trải nghiệm UI có nhịp tốt.",
