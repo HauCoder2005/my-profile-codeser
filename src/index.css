@@ -239,6 +239,61 @@ button,
   background: rgba(0, 0, 0, 0.08);
 }
 
+.showcase-card-inner {
+  position: relative;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.48), transparent 22%),
+    rgba(255, 255, 255, 0.34);
+  backdrop-filter: blur(14px);
+}
+
+.dark .showcase-card-inner {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 24%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.showcase-card {
+  position: relative;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.showcase-card-inner {
+  padding: 20px;
+  min-height: 100%;
+  transform: rotateX(7deg) rotateY(-6deg) translate3d(0, 0, 18px);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.12);
+}
+
+.focus-index,
+.focus-badge {
+  display: inline-flex;
+  min-width: 48px;
+  justify-content: center;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.65), transparent),
+    var(--panel);
+  padding: 10px 8px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.dark .focus-index,
+.dark .focus-badge {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent),
+    rgba(255, 255, 255, 0.04);
+}
+
+.focus-badge {
+  color: var(--accent);
+}
+
 .lift-card {
   transform-style: preserve-3d;
 }
@@ -271,7 +326,9 @@ button,
 @media (prefers-reduced-motion: reduce) {
   .scanline,
   .tech-tile::after,
-  .lift-card:hover {
+  .lift-card:hover,
+  .hero-stack-card,
+  .showcase-card-inner {
     animation: none !important;
     transform: none !important;
   }

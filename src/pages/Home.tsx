@@ -1,10 +1,17 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { ArrowForward, NorthEast, RocketLaunch } from "@mui/icons-material";
+import React, { useMemo, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  ArrowForward,
+  NorthEast,
+  RocketLaunch,
+  GitHub,
+  Launch,
+} from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { container, itemUp } from "../utils/motion";
 import { GlassCard } from "../components/GlassCard";
-import { profile, techVisuals } from "../data/profile";
+import { TagPill } from "../components/TagPill";
+import { profile, projects, techVisuals } from "../data/profile";
 
 function TechWall() {
   return (
@@ -40,11 +47,44 @@ function TechWall() {
 }
 
 export default function Home() {
+  const featuredRef = useRef<HTMLDivElement | null>(null);
+
+  const featuredScroll = useScroll({
+    target: featuredRef,
+    offset: ["start end", "end start"],
+  });
+
+  const featuredY = useTransform(featuredScroll.scrollYProgress, [0, 1], [44, -28]);
+  const featuredRotate = useTransform(featuredScroll.scrollYProgress, [0, 1], [-3, 3]);
+
   const metrics = [
     { label: "Core", value: "Backend Architecture" },
     { label: "UI", value: "React / Next Interface" },
     { label: "Data", value: "MySQL / SQL Server" },
   ];
+
+  const buildSignals = [
+    {
+      title: "Project thật tay",
+      desc: "Ưu tiên các bài toán có nghiệp vụ rõ thay vì chỉ dựng landing page demo.",
+    },
+    {
+      title: "Có chiều backend",
+      desc: "Tập trung auth, payment, database flow và cách các service nói chuyện với nhau.",
+    },
+    {
+      title: "UI biết tiết chế",
+      desc: "Làm giao diện sáng sủa, có motion và điểm nhấn nhưng không rối tay người dùng.",
+    },
+  ];
+
+  const featuredProjects = useMemo(
+    () =>
+      projects.filter((project) =>
+        ["Shopping Now", "Cinema Booking System"].includes(project.name),
+      ),
+    [],
+  );
 
   return (
     <motion.div
@@ -147,8 +187,8 @@ export default function Home() {
 
       <GlassCard delayIndex={3} className="overflow-hidden">
         <div className="scanline" aria-hidden="true" />
-        <div className="relative grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
-          <div>
+        <div className="relative grid gap-6 md:grid-cols-2">
+          <div className="grid content-start gap-4">
             <div className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
               Focus
             </div>
@@ -157,23 +197,44 @@ export default function Home() {
                 <motion.div
                   key={line}
                   variants={itemUp(0.03 * idx)}
-                  className="border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-4 text-sm leading-relaxed dark:border-white/10"
+                  className="border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-4 dark:border-white/10"
                 >
-                  {line}
+                  <div className="flex items-start gap-4">
+                    <div className="focus-index">
+                      {String(idx + 1).padStart(2, "0")}
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-[11px] font-extrabold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                        Core focus
+                      </div>
+                      <div className="mt-2 text-sm leading-relaxed">{line}</div>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
           </div>
 
-          <div className="grid gap-3">
-            <div className="border border-slate-900/10 bg-[var(--panel-strong)] p-4 dark:border-white/10">
-              <div className="text-[11px] font-extrabold uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">
-                Direction
-              </div>
-              <div className="mt-2 text-sm font-bold uppercase leading-relaxed">
-                Clean architecture, strong data flow, animation with control.
-              </div>
-            </div>
+          <div className="grid content-start gap-3">
+            {buildSignals.map((signal, idx) => (
+              <motion.div
+                key={signal.title}
+                variants={itemUp(0.08 + idx * 0.03)}
+                className="border border-slate-900/10 bg-[var(--panel-strong)] p-4 dark:border-white/10"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="focus-badge">
+                    {String(idx + 1).padStart(2, "0")}
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-[11px] font-extrabold uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">
+                      {signal.title}
+                    </div>
+                    <div className="mt-2 text-sm leading-relaxed">{signal.desc}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
             <Link
               to="/about"
               className="inline-flex items-center justify-between border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-4 text-sm font-extrabold uppercase tracking-[0.16em] dark:border-white/10"
@@ -184,6 +245,103 @@ export default function Home() {
           </div>
         </div>
       </GlassCard>
+
+      <div ref={featuredRef}>
+        <GlassCard delayIndex={4} className="overflow-hidden">
+          <div className="grid gap-6 lg:grid-cols-[0.76fr_1.24fr]">
+            <div className="grid content-start gap-4">
+              <div className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
+                Featured Work
+              </div>
+              <div className="text-2xl font-black uppercase leading-tight sm:text-3xl">
+                Hai dự án tiêu biểu để kéo nhịp phần home lên rõ hơn
+              </div>
+              <div className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+                Mình đưa `Shopping Now` và `Cinema Booking System` xuống ngay dưới hero để người xem thấy ngay chiều sâu về marketplace, booking flow, thanh toán và tổ chức module.
+              </div>
+              <Link
+                to="/projects"
+                className="inline-flex w-fit items-center gap-2 border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-sm font-extrabold uppercase tracking-[0.16em] dark:border-white/10"
+              >
+                Xem toàn bộ projects
+                <NorthEast fontSize="small" />
+              </Link>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              {featuredProjects.map((project, idx) => (
+                <motion.div
+                  key={project.name}
+                  variants={itemUp(0.08 + idx * 0.04)}
+                  style={{
+                    y: featuredY,
+                    rotate: featuredRotate,
+                  }}
+                  className="showcase-card"
+                >
+                  <div className="showcase-card-inner">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="text-lg font-black uppercase tracking-[0.16em]">
+                          {project.name}
+                        </div>
+                        <div className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">
+                          {project.role}
+                        </div>
+                      </div>
+                      <div className="text-[11px] font-extrabold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                        0{idx + 1}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 grid gap-3">
+                      {project.description.map((line) => (
+                        <div
+                          key={line}
+                          className="border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-sm leading-relaxed dark:border-white/10"
+                        >
+                          {line}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {project.tags.map((tag) => (
+                        <TagPill key={tag}>{tag}</TagPill>
+                      ))}
+                    </div>
+
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {project.repoUrl && (
+                        <a
+                          href={project.repoUrl}
+                          target={project.repoUrl === "#" ? "_self" : "_blank"}
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-xs font-extrabold uppercase tracking-[0.16em] dark:border-white/10"
+                        >
+                          <GitHub fontSize="small" />
+                          Repo
+                        </a>
+                      )}
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl}
+                          target={project.liveUrl === "#" ? "_self" : "_blank"}
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 border border-slate-900/10 bg-[var(--panel-strong)] px-4 py-3 text-xs font-extrabold uppercase tracking-[0.16em] dark:border-white/10"
+                        >
+                          <Launch fontSize="small" />
+                          Live
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </GlassCard>
+      </div>
 
       <GlassCard delayIndex={5}>
         <div className="mb-5 flex items-center justify-between gap-4">
