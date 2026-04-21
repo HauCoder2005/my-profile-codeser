@@ -13,7 +13,7 @@ export default function MobileRepos() {
       <SectionHeading
         eyebrow="MOBILE"
         title="Mobile Repositories"
-        subtitle="Khu vực dành cho repo chạy/hiển thị tốt trên điện thoại: Mobile app, PWA, mini tools."
+        subtitle="Các repo ưu tiên hiển thị và trải nghiệm tốt trên điện thoại."
       />
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -23,14 +23,11 @@ export default function MobileRepos() {
             <GlassCard key={m.name} delayIndex={idx}>
               <motion.div variants={itemUp(0.02 * idx)}>
                 <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-slate-900/5 dark:bg-white/10 border border-slate-200/60 dark:border-white/10 flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[var(--panel-strong)] border border-slate-900/10 dark:border-white/10 flex items-center justify-center">
                     <Icon />
                   </div>
                   <div>
-                    <div className="text-lg font-black">{m.name}</div>
-                    <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                      Repo dành cho điện thoại (bạn thay nội dung thật).
-                    </div>
+                    <div className="text-lg font-black uppercase tracking-[0.16em]">{m.name}</div>
                   </div>
                 </div>
 
@@ -49,9 +46,8 @@ export default function MobileRepos() {
                 <div className="mt-5">
                   <a
                     href={m.repoUrl ?? "#"}
-                    className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-extrabold
-                               border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-md
-                               hover:shadow transition-all"
+                    className="inline-flex items-center gap-2 px-4 py-3 text-xs font-extrabold uppercase tracking-[0.16em]
+                               border border-slate-900/10 dark:border-white/10 bg-[var(--panel-strong)]"
                   >
                     <GitHub fontSize="small" /> Repo
                   </a>
@@ -64,9 +60,7 @@ export default function MobileRepos() {
 
       <GlassCard delayIndex={10}>
         <div className="text-sm md:text-base text-slate-700 dark:text-slate-200 leading-relaxed">
-          <b>Gợi ý:</b> Nếu bạn muốn “đẹp trên điện thoại” hơn nữa, hãy ưu tiên:
-          spacing lớn hơn, button to, và test responsive (Chrome DevTools). UI ở project này đã tối ưu
-          sẵn cho mobile: navbar có menu trên màn nhỏ, card bo tròn, hiệu ứng nhẹ nhàng.
+          Mobile-first ưu tiên spacing rõ, block lớn, trạng thái dễ đọc và thao tác chạm không bị dính.
         </div>
       </GlassCard>
     </motion.div>

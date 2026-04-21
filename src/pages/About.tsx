@@ -1,117 +1,28 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { container, itemUp } from "../utils/motion";
-import { profile } from "../data/profile";
-import { GlassCard } from "../components/GlassCard";
 import { Verified, Psychology, Engineering } from "@mui/icons-material";
-
-function TypeTitleLoop({
-  text,
-  className = "",
-  typingSpeed = 55,
-  deletingSpeed = 35,
-  holdMs = 950,
-}: {
-  text: string;
-  className?: string;
-  typingSpeed?: number;
-  deletingSpeed?: number;
-  holdMs?: number;
-}) {
-  const [txt, setTxt] = React.useState("");
-  const [mode, setMode] = React.useState<"type" | "hold" | "delete">("type");
-
-  React.useEffect(() => {
-    let t: number;
-
-    if (mode === "type") {
-      if (txt.length < text.length) {
-        t = window.setTimeout(
-          () => setTxt(text.slice(0, txt.length + 1)),
-          typingSpeed
-        );
-      } else {
-        t = window.setTimeout(() => setMode("hold"), holdMs);
-      }
-    } else if (mode === "hold") {
-      t = window.setTimeout(() => setMode("delete"), holdMs);
-    } else {
-      if (txt.length > 0) {
-        t = window.setTimeout(() => setTxt(txt.slice(0, -1)), deletingSpeed);
-      } else {
-        setMode("type");
-      }
-    }
-
-    return () => window.clearTimeout(t);
-  }, [txt, mode, text, typingSpeed, deletingSpeed, holdMs]);
-
-  const Cursor = (
-    <span className="inline-block w-[10px] h-[22px] sm:h-[26px] rounded-sm bg-slate-900/60 dark:bg-white/60 animate-pulse align-[-5px]" />
-  );
-
-  // FIX: reserve height bằng placeholder invisible, chữ chạy đặt absolute => không đẩy layout bên dưới
-  return (
-    <span className={["relative inline-block max-w-full align-bottom", className].join(" ")}>
-      {/* placeholder giữ chỗ theo full text */}
-      <span className="invisible inline-flex items-end gap-2 max-w-full">
-        <span className="break-words sm:whitespace-nowrap">{text}</span>
-        {Cursor}
-      </span>
-
-      {/* layer chữ chạy */}
-      <span className="absolute inset-0 inline-flex items-end gap-2 max-w-full">
-        <span className="break-words sm:whitespace-nowrap">{txt}</span>
-        {Cursor}
-      </span>
-    </span>
-  );
-}
+import { container, itemUp } from "../utils/motion";
+import { GlassCard } from "../components/GlassCard";
+import { profile } from "../data/profile";
 
 export default function About() {
-  const [active, setActive] = React.useState(0);
-
-  React.useEffect(() => {
-    const id = window.setInterval(() => {
-      setActive((x) => (x + 1) % 3);
-    }, 2200);
-    return () => window.clearInterval(id);
-  }, []);
-
-  const cards = [
+  const points = [
     {
       icon: Verified,
-      title: "Chuẩn hoá",
-      desc: "Code rõ ràng, module gọn, naming thống nhất.",
-      glow: "from-indigo-500/25 via-transparent to-fuchsia-500/18",
-      activeBg:
-        "from-indigo-500/10 via-white/0 to-fuchsia-500/10 dark:from-indigo-500/12 dark:to-fuchsia-500/10",
-      activeBorder: "border-indigo-300/50 dark:border-indigo-300/20",
+      title: "Structured code",
+      desc: "Ưu tiên flow rõ ràng, naming sạch và module dễ mở rộng.",
     },
     {
       icon: Psychology,
-      title: "Tư duy hệ thống",
-      desc: "Thiết kế CSDL, flow, API boundary.",
-      glow: "from-cyan-500/22 via-transparent to-indigo-500/18",
-      activeBg:
-        "from-cyan-500/10 via-white/0 to-indigo-500/10 dark:from-cyan-500/10 dark:to-indigo-500/10",
-      activeBorder: "border-cyan-300/45 dark:border-cyan-300/18",
+      title: "System thinking",
+      desc: "Đi từ bài toán, dữ liệu, API tới trải nghiệm người dùng.",
     },
     {
       icon: Engineering,
-      title: "Thực chiến",
-      desc: "Build project end-to-end, có demo.",
-      glow: "from-emerald-500/20 via-transparent to-cyan-500/18",
-      activeBg:
-        "from-emerald-500/10 via-white/0 to-cyan-500/10 dark:from-emerald-500/10 dark:to-cyan-500/10",
-      activeBorder: "border-emerald-300/45 dark:border-emerald-300/18",
+      title: "Execution",
+      desc: "Thích build project thật, kiểm soát chất lượng và ship đều tay.",
     },
-  ] as const;
-
-  const loopTitle = React.useMemo(() => {
-    const alias = (profile.alias ?? "codeser").toLowerCase();
-    return `Tôi là Huỳnh Hậu <${alias}/>`;
-  }, []);
+  ];
 
   return (
     <motion.div
@@ -120,173 +31,74 @@ export default function About() {
       animate="show"
       className="grid gap-6"
     >
-      {/* HEADER: đúng thứ tự INTRO -> title chạy -> subtitle */}
       <motion.div variants={itemUp(0)} className="grid gap-3">
-        <div className="text-[11px] md:text-xs font-extrabold tracking-[0.25em] uppercase text-slate-500 dark:text-slate-400">
-          INTRO
+        <div className="text-[11px] font-extrabold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+          Profile
         </div>
-
-        <div className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-950 dark:text-white">
-          <TypeTitleLoop
-            text={loopTitle}
-            typingSpeed={55}
-            deletingSpeed={35}
-            holdMs={950}
-          />
+        <div className="text-3xl font-black uppercase leading-tight sm:text-4xl md:text-5xl">
+          {profile.fullName} / {profile.alias}
         </div>
-
-        <div className="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">
-          Một người đang rèn kỹ năng mỗi ngày để tiến gần hơn tới mục tiêu:{" "}
-          <b>Software Engineer</b>.
+        <div className="max-w-3xl text-sm leading-relaxed text-slate-700 dark:text-slate-200 md:text-base">
+          Backend-first engineer đang phát triển đồng thời tư duy hệ thống, data flow và giao diện hiện đại để tạo ra sản phẩm hoàn chỉnh hơn.
         </div>
       </motion.div>
 
-      <div className="grid md:grid-cols-12 gap-6">
-        <motion.div variants={itemUp(0)} className="md:col-span-7">
-          <GlassCard>
-            <div className="space-y-4 text-base md:text-base text-slate-700 dark:text-slate-200 leading-relaxed">
+      <div className="grid gap-6 md:grid-cols-2">
+        <motion.div variants={itemUp(0.02)} className="h-full">
+          <GlassCard className="h-full">
+            <div className="grid h-full content-between gap-4 text-sm leading-relaxed text-slate-700 dark:text-slate-200 md:min-h-[460px] md:text-base">
+              <div className="grid gap-4">
               <p>
-                Mình theo đuổi con đường trở thành <b>Kỹ sư Phần mềm</b> theo đúng
-                nghĩa: hiểu vấn đề, thiết kế giải pháp, viết code có cấu trúc, và
-                quan trọng nhất là <b>ship sản phẩm</b> có thể dùng được ngoài đời.
+                Mình theo đuổi hướng làm sản phẩm từ nền tảng backend vững, sau đó mở rộng sang frontend và trải nghiệm tương tác để hệ thống vừa chạy tốt vừa nhìn tốt.
               </p>
               <p>
-                Về backend, mình ưu tiên nền tảng chắc chắn với{" "}
-                <b>Java (Spring Boot)</b>, song song học và mở rộng sang <b>C#</b>{" "}
-                và <b>Node.js</b> để linh hoạt theo từng dự án. Về frontend, mình
-                chọn <b>ReactJS</b> (và level-up lên <b>NextJS</b>) để build UI
-                mượt, dễ mở rộng.
+                Java Spring Boot là vùng làm việc chính. Song song đó là NestJS, Node.js, ReactJS, NextJS và cách tổ chức dữ liệu để mỗi phần của hệ thống kết nối trơn tru.
               </p>
               <p>
-                Mình cũng học <b>Data Science</b> để hiểu dữ liệu và cách hệ thống
-                vận hành từ góc nhìn phân tích — giúp mình đưa ra quyết định tốt
-                hơn khi thiết kế sản phẩm.
+                Điều mình ưu tiên nhất là code có cấu trúc, dữ liệu rõ ràng, luồng xử lý có thể bảo trì và giao diện không thừa chi tiết.
               </p>
-            </div>
+              </div>
 
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {cards.map((it, idx) => {
-                const Icon = it.icon;
-                const isActive = active === idx;
+              <div className="grid gap-3 md:grid-cols-3">
+                {points.map((point) => {
+                  const Icon = point.icon;
 
-                return (
-                  <motion.div
-                    key={it.title}
-                    variants={itemUp(0.06 + idx * 0.04)}
-                    animate={
-                      isActive
-                        ? { scale: [1, 1.06, 1], y: [0, -6, 0] }
-                        : { scale: 1, y: 0 }
-                    }
-                    transition={
-                      isActive
-                        ? { duration: 0.9, ease: "easeInOut" }
-                        : { duration: 0.25 }
-                    }
-                    className={[
-                      "relative overflow-hidden rounded-2xl border p-4",
-                      "transition-all duration-500",
-                      isActive
-                        ? `bg-gradient-to-br ${it.activeBg} ${it.activeBorder}`
-                        : "bg-white/60 dark:bg-white/5 border-slate-200/60 dark:border-white/10 opacity-90",
-                      isActive
-                        ? "shadow-[0_18px_60px_rgba(2,6,23,0.16)] dark:shadow-[0_20px_70px_rgba(0,0,0,0.45)]"
-                        : "shadow-sm",
-                    ].join(" ")}
-                    style={{ transformOrigin: "center" }}
-                  >
+                  return (
                     <div
-                      className={[
-                        "pointer-events-none absolute -inset-10 opacity-0 transition-opacity duration-500",
-                        isActive ? "opacity-100" : "opacity-0",
-                      ].join(" ")}
+                      key={point.title}
+                      className="border border-slate-900/10 bg-[var(--panel-strong)] p-4 dark:border-white/10"
                     >
-                      <div
-                        className={[
-                          "absolute inset-0 bg-gradient-to-br",
-                          it.glow,
-                          "blur-2xl",
-                        ].join(" ")}
-                      />
-                    </div>
-
-                    <div className="relative inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-900/5 dark:bg-white/10 border border-slate-200/60 dark:border-white/10 transition-transform duration-500">
-                      <motion.div
-                        animate={isActive ? { scale: 1.12, rotate: 2 } : { scale: 1, rotate: 0 }}
-                        transition={{ duration: 0.5 }}
-                      >
+                      <div className="flex h-10 w-10 items-center justify-center border border-slate-900/10 bg-[var(--panel)] dark:border-white/10">
                         <Icon />
-                      </motion.div>
+                      </div>
+                      <div className="mt-3 text-sm font-black uppercase tracking-[0.16em]">
+                        {point.title}
+                      </div>
+                      <div className="mt-2 text-sm leading-relaxed">
+                        {point.desc}
+                      </div>
                     </div>
-
-                    <div className="relative mt-2 text-base font-extrabold text-slate-900 dark:text-slate-100">
-                      {it.title}
-                    </div>
-
-                    <div className="relative mt-1 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                      {it.desc}
-                    </div>
-                  </motion.div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </GlassCard>
         </motion.div>
 
-        <motion.div variants={itemUp(0.08)} className="md:col-span-5">
-          <div
-            className="relative h-full min-h-[260px] sm:min-h-[320px] md:min-h-[420px] overflow-hidden rounded-3xl
-                      border border-slate-200/60 dark:border-white/10
-                      bg-white/70 dark:bg-white/5 backdrop-blur-xl shadow-sm"
-          >
-            <img
-              src="/images/codeser.jpg"
-              alt="Ảnh cá nhân / ảnh working setup"
-              className="absolute inset-0 h-full w-full object-cover"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/15 dark:from-black/25 dark:to-black/35" />
-          </div>
+        <motion.div variants={itemUp(0.06)} className="h-full">
+          <GlassCard className="h-full p-0">
+            <div className="relative min-h-[460px] h-full overflow-hidden">
+              <img
+                src="/images/codeser.jpg"
+                alt="Huynh Hau working portrait"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_10%,rgba(9,13,18,0.38)_100%)]" />
+            </div>
+          </GlassCard>
         </motion.div>
       </div>
-
-      <GlassCard delayIndex={4}>
-        <div className="grid md:grid-cols-12 gap-6">
-          <div className="md:col-span-6">
-            <div className="text-[11px] md:text-xs font-extrabold tracking-[0.25em] uppercase text-slate-500 dark:text-slate-400">
-              Tuyên ngôn nhỏ
-            </div>
-
-            <h3 className="mt-3 text-lg sm:text-xl md:text-2xl font-black">
-              Mình thích “đúng bản chất” hơn là “đúng trend”.
-            </h3>
-
-            <p className="mt-3 text-base md:text-base text-slate-700 dark:text-slate-200 leading-relaxed">
-              Với mình, nền tảng là thứ quyết định đường dài: kiến trúc rõ ràng,
-              dữ liệu chuẩn, API gọn, UI mượt — rồi mới tới fancy feature. Mình
-              sẵn sàng học nhanh, nhưng luôn ưu tiên hiểu thật kỹ trước khi tối ưu.
-            </p>
-          </div>
-
-          <div className="md:col-span-6">
-            <div className="text-[11px] md:text-xs font-extrabold tracking-[0.25em] uppercase text-slate-500 dark:text-slate-400">
-              Snapshot
-            </div>
-
-            <div className="mt-3 space-y-2 text-base text-slate-700 dark:text-slate-200">
-              <div className="rounded-2xl border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5 px-4 py-3">
-                <b>Name:</b> {profile.fullName}
-              </div>
-              <div className="rounded-2xl border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5 px-4 py-3">
-                <b>Alias:</b> {profile.alias}
-              </div>
-              <div className="rounded-2xl border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5 px-4 py-3">
-                <b>Focus:</b> Backend strong • Full-stack ready • UI smooth
-              </div>
-            </div>
-          </div>
-        </div>
-      </GlassCard>
     </motion.div>
   );
 }

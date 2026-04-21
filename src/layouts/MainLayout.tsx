@@ -24,11 +24,11 @@ export function MainLayout() {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-dvh">
-      <div className="bg-ambient animate-shimmer">
+    <div className="flex min-h-dvh flex-col">
+      <div className="bg-ambient flex min-h-dvh flex-1 flex-col">
         <Navbar theme={theme} onToggleTheme={toggle} />
 
-        <main className="mx-auto max-w-6xl px-4 py-6 sm:py-8 md:py-10">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-8 md:py-10">
           <Outlet />
         </main>
 

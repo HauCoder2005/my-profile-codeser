@@ -23,14 +23,15 @@ import {
 export const profile = {
   fullName: "Huỳnh Hậu",
   alias: "codeser",
-  headline: "Software Engineer (Backend-oriented) • Full-stack ready",
+  headline: "Software Engineer • Backend-first • Full-stack capable",
   location: "TP. Hồ Chí Minh, Việt Nam",
   goal:
-    "Mục tiêu của mình là trở thành một Kỹ sư Phần mềm đúng nghĩa: hiểu vấn đề, thiết kế giải pháp, viết code có cấu trúc, tối ưu hiệu năng, và ship sản phẩm thật sự dùng được.",
+    "Xây dựng hệ thống có cấu trúc rõ ràng, hiệu năng tốt và trải nghiệm gọn gàng từ backend tới frontend.",
+
   shortBio: [
-    "Backend: Java (Spring Boot), mở rộng C# (ASP.NET Core) và Node.js để linh hoạt theo dự án.",
-    "Frontend: ReactJS và level-up NextJS để scale sản phẩm tốt hơn.",
-    "Database: MySQL/SQL Server + tư duy tối ưu query, indexing, schema chuẩn.",
+    "Backend mạnh với Java Spring Boot, NestJS và Node.js theo từng bài toán.",
+    "Frontend tập trung ReactJS, NextJS, TypeScript và trải nghiệm UI có nhịp tốt.",
+    "Database ưu tiên MySQL, SQL Server, tối ưu schema, query và indexing.",
   ],
 };
 
@@ -45,80 +46,83 @@ export type SkillCategory = {
 /*SKILL*/
 export const skillCategories: SkillCategory[] = [
   {
-    title: "Frontend (React / Next / UI)",
+    title: "Frontend",
     icon: Web,
     items: [
-      "ReactJS: Router, Hooks, Component patterns",
-      "NextJS: App Router, SSR/CSR, SEO basics, API patterns",
-      "TypeScript / JavaScript (strict typing, clean component API)",
-      "UI Libraries: Material UI (MUI) • Bootstrap",
-      "Styling: TailwindCSS (design system, responsive, dark mode)",
-      "Design tool: Figma (layout, component, handoff cơ bản)",
-      "Animation: Framer Motion (stagger, transitions, micro-interactions)",
-      "CRUD UI chuẩn dự án: form state + validation + loading/error/empty states",
-      "Data table: pagination/filter/sort/search UI + debounced search",
-      "Optimistic update (cơ bản) + cache invalidation mindset (React Query)",
-      "UX basics: spacing, typography hierarchy, accessibility mindset",
+      "ReactJS, NextJS, TypeScript",
+      "TailwindCSS, Material UI",
+      "Responsive UI, component architecture",
+      "Framer Motion, interaction flow",
+      "Figma handoff, layout control",
     ],
   },
-
   {
-    title: "Backend (Java / C# / Node)",
+    title: "Backend",
     icon: Storage,
     items: [
-      "Java Core: OOP, collections, clean code",
-      "Spring Boot: REST API, validation, pagination/filter, DTO/Mapper",
-      "Spring Security: Authentication, Authorization, RBAC",
-      "CRUD REST chuẩn dự án: validate input + error handling (400/404/409/500)",
-      "Pagination / Sorting / Filtering / Search cho danh sách API",
-      "AuthN/AuthZ: JWT/session cơ bản + RBAC (Admin/Nhân viên/Client)",
-      "DTO/Mapper + response shape nhất quán, convention đặt endpoint",
-      "Upload media/file: size/format limit, path, fallback, security basics",
-      "Logging/Audit: ai tạo/sửa/xoá, timestamp, trace để debug",
-      "C#: fundamentals, OOP, ASP.NET Core (learning)",
-      "Node.js: REST API, MVC pattern (learning)",
-      "API design: status codes, consistent response shape, versioning cơ bản",
+      "Java Core, Spring Boot, REST API",
+      "NestJS, module architecture, DTO, guard",
+      "API Gateway, service boundary, webhook handler",
+      "Order service, payment service, provider adapter",
+      "Validation, pagination, DTO, mapper",
+      "Security, auth flow, RBAC",
+      "Node.js service layer",
     ],
   },
-
   {
-    title: "Database & DBMS (MySQL / SQL Server)",
+    title: "Database",
     icon: Dns,
     items: [
-      "MySQL: schema design, constraints, FK, indexing",
-      "SQL Server: fundamentals, query & management basics",
-      "SQL advanced: JOIN, GROUP BY, HAVING, subquery, window basics",
-      "Normalization: 1NF–3NF, tránh duplication, đảm bảo data integrity",
-      "Data integrity: FK, UNIQUE, CHECK, cascade rules đúng nghiệp vụ",
-      "Index strategy: B-Tree, composite index, covering index (tư duy chọn index)",
-      "Query optimization: EXPLAIN, đọc query plan, tối ưu slow query",
-      "Transactions: ACID, isolation levels, xử lý deadlock/cạnh tranh dữ liệu",
-      "Concurrency: hiểu lost update, phantom read (cơ bản) + cách giảm rủi ro",
-      "Stored procedures / views (cơ bản), backup/restore (tư duy vận hành)",
+      "MySQL, SQL Server, MongoDB",
+      "Schema design, FK, indexing",
+      "JOIN, GROUP BY, subquery",
+      "Query plan, optimization mindset",
+      "Transaction and data integrity",
+      "Media metadata, transaction status, webhook log",
     ],
   },
-
   {
-    title: "Business Analysis (BA) / Product Thinking",
+    title: "Integration",
+    icon: Security,
+    items: [
+      "VNPay, MoMo, card payment integration",
+      "Webhook verify, callback processing, status sync",
+      "Email flow, OTP, external provider communication",
+      "Auth, catalog, checkout, orders, users shop module split",
+    ],
+  },
+  {
+    title: "Infra",
+    icon: Build,
+    items: [
+      "Redis cache, temp status, idempotency",
+      "RabbitMQ queue, payment event, media job",
+      "MinIO object storage, file pipeline",
+      "Python worker for resize, compress, convert",
+      "Upload hub, media hub, processing orchestration",
+    ],
+  },
+  {
+    title: "Analysis",
     icon: AutoAwesome,
     items: [
-      "Thu thập yêu cầu: user story, use case, scope rõ ràng",
-      "Phân tích nghiệp vụ: actor, luồng chính/phụ, edge cases",
-      "Wireframe/flow: mô tả màn hình, hành vi, trạng thái UI",
-      "Tài liệu hoá: PRD đơn giản, spec API, acceptance criteria",
-      "Tư duy sản phẩm: ưu tiên feature theo giá trị & tác động",
+      "Use case, user story, scope breakdown",
+      "Flow mapping and edge-case review",
+      "Wireframe and API specification",
+      "Product value and feature priority",
+      "Order lifecycle and shipment tracking flow",
+      "Voucher, flash sale, pricing rule mapping",
     ],
   },
-
   {
-    title: "Tools & Workflow",
+    title: "Workflow",
     icon: Terminal,
     items: [
-      "Git/GitHub workflow (branching, merge, conflict resolve)",
-      "Linux terminal workflow (dev environment)",
-      "Debug có hệ thống (log, reproduce, isolate, fix)",
-      "Code organization: modular, clean architecture mindset",
-      "Testing mindset: test case cơ bản theo luồng nghiệp vụ",
+      "Git, GitHub, branch workflow",
+      "Linux terminal and debugging",
+      "Modular structure, clean code",
+      "Testing mindset by business flow",
+      "Email OTP flow and role permission mapping",
     ],
   },
 ];
@@ -144,7 +148,6 @@ export const education: EducationItem[] = [
       "Học nền tảng phân tích dữ liệu, xử lý dữ liệu, mô hình hoá và đánh giá.",
       "Làm dự án, báo cáo và thuyết trình theo chuẩn học phần.",
     ],
-    imageHint: ">> Thêm ảnh UTH tại đây <<",
   },
   {
     title: "Aptech Computer Education — TP.HCM",
@@ -153,10 +156,9 @@ export const education: EducationItem[] = [
     period: "Đang theo học",
     imageUrl: "/images/aptech.jpg", 
     description: [
-      "Chương trình đào tạo chuyên sâu về Kỹ thuật Phần mềm: OOP, System Design, Database, Full-stack.",
+      "Chương trình đào tạo chuyên sâu về Kỹ thuật Phần mềm: OOP, Database, Full-stack.",
       "Tập trung tư duy kỹ sư: chuẩn hoá codebase, triển khai dự án thực tế, tài liệu kỹ thuật.",
     ],
-    imageHint: ">> Thêm ảnh Aptech tại đây <<",
   },
 ];
 
@@ -174,43 +176,48 @@ export type ProjectItem = {
 
 export const projects: ProjectItem[] = [
   {
+    name: "Shopping Now",
+    role: "E-commerce marketplace",
+    description: [
+      "Nền tảng thương mại điện tử cho thị trường Việt Nam theo mô hình nhiều shop cùng bán hàng.",
+      "Bao gồm xác thực email OTP, role permission riêng, quản lý sản phẩm, giỏ hàng, đặt hàng, thanh toán, voucher, flash sale và theo dõi hành trình đơn hàng.",
+    ],
+    tags: ["NextJS", "NestJS", "Marketplace", "Order Tracking"],
+    repoUrl: "#",
+    liveUrl: "#",
+  },
+  {
     name: "LinhLoanSG Company Website",
     role: "Website giới thiệu doanh nghiệp",
     description: [
       "Website giới thiệu công ty Cung cấp vật liệu xây dựng và đầu tư Linh Loan Sài Gòn.",
-      "Tập trung vào nội dung giới thiệu, thông tin dịch vụ, và định hướng trình bày rõ ràng cho khách hàng tham khảo.",
-      "Chi tiết kỹ thuật / demo: xem trong phần Repo.",
+      "Tập trung vào bố cục giới thiệu dịch vụ, nội dung rõ ràng và trải nghiệm duyệt mạch lạc.",
     ],
     tags: ["Company", "Website", "UI/UX", "Frontend"],
     repoUrl: "https://github.com/HauCoder2005/company-LinhLoanSG",
     liveUrl: "https://haucoder2005.github.io/company-LinhLoanSG/",
-    imageHint: ">> Thêm ảnh/screenshot giao diện dự án tại đây <<",
   },
   {
     name: "Toolz – Get All Courses UTH",
     role: "Tool/Automation hỗ trợ đăng ký học phần",
     description: [
       "Tool giúp lấy danh sách học phần và hỗ trợ đăng ký khi trang trường bị quá tải/sập, thông qua API.",
-      "Mục tiêu: giảm thao tác thủ công, tăng tốc độ xử lý và chủ động khi hệ thống gặp sự cố.",
-      "Chi tiết cách chạy và API: xem trong phần Repo.",
+      "Mục tiêu là giảm thao tác thủ công, tăng tốc độ xử lý và chủ động khi hệ thống gặp sự cố.",
     ],
     tags: ["Tooling", "Automation", "API", "UTH"],
     repoUrl: "https://github.com/HauCoder2005/Toolz-get-all-courses-UTH",
     liveUrl: "#",
-    imageHint: ">> Thêm ảnh CLI/log/demo output tại đây <<",
   },
   {
     name: "BeachesOfBeauty (Full-stack)",
     role: "Full-stack Project • Content/Discovery",
     description: [
       "Dự án full-stack giới thiệu các bãi biển nổi tiếng trên thế giới.",
-      "Người dùng có thể xem online để tham khảo địa điểm muốn đến: mô tả, điểm nổi bật và trải nghiệm gợi ý.",
-      "Chi tiết tính năng và cấu trúc hệ thống: xem trong phần Repo (Projects).",
+      "Người dùng có thể xem thông tin địa điểm, điểm nổi bật và trải nghiệm gợi ý.",
     ],
     tags: ["Full-stack", "Discovery", "Content", "Web App"],
     repoUrl: "https://github.com/HauCoder2005/BeachesOfBeauty",
     liveUrl: "#",
-    imageHint: ">> Thêm ảnh trang listing/detail bãi biển tại đây <<",
   },
   {
     name: "CanTeenGo",
@@ -218,25 +225,21 @@ export const projects: ProjectItem[] = [
     description: [
       "Ứng dụng đặt đồ ăn trong căn tin: cho phép đặt trong số lượng (suất) đồ ăn có sẵn.",
       "Tập trung vào luồng đặt món nhanh, rõ ràng và phù hợp môi trường căn tin.",
-      "Chi tiết mô hình dữ liệu và luồng đặt món: xem trong phần Repo.",
     ],
     tags: ["Ordering", "Canteen", "App Flow", "CRUD"],
     repoUrl: "https://github.com/HauCoder2005/CanTeenGo",
     liveUrl: "#",
-    imageHint: ">> Thêm ảnh giao diện đặt món/giỏ hàng tại đây <<",
   },
   {
     name: "Cinema Booking System",
-    role: "Đang triển khai • Coming soon",
+    role: "Booking platform",
     description: [
       "Hệ thống quản lý rạp chiếu phim cho phép khách đặt chỗ/đặt vé online.",
-      "Đang triển khai theo từng module: phim, lịch chiếu, phòng/ghế, đặt vé, thanh toán và quản trị.",
-      "Demo/chi tiết sẽ cập nhật sớm khi hoàn thiện các phần chính.",
+      "Triển khai theo từng module: phim, lịch chiếu, phòng ghế, đặt vé, thanh toán và quản trị.",
     ],
-    tags: ["Coming soon", "Booking", "System Design", "Backend + Frontend"],
+    tags: ["Booking", "Backend", "Frontend", "Payment"],
     repoUrl: "#",
     liveUrl: "#",
-    imageHint: ">> Thêm ảnh ERD / UI / flow booking tại đây <<",
   },
 ];
 
@@ -252,23 +255,21 @@ export type MobileRepoItem = {
 
 export const mobileRepos: MobileRepoItem[] = [
   {
-    name: "Mobile Repo Placeholder 01",
+    name: "Responsive Web Profile",
     icon: PhoneIphone,
     description: [
-      "Repo mobile/PWA để show chạy tốt trên điện thoại.",
-      "Bạn thay nội dung theo repo thật của bạn.",
+      "Bản giao diện profile tối ưu cho màn nhỏ với bố cục rõ ràng, thao tác nhanh và typography lớn hơn.",
+      "Tập trung vào responsive layout, touch target và nhịp chuyển động nhẹ.",
     ],
-    tech: ["React Native / PWA", "API integration", "UI"],
+    tech: ["React", "Responsive UI", "Motion"],
     repoUrl: "#",
-    imageHint: ">> Thêm ảnh demo mobile tại đây <<",
   },
   {
-    name: "Mobile Repo Placeholder 02",
+    name: "Mini Tool Interface",
     icon: Bolt,
-    description: ["Mini tool / app nhỏ để showcase UX & tốc độ."],
+    description: ["Mini tool thiên về tốc độ thao tác, trạng thái rõ và luồng sử dụng ngắn gọn."],
     tech: ["React", "Offline-first"],
     repoUrl: "#",
-    imageHint: ">> Thêm ảnh demo mobile tại đây <<",
   },
 ];
 
@@ -311,4 +312,27 @@ export const socials: SocialLink[] = [
     url: "mailto:haucoderfullstack05@gmail.com",
     hint: "haucoderfullstack05@gmail.com",
   },
+];
+
+export type TechVisual = {
+  name: string;
+  image: string;
+  tone: string;
+};
+
+export const techVisuals: TechVisual[] = [
+  { name: "React", image: "/images/tech/react.svg", tone: "from-indigo-500/18 to-slate-300/5" },
+  { name: "NextJS", image: "/images/tech/nextjs.svg", tone: "from-slate-700/18 to-slate-300/5" },
+  { name: "NestJS", image: "/images/tech/nestjs.svg", tone: "from-indigo-400/18 to-slate-400/5" },
+  { name: "TypeScript", image: "/images/tech/typescript.svg", tone: "from-indigo-500/18 to-slate-300/5" },
+  { name: "JavaScript", image: "/images/tech/javascript.svg", tone: "from-slate-500/18 to-indigo-300/5" },
+  { name: "Java", image: "/images/tech/java.svg", tone: "from-slate-600/18 to-indigo-300/5" },
+  { name: "Spring", image: "/images/tech/spring.svg", tone: "from-slate-500/18 to-indigo-200/5" },
+  { name: "NodeJS", image: "/images/tech/nodejs.svg", tone: "from-slate-700/18 to-indigo-200/5" },
+  { name: "MySQL", image: "/images/tech/mysql.svg", tone: "from-indigo-500/18 to-slate-300/5" },
+  { name: "SQL Server", image: "/images/tech/sqlserver.svg", tone: "from-slate-700/18 to-indigo-200/5" },
+  { name: "Tailwind", image: "/images/tech/tailwindcss.svg", tone: "from-indigo-400/18 to-slate-300/5" },
+  { name: "Git", image: "/images/tech/git.svg", tone: "from-slate-700/18 to-indigo-300/5" },
+  { name: "GitHub", image: "/images/tech/github.svg", tone: "from-slate-700/18 to-slate-300/5" },
+  { name: "Figma", image: "/images/tech/figma.svg", tone: "from-indigo-400/18 to-slate-300/5" },
 ];

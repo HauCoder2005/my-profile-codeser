@@ -20,11 +20,11 @@ type Props = {
 };
 
 const linkBase =
-  "flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-semibold transition-all";
+  "flex items-center gap-2 px-3 py-2 text-sm font-semibold uppercase tracking-[0.16em] transition-all";
 const linkInactive =
-  "text-slate-700 hover:text-slate-900 hover:bg-slate-900/5 dark:text-slate-200 dark:hover:text-white dark:hover:bg-white/5";
+  "text-slate-700 hover:text-slate-950 hover:bg-black/5 dark:text-slate-200 dark:hover:text-white dark:hover:bg-white/5";
 const linkActive =
-  "text-slate-950 bg-slate-900/5 dark:text-white dark:bg-white/10 shadow-sm";
+  "text-slate-950 bg-black/5 dark:text-white dark:bg-white/10";
 
 const navItems = [
   { to: "/", label: "Home", icon: Home },
@@ -46,7 +46,7 @@ export function Navbar({ theme, onToggleTheme }: Props) {
 
   return (
     <div className="sticky top-0 z-50">
-      <div className="bg-white/60 dark:bg-[#0b0f19]/50 backdrop-blur-xl border-b border-slate-200/60 dark:border-white/10">
+      <div className="border-b border-slate-900/10 bg-[var(--panel)] backdrop-blur-xl dark:border-white/10">
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
           <LogoMark />
 
@@ -84,9 +84,9 @@ export function Navbar({ theme, onToggleTheme }: Props) {
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
-              className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-2xl
-                         border border-slate-200/70 dark:border-white/10
-                         bg-white/70 dark:bg-white/5 backdrop-blur-md shadow-sm hover:shadow transition-all"
+              className="md:hidden inline-flex items-center justify-center w-10 h-10
+                         border border-slate-900/10 dark:border-white/10
+                         bg-[var(--panel-strong)] backdrop-blur-md transition-all"
               aria-label="Open menu"
               title="Menu"
             >
@@ -116,20 +116,18 @@ export function Navbar({ theme, onToggleTheme }: Props) {
                 animate={{ y: 0, opacity: 1, scale: 1, filter: "blur(0px)" }}
                 exit={{ y: -10, opacity: 0, scale: 0.98, filter: "blur(6px)" }}
                 transition={{ duration: 0.25 }}
-                className="relative mx-auto mt-3 w-[94%] max-w-md rounded-3xl
-                           border border-slate-200/60 dark:border-white/10
-                           bg-white/80 dark:bg-[#0b0f19]/85 backdrop-blur-xl shadow-xl p-3"
+                className="panel-3d relative mx-auto mt-3 w-[94%] max-w-md p-3"
               >
                 <div className="flex items-center justify-between px-2 py-2">
-                  <div className="text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                  <div className="text-sm font-extrabold uppercase tracking-[0.18em] text-slate-900 dark:text-slate-100">
                     Navigation
                   </div>
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
-                    className="inline-flex items-center justify-center w-9 h-9 rounded-2xl
-                               border border-slate-200/70 dark:border-white/10
-                               bg-white/70 dark:bg-white/5 hover:shadow transition-all"
+                    className="inline-flex items-center justify-center w-9 h-9
+                               border border-slate-900/10 dark:border-white/10
+                               bg-[var(--panel-strong)] transition-all"
                     aria-label="Close menu"
                   >
                     <CloseIcon fontSize="small" />
@@ -153,12 +151,12 @@ export function Navbar({ theme, onToggleTheme }: Props) {
                             [
                               "w-full",
                               "flex items-center gap-3",
-                              "rounded-2xl px-4 py-3 font-extrabold",
-                              "border border-slate-200/60 dark:border-white/10",
-                              "bg-white/60 dark:bg-white/5",
-                              "hover:shadow-sm transition-all",
+                              "px-4 py-3 font-extrabold uppercase tracking-[0.14em]",
+                              "border border-slate-900/10 dark:border-white/10",
+                              "bg-[var(--panel-strong)]",
+                              "transition-all",
                               isActive
-                                ? "text-slate-950 dark:text-white ring-1 ring-slate-900/10 dark:ring-white/10"
+                                ? "text-slate-950 dark:text-white"
                                 : "text-slate-800 dark:text-slate-200",
                             ].join(" ")
                           }

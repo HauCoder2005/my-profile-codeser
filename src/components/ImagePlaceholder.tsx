@@ -9,7 +9,7 @@ type Props = {
   delayIndex?: number;
 };
 
-export function ImagePlaceholder({ label = "Ảnh (bạn tự thêm)", className = "", delayIndex = 0 }: Props) {
+export function ImagePlaceholder({ label = "Image", className = "", delayIndex = 0 }: Props) {
   return (
     <motion.div
       variants={itemFade(0.02 * delayIndex)}

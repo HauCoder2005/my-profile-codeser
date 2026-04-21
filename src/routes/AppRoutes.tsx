@@ -8,7 +8,6 @@ const About = lazy(() => import("../pages/About"));
 const Skills = lazy(() => import("../pages/Skills"));
 const Education = lazy(() => import("../pages/Education"));
 const Projects = lazy(() => import("../pages/Projects"));
-const MobileRepos = lazy(() => import("../pages/MobileRepos"));
 const Social = lazy(() => import("../pages/Social"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
