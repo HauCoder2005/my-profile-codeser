@@ -16,7 +16,7 @@
     linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
     linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-  --notebook-grid-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+--notebook-grid-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
 }
 
 * {
