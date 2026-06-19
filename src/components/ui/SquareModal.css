@@ -1,0 +1,105 @@
+.square-modal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  padding: 32px;
+  display: grid;
+  place-items: center;
+  background: rgba(18, 18, 18, 0.72);
+}
+
+.square-modal {
+  width: min(1120px, 100%);
+  height: min(85vh, 920px);
+  max-height: 85vh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: #f5f3e9;
+  border: 2px solid var(--color-border);
+  box-shadow: 14px 14px 0 rgba(0, 0, 0, 0.42);
+  color: var(--color-text);
+  overflow: hidden;
+}
+
+.square-modal__bar {
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 58px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.square-modal__title {
+  min-width: 0;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+.square-modal__close {
+  width: 58px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: var(--color-text);
+  border: 0;
+  border-left: 1px solid var(--color-border);
+  color: var(--color-bg);
+}
+
+.square-modal__close:hover {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.square-modal__close:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -6px;
+}
+
+.square-modal__body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 32px;
+}
+
+.square-modal__body::-webkit-scrollbar {
+  width: 12px;
+}
+
+.square-modal__body::-webkit-scrollbar-track {
+  background: #f5f3e9;
+  border-left: 1px solid var(--color-border);
+}
+
+.square-modal__body::-webkit-scrollbar-thumb {
+  background: var(--color-text);
+  border: 2px solid #f5f3e9;
+}
+
+.square-modal__body {
+  scrollbar-color: var(--color-text) #f5f3e9;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 640px) {
+  .square-modal__overlay {
+    padding: 14px;
+  }
+
+  .square-modal {
+    height: 90vh;
+    max-height: 90vh;
+  }
+
+  .square-modal__body {
+    padding: 20px;
+  }
+}

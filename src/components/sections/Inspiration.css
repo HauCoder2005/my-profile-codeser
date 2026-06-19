@@ -1,0 +1,170 @@
+.inspiration {
+  padding: 96px var(--page-padding);
+  background-color: transparent;
+  display: grid;
+  gap: 48px;
+}
+
+.inspiration__diagram {
+  width: 100%;
+  max-width: 960px;
+  height: 600px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.inspiration__connections {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.inspiration__connections path {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 2;
+  stroke-linejoin: miter;
+  stroke-linecap: square;
+}
+
+.inspiration__portrait-wrap {
+  width: 224px;
+  height: 224px;
+  position: absolute;
+  z-index: 3;
+  top: 188px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid var(--color-border);
+  background: var(--color-bg-muted);
+  box-shadow: 12px 12px 0 var(--color-border);
+  overflow: hidden;
+}
+
+.inspiration__portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.inspiration__quote {
+  width: 300px;
+  min-height: 150px;
+  position: absolute;
+  z-index: 3;
+  padding: 20px;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-text);
+  color: var(--color-bg);
+  box-shadow: 8px 8px 0 var(--color-border);
+}
+
+.inspiration__quote span {
+  color: #d8cfb5;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.inspiration__quote p {
+  margin: 0;
+  padding: 0;
+  color: var(--color-bg);
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.42;
+}
+
+.inspiration__quote--top-left {
+  top: 70px;
+  left: 0;
+}
+
+.inspiration__quote--top-right {
+  top: 70px;
+  right: 0;
+}
+
+.inspiration__quote--bottom {
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 420px;
+}
+
+@media (max-width: 900px) {
+  .inspiration__diagram {
+    max-width: 560px;
+    height: auto;
+    display: grid;
+    justify-items: center;
+    gap: 0;
+  }
+
+  .inspiration__connections {
+    display: none;
+  }
+
+  .inspiration__portrait-wrap,
+  .inspiration__quote,
+  .inspiration__quote--top-left,
+  .inspiration__quote--top-right,
+  .inspiration__quote--bottom {
+    position: static;
+    transform: none;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .inspiration__portrait-wrap {
+    width: 224px;
+    height: 224px;
+    margin-bottom: 42px;
+  }
+
+  .inspiration__quote {
+    min-height: auto;
+  }
+
+  .inspiration__quote + .inspiration__quote,
+  .inspiration__quote--bottom {
+    margin-top: 42px;
+  }
+
+  .inspiration__quote::before {
+    content: "";
+    position: absolute;
+    top: -42px;
+    left: 50%;
+    width: 2px;
+    height: 42px;
+    background: var(--color-border);
+  }
+}
+
+@media (max-width: 520px) {
+  .inspiration {
+    padding-block: 72px;
+  }
+
+  .inspiration__portrait-wrap {
+    width: 192px;
+    height: 192px;
+  }
+
+  .inspiration__quote p {
+    font-size: 16px;
+  }
+}

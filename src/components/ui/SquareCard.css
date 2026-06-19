@@ -1,0 +1,7 @@
+.square-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 24px;
+  box-shadow: 8px 8px 0 var(--color-border);
+}

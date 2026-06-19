@@ -1,0 +1,37 @@
+.square-button {
+  min-height: 44px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--color-text);
+  border: 1px solid var(--color-border);
+  color: var(--color-bg);
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.square-button:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+  transform: translate(-2px, -2px);
+}
+
+.square-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.square-button__icon {
+  flex: 0 0 auto;
+}
+
+.square-button__text {
+  white-space: nowrap;
+}
