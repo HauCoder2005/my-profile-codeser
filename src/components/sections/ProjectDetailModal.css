@@ -1,15 +1,17 @@
 .project-detail-modal {
   display: grid;
   gap: 28px;
+  min-width: 0;
 }
 
 .project-detail-modal__stack {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   padding: 18px;
   border: 1px solid var(--color-border);
   background: var(--color-surface);
+  min-width: 0;
 }
 
 .project-detail-modal__badge {
@@ -32,6 +34,8 @@
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.78;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .project-markdown__h1,
@@ -83,6 +87,7 @@
   font-size: 16px;
   font-weight: 500;
   line-height: 1.78;
+  text-align: left;
 }
 
 .project-markdown__ul,
@@ -91,6 +96,7 @@
   padding: 0;
   color: var(--color-text-muted);
   font-family: var(--font-body);
+  text-align: left;
 }
 
 .project-markdown__ul {
@@ -127,9 +133,11 @@
 }
 
 .project-markdown__pre {
+  max-width: 100%;
   margin: 18px 0 22px;
   padding: 18px;
   overflow-x: auto;
+  white-space: pre;
   border: 1px solid var(--color-border);
   background: #222222;
   color: #f5f3e9;
@@ -168,6 +176,7 @@
 }
 
 .project-markdown__table-wrap {
+  max-width: 100%;
   width: 100%;
   margin: 18px 0 24px;
   overflow-x: auto;
@@ -222,16 +231,68 @@
 }
 
 @media (max-width: 640px) {
+  .project-detail-modal {
+    gap: 20px;
+  }
+
   .project-detail-modal__stack {
     padding: 14px;
+  }
+
+  .project-detail-modal__badge {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 11px;
   }
 
   .project-markdown {
     font-size: 15px;
   }
 
+  .project-markdown__h1,
+  .project-markdown__h2,
+  .project-markdown__h3,
+  .project-markdown__h4 {
+    margin: 24px 0 12px;
+    line-height: 1.22;
+  }
+
+  .project-markdown__h1 {
+    padding: 14px;
+    font-size: 24px;
+  }
+
+  .project-markdown__h2 {
+    font-size: 21px;
+  }
+
+  .project-markdown__h3 {
+    font-size: 18px;
+  }
+
+  .project-markdown__h4 {
+    font-size: 16px;
+  }
+
   .project-markdown__p,
   .project-markdown__li {
     font-size: 15px;
+    text-align: left;
+  }
+
+  .project-markdown__ul,
+  .project-markdown__ol {
+    margin-left: 20px;
+    text-align: left;
+  }
+
+  .project-markdown__blockquote {
+    padding: 14px;
+    border-left-width: 6px;
+  }
+
+  .project-markdown__pre {
+    padding: 14px;
+    font-size: 13px;
   }
 }

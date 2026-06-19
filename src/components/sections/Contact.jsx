@@ -5,12 +5,12 @@ import "./Contact.css";
 const contactLinks = [
   {
     label: "Email",
-    href: "mailto:huynhhau.dev@gmail.com",
+    href: "haucoderfullstack05@gmail.com",
     icon: Mail,
   },
   {
     label: "GitHub",
-    href: "https://github.com/huynhhau",
+    href: "https://github.com/HauCoder2005",
     icon: Code,
   },
   {

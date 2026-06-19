@@ -8,16 +8,12 @@ const educationItems = [
       "University of Transport and Communications (UTH) - Ho Chi Minh City",
     degree: "Data Science",
     year: "2023 - Present",
-    logoSrc: "PUT_UTH_LOGO_URL_HERE",
-    logoAlt: "University of Transport and Communications logo",
     logoSlot: "uth",
   },
   {
-    institution: "Aptech Education",
+    institution: "Aptech Computer Education - Ho Chi Minh City",
     degree: "Advanced Diploma in Software Engineering (ADSE)",
     year: "",
-    logoSrc: "PUT_APTECH_LOGO_URL_HERE",
-    logoAlt: "Aptech Education logo",
     logoSlot: "aptech",
   },
 ];
@@ -32,31 +28,30 @@ function Education() {
           <SquareCard className="education__card" key={item.institution}>
             <div className="education__logo-wrap">
               {item.logoSlot === "uth" ? (
-                <img
-                  src="/images/uth.png"
-                  alt="UTH"
-                  className="w-full h-full object-cover block"
-                />
+                <>
+                  {/* TODO: INSERT_UTH_LOGO_HERE */}
+                  <img
+                    className="education__logo"
+                    src="/images/uth.png"
+                    alt="University of Transport and Communications logo"
+                  />
+                </>
               ) : (
-                <img
-                  src="/images/aptech.png"
-                  alt="Aptech"
-                  className="w-full h-full object-cover block"
-                />
+                <>
+                  {/* TODO: INSERT_APTECH_LOGO_HERE */}
+                  <img
+                    className="education__logo"
+                    src="/images/aptech.png"
+                    alt="Aptech Education logo"
+                  />
+                </>
               )}
-              <img
-                className="education__logo"
-                src={item.logoSrc}
-                alt={item.logoAlt}
-              />
             </div>
 
             <div className="education__content">
               <h3 className="education__institution">{item.institution}</h3>
               <p className="education__degree">{item.degree}</p>
-              {item.year ? (
-                <p className="education__year">{item.year}</p>
-              ) : null}
+              {item.year ? <p className="education__year">{item.year}</p> : null}
             </div>
           </SquareCard>
         ))}

@@ -1,6 +1,7 @@
 import Header from "./components/layouts/header/Header";
 import Contact from "./components/sections/Contact";
 import Education from "./components/sections/Education";
+import FooterSocials from "./components/sections/FooterSocials";
 import HeroAbout from "./components/sections/HeroAbout";
 import Inspiration from "./components/sections/Inspiration";
 import Projects from "./components/sections/Projects";
@@ -18,6 +19,7 @@ function App() {
         <Inspiration />
         <Projects />
         <Contact />
+        <FooterSocials />
       </main>
     </div>
   );

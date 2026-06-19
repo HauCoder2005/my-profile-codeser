@@ -19,7 +19,13 @@ function HeroAbout() {
             technical discipline to modern web development, striving for clean
             architecture and performant solutions.
           </p>
-          <SquareButton icon={Download} text="Download CV" />
+          <SquareButton
+            as="a"
+            download="HuynhHau_CV.pdf"
+            href="/images/cv.pdf"
+            icon={Download}
+            text="Download CV"
+          />
         </div>
 
         <div className="hero-about__media" aria-label="Huynh Hau photo placeholder">

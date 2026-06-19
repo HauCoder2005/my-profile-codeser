@@ -1,6 +1,7 @@
 import "./SquareButton.css";
 
 function SquareButton({
+  as: Component = "button",
   icon: Icon,
   text,
   children,
@@ -9,16 +10,17 @@ function SquareButton({
   ...props
 }) {
   const label = text || children;
+  const componentProps = Component === "button" ? { type } : {};
 
   return (
-    <button
+    <Component
       className={`square-button ${className}`.trim()}
-      type={type}
+      {...componentProps}
       {...props}
     >
       {Icon ? <Icon className="square-button__icon" size={18} strokeWidth={2} /> : null}
       {label ? <span className="square-button__text">{label}</span> : null}
-    </button>
+    </Component>
   );
 }
 

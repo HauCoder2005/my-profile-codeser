@@ -91,15 +91,31 @@
 
 @media (max-width: 640px) {
   .square-modal__overlay {
-    padding: 14px;
+    padding: 0;
   }
 
   .square-modal {
+    width: 95vw;
     height: 90vh;
     max-height: 90vh;
+    box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.42);
+  }
+
+  .square-modal__bar {
+    min-height: 58px;
+    grid-template-columns: minmax(0, 1fr) 52px;
+  }
+
+  .square-modal__title {
+    padding: 0 14px;
+    font-size: 16px;
+  }
+
+  .square-modal__close {
+    width: 52px;
   }
 
   .square-modal__body {
-    padding: 20px;
+    padding: 16px;
   }
 }
