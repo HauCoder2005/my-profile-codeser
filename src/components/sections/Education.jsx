@@ -4,7 +4,8 @@ import "./Education.css";
 
 const educationItems = [
   {
-    institution: "University of Transport and Communications (UTH) - Ho Chi Minh City",
+    institution:
+      "University of Transport and Communications (UTH) - Ho Chi Minh City",
     degree: "Data Science",
     year: "2023 - Present",
     logoSrc: "PUT_UTH_LOGO_URL_HERE",
@@ -31,9 +32,17 @@ function Education() {
           <SquareCard className="education__card" key={item.institution}>
             <div className="education__logo-wrap">
               {item.logoSlot === "uth" ? (
-                <>{/* TODO: INSERT_UTH_LOGO_HERE */}</>
+                <img
+                  src="/images/uth.png"
+                  alt="UTH"
+                  className="w-full h-full object-cover block"
+                />
               ) : (
-                <>{/* TODO: INSERT_APTECH_LOGO_HERE */}</>
+                <img
+                  src="/images/aptech.png"
+                  alt="Aptech"
+                  className="w-full h-full object-cover block"
+                />
               )}
               <img
                 className="education__logo"
@@ -45,7 +54,9 @@ function Education() {
             <div className="education__content">
               <h3 className="education__institution">{item.institution}</h3>
               <p className="education__degree">{item.degree}</p>
-              {item.year ? <p className="education__year">{item.year}</p> : null}
+              {item.year ? (
+                <p className="education__year">{item.year}</p>
+              ) : null}
             </div>
           </SquareCard>
         ))}

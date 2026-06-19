@@ -36,6 +36,15 @@ function Inspiration() {
           <path d="M 480 375 L 480 470 L 480 470" />
         </svg>
 
+        <div className="inspiration__portrait-wrap" aria-label="Terry A. Davis photo">
+          {/* TODO: INSERT_TERRY_DAVIS_PHOTO_HERE */}
+          <img
+            className="inspiration__portrait"
+            src="/images/terry-2.JPG"
+            alt="Terry A. Davis"
+          />
+        </div>
+
         <article className="inspiration__quote inspiration__quote--top-left">
           <span>{quotes[0].label}</span>
           <p>"{quotes[0].text}"</p>
@@ -45,15 +54,6 @@ function Inspiration() {
           <span>{quotes[1].label}</span>
           <p>"{quotes[1].text}"</p>
         </article>
-
-        <div className="inspiration__portrait-wrap" aria-label="Terry A. Davis photo">
-          {/* TODO: INSERT_TERRY_DAVIS_PHOTO_HERE */}
-          <img
-            className="inspiration__portrait"
-            src="/images/terry-2.JPG"
-            alt="Terry A. Davis"
-          />
-        </div>
 
         <article className="inspiration__quote inspiration__quote--bottom">
           <span>{quotes[2].label}</span>

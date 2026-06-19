@@ -108,9 +108,10 @@
   .inspiration__diagram {
     max-width: 560px;
     height: auto;
-    display: grid;
-    justify-items: center;
-    gap: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
   }
 
   .inspiration__connections {
@@ -131,26 +132,13 @@
   .inspiration__portrait-wrap {
     width: 224px;
     height: 224px;
-    margin-bottom: 42px;
+    max-width: 18rem;
+    flex: 0 0 auto;
+    margin: 0 auto;
   }
 
   .inspiration__quote {
     min-height: auto;
-  }
-
-  .inspiration__quote + .inspiration__quote,
-  .inspiration__quote--bottom {
-    margin-top: 42px;
-  }
-
-  .inspiration__quote::before {
-    content: "";
-    position: absolute;
-    top: -42px;
-    left: 50%;
-    width: 2px;
-    height: 42px;
-    background: var(--color-border);
   }
 }
 
