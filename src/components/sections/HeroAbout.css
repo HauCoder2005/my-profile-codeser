@@ -95,7 +95,6 @@
 .hero-about__photo-placeholder img {
   object-fit: cover;
 }
-
 @media (max-width: 900px) and (min-width: 769px) {
   .hero-about__inner {
     grid-template-columns: minmax(0, 1.25fr) minmax(280px, 1fr);
@@ -129,10 +128,18 @@
     line-height: 1.12;
   }
 
+  /* ĐOẠN ĐÃ ĐƯỢC CHỈNH SỬA LẠI */
   .hero-about__intro {
     font-size: 16px;
     line-height: 1.75;
-    text-align: left;
+    text-align: justify;
+    /* Ép canh đều 2 bên */
+    -webkit-hyphens: auto;
+    /* Hỗ trợ tự gạch nối chữ cho Safari/iOS */
+    hyphens: auto;
+    /* Tự động gạch nối từ khi bị ép xuống dòng */
+    word-break: break-word;
+    /* Đảm bảo chữ dài không đâm thủng màn hình */
   }
 }
 
