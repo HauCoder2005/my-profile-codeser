@@ -579,7 +579,7 @@ const projects = [
     architecture:
       "Designed with modular service boundaries for branches, screens, showtimes, seat inventory, reservations, payments, and administrative workflows so the system can scale across locations without coupling operational domains.",
     stack: ["Java", "Next.js", "MySQL", "Docker"],
-    githubUrl: "https://github.com/huynhhau/cinema-booking",
+    githubUrl: "https://github.com/HauCoder2005/cinema-booking-projects",
   },
 ];
 
