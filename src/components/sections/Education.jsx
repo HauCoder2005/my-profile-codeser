@@ -2,18 +2,21 @@ import SectionTitle from "../ui/SectionTitle";
 import SquareCard from "../ui/SquareCard";
 import "./Education.css";
 
-const educationItems = [
+const educationData = [
   {
-    institution:
-      "University of Transport and Communications (UTH) - Ho Chi Minh City",
+    school: "UNIVERSITY OF TRANSPORT HO CHI MINH CITY (UTH)",
     degree: "Data Science",
-    year: "2023 - Present",
+    timeline: "2023 - Late 2026",
+    status: "Expected Graduation",
+    description: "Focusing on data structures, algorithms, machine learning, and deep software engineering principles.",
     logoSlot: "uth",
   },
   {
-    institution: "Aptech Computer Education - Ho Chi Minh City",
-    degree: "Advanced Diploma in Software Engineering (ADSE)",
-    year: "",
+    school: "APTECH COMPUTER EDUCATION",
+    degree: "Advanced Diploma in Software Engineering",
+    timeline: "2023 - 2026",
+    status: "Graduated",
+    description: "Completed rigorous practical coursework in full-stack development, database architecture, and enterprise solutions.",
     logoSlot: "aptech",
   },
 ];
@@ -24,8 +27,8 @@ function Education() {
       <SectionTitle eyebrow="ACADEMIC BACKGROUND" title="EDUCATION" />
 
       <div className="education__grid">
-        {educationItems.map((item) => (
-          <SquareCard className="education__card" key={item.institution}>
+        {educationData.map((item) => (
+          <SquareCard className="education__card" key={item.school}>
             <div className="education__logo-wrap">
               {item.logoSlot === "uth" ? (
                 <>
@@ -49,9 +52,16 @@ function Education() {
             </div>
 
             <div className="education__content">
-              <h3 className="education__institution">{item.institution}</h3>
+              <h3 className="education__institution">{item.school}</h3>
               <p className="education__degree">{item.degree}</p>
-              {item.year ? <p className="education__year">{item.year}</p> : null}
+              
+              <div className="education__meta">
+                <span className="education__timeline">{item.timeline}</span>
+                <span className="education__dot">•</span>
+                <span className="education__status">{item.status}</span>
+              </div>
+
+              <p className="education__description">{item.description}</p>
             </div>
           </SquareCard>
         ))}

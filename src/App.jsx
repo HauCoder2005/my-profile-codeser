@@ -1,41 +1,39 @@
-import Header from "./components/layouts/header/Header";
-import Contact from "./components/sections/Contact";
-import Education from "./components/sections/Education";
-import FooterSocials from "./components/sections/FooterSocials";
-import HeroAbout from "./components/sections/HeroAbout";
-import Inspiration from "./components/sections/Inspiration";
-import Projects from "./components/sections/Projects";
-import Skills from "./components/sections/Skills";
-import FadeIn from "./components/ui/FadeIn";
+import React, { useEffect } from "react";
+import Navbar from "./components/Navbar";
+import SpaceBackground from "./components/SpaceBackground";
+import Hero from "./components/Hero";
+import Inspiration from "./components/Inspiration";
+import Education from "./components/Education";
+import Skills from "./components/Skills";
+import Projects from "./components/Projects";
+import Contact from "./components/Contact";
 import "./App.css";
 
 function App() {
+  // Ensure default dark mode on mount
+  useEffect(() => {
+    const root = document.documentElement;
+    if (!root.classList.contains('light')) {
+      root.classList.add('dark');
+    }
+  }, []);
+
   return (
-    <div className="app-shell">
-      <Header />
-      <main className="app-main" id="top">
-        <FadeIn>
-          <HeroAbout />
-        </FadeIn>
-        <FadeIn>
-          <Skills />
-        </FadeIn>
-        <FadeIn>
-          <Education />
-        </FadeIn>
-        <FadeIn>
+    <div className="min-h-screen bg-transparent text-black dark:text-white transition-colors duration-300 font-sans">
+      <SpaceBackground />
+      
+      <div className="relative z-10 bg-transparent">
+        <Navbar />
+        
+        <main className="w-full flex flex-col bg-transparent">
+          <Hero />
           <Inspiration />
-        </FadeIn>
-        <FadeIn>
+          <Education />
+          <Skills />
           <Projects />
-        </FadeIn>
-        <FadeIn>
           <Contact />
-        </FadeIn>
-        <FadeIn>
-          <FooterSocials />
-        </FadeIn>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

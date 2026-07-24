@@ -54,8 +54,7 @@
   line-height: 1.22;
 }
 
-.education__degree,
-.education__year {
+.education__degree {
   margin: 0;
   padding: 0;
   color: var(--color-text-muted);
@@ -65,10 +64,44 @@
   line-height: 1.55;
 }
 
-.education__year {
+.education__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.education__timeline {
   color: var(--color-accent);
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 700;
+}
+
+.education__dot {
+  color: var(--color-border);
+  font-size: 12px;
+}
+
+.education__status {
+  color: var(--color-text);
+  background: var(--color-bg-muted);
+  padding: 4px 8px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.education__description {
+  margin: 12px 0 0 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 @media (max-width: 860px) {

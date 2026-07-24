@@ -1,67 +1,45 @@
-@import url("https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700;800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
-:root {
-  --color-bg: #f5f3e9;
-  --color-bg-muted: #f5f3e9;
-  --color-surface: #fffdf5;
-  --color-text: #2d2d2d;
-  --color-text-muted: #626056;
-  --color-border: #2d2d2d;
-  --color-accent: #8a6f3d;
-  --font-heading: "JetBrains Mono", monospace;
-  --font-body: "Be Vietnam Pro", system-ui, sans-serif;
-  --header-height: 76px;
-  --notebook-grid:
-    linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
-    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
---notebook-grid-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+  }
+  
+  .dark {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+  }
+
+  body {
+    @apply bg-[var(--bg-color)] text-[var(--text-color)] font-sans antialiased transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-mono font-bold tracking-tight;
+  }
+
+  * {
+    border-radius: 0 !important;
+  }
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  border-radius: 0 !important;
-}
-
-html {
-  scroll-behavior: smooth;
-  background-color: #f5f3e9;
-  background-image: var(--notebook-grid);
-  background-size: var(--notebook-grid-size);
-  background-position: center top;
-}
-
-body {
-  min-height: 100vh;
-  background-color: #f5f3e9;
-  background-image: var(--notebook-grid);
-  background-size: var(--notebook-grid-size);
-  background-position: center top;
-  color: var(--color-text);
-  font-family: var(--font-body);
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-#root {
-  min-height: 100vh;
+@layer utilities {
+  .glow-plasma-dark {
+    box-shadow: 0 0 15px 2px rgba(255, 255, 255, 0.2);
+  }
+  .glow-plasma-light {
+    box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  .glow-plasma-dark-hover {
+    box-shadow: 0 0 25px 8px rgba(255, 255, 255, 0.5);
+  }
+  .glow-plasma-light-hover {
+    box-shadow: 0 0 25px 8px rgba(0, 0, 0, 0.5);
+  }
 }
