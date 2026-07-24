@@ -10,7 +10,6 @@ export const translations = { en, vi };
 export const LanguageProvider = ({ children }) => {
   const [lang, setLang] = useState('en');
   const [isChangingLang, setIsChangingLang] = useState(false);
-  const [loadingText, setLoadingText] = useState('');
 
   useEffect(() => {
     const savedLang = localStorage.getItem('app_lang');
@@ -23,9 +22,7 @@ export const LanguageProvider = ({ children }) => {
     if (isChangingLang) return; // Prevent spam clicking
 
     const newLang = lang === 'en' ? 'vi' : 'en';
-    const text = newLang === 'en' ? 'SWITCHING TO ENGLISH...' : 'ĐANG CHUYỂN NGÔN NGỮ...';
     
-    setLoadingText(text);
     setIsChangingLang(true);
 
     // Wait for the blur overlay to fade in completely
