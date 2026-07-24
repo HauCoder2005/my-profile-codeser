@@ -1,26 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../contexts/LanguageContext';
 
-const educationData = [
-  {
-    school: "UNIVERSITY OF TRANSPORT HO CHI MINH CITY (UTH)",
-    degree: "Data Science",
-    timeline: "2023 - Late 2026", 
-    status: "Expected Graduation",
-    description: "Focusing on data structures, algorithms, machine learning, and deep software engineering principles.",
-    logo: "/images/uth.png"
-  },
-  {
-    school: "APTECH COMPUTER EDUCATION",
-    degree: "Advanced Diploma in Software Engineering",
-    timeline: "2023 - 2025",
-    status: "Graduated",
-    description: "Completed rigorous practical coursework in full-stack development, database architecture, and enterprise solutions.",
-    logo: "/images/aptech.png"
-  }
+const logos = [
+  "/images/uth.png",
+  "/images/aptech.png"
 ];
 
 const Education = () => {
+  const { t } = useLanguage();
+  const educationData = t('education.items');
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -46,7 +36,7 @@ const Education = () => {
         className="mb-20 text-center flex flex-col items-center"
       >
         <h2 className="text-4xl md:text-5xl font-mono font-bold uppercase tracking-widest text-black dark:text-white">
-          [ Education ]
+          {t('education.title')}
         </h2>
         <div className="w-24 h-1 bg-black dark:bg-white mt-6"></div>
       </motion.div>
@@ -67,7 +57,7 @@ const Education = () => {
             {/* Centered Circular Logo */}
             <div className="w-32 h-32 rounded-full border-2 border-black dark:border-white bg-white dark:bg-black p-4 mb-8 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 overflow-hidden">
               <img 
-                src={item.logo} 
+                src={logos[index]} 
                 alt={`${item.school} Logo`} 
                 className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
                 onError={(e) => {

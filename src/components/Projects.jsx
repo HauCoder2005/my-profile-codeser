@@ -2,25 +2,17 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
 import { FaGithub as Github } from 'react-icons/fa';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Projects = () => {
-  const projects = [
-    {
-      title: "AI MOCK INTERVIEW",
-      description: "AI-powered platform for technical interviews, CV reviews, and feedback. Used Whisper (Voice-to-Text), Qwen 2.5, and Ollama to support role-based mock interviews.",
-      tech: ["Next.js", "NestJS", "Docker", "Redis", "MinIO"]
-    },
-    {
-      title: "CINEMA BOOKING",
-      description: "Scalable movie ticket booking system with multi-branch management and online payment. Designed a 25+ table relational database and core business logic.",
-      tech: ["Java 21", "Spring Boot", "Next.js", "MySQL"]
-    },
-    {
-      title: "SHOPPING NOW (GIAO)",
-      description: "E-commerce marketplace system designed for regional same-day delivery operations with specialized media processing pipelines.",
-      tech: ["React.js", "Node.js", "Media Pipeline", "Logistics"]
-    }
+  const { t } = useLanguage();
+  const projects = t('projects.items');
+  const techs = [
+    ["Next.js", "NestJS", "Docker", "Redis", "MinIO"],
+    ["Java 21", "Spring Boot", "Next.js", "MySQL"],
+    ["React.js", "Node.js", "Media Pipeline", "Logistics"]
   ];
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -47,7 +39,7 @@ const Projects = () => {
         className="mb-16"
       >
         <h2 className="text-4xl md:text-5xl font-mono font-bold uppercase border-b-4 border-black dark:border-white inline-block pb-2">
-          Projects
+          {t('projects.title')}
         </h2>
       </motion.div>
 
@@ -74,7 +66,7 @@ const Projects = () => {
               </p>
               
               <div className="flex flex-wrap gap-3">
-                {project.tech.map((tech, tIdx) => (
+                {techs[idx].map((tech, tIdx) => (
                   <span 
                     key={tIdx} 
                     className="px-3 py-1 text-sm font-mono font-bold uppercase border-2 border-black dark:border-white"

@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const InspirationNode = ({ children, delay = 0 }) => (
   <motion.div
@@ -14,6 +15,7 @@ const InspirationNode = ({ children, delay = 0 }) => (
 );
 
 const Inspiration = () => {
+  const { t } = useLanguage();
   return (
     <section id="inspiration" className="relative z-10 py-32 px-8 w-full">
       <div className="max-w-6xl mx-auto flex flex-col items-center">
@@ -47,7 +49,7 @@ const Inspiration = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="border-4 border-black dark:border-white bg-black text-white dark:bg-white dark:text-black px-8 py-4 font-mono font-bold text-xl md:text-3xl uppercase tracking-widest text-center"
           >
-            Inspiration & Philosophy
+            {t('inspiration.title')}
           </motion.div>
         </div>
 
@@ -111,9 +113,7 @@ const Inspiration = () => {
           
           <div className="flex flex-col items-center">
             <InspirationNode delay={1.2}>
-              Rule 01:<br /><br />
-              An idiot admires complexity,<br />
-              a genius admires simplicity.
+              <span className="whitespace-pre-wrap">{t('inspiration.rule1')}</span>
             </InspirationNode>
             {/* Mobile connecting line to next node */}
             <div className="flex md:hidden w-1 h-16 bg-black dark:bg-white mt-8"></div>
@@ -121,10 +121,7 @@ const Inspiration = () => {
 
           <div className="flex flex-col items-center h-full">
             <InspirationNode delay={1.4}>
-              Rule 02:<br /><br />
-              You can see the code.<br />
-              It is not a black box.<br />
-              You have absolute control.
+              <span className="whitespace-pre-wrap">{t('inspiration.rule2')}</span>
             </InspirationNode>
             {/* Mobile connecting line to next node */}
             <div className="flex md:hidden w-1 h-16 bg-black dark:bg-white mt-8"></div>
@@ -132,10 +129,7 @@ const Inspiration = () => {
 
           <div className="flex flex-col items-center h-full">
             <InspirationNode delay={1.6}>
-              Rule 03:<br /><br />
-              I built a compiler,<br />
-              an assembler, and a kernel<br />
-              from scratch.
+              <span className="whitespace-pre-wrap">{t('inspiration.rule3')}</span>
             </InspirationNode>
           </div>
 

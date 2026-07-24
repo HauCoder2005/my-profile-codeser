@@ -2,8 +2,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail } from 'lucide-react';
 import { FaGithub as Github, FaLinkedin as Linkedin } from 'react-icons/fa';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Contact = () => {
+  const { t } = useLanguage();
   return (
     <section id="contact" className="relative z-10 py-32 px-8 w-full max-w-4xl mx-auto flex flex-col items-center">
       
@@ -15,7 +17,7 @@ const Contact = () => {
         className="mb-16 text-center"
       >
         <h2 className="text-4xl md:text-5xl font-mono font-bold uppercase border-b-4 border-black dark:border-white inline-block pb-2">
-          Initiate Contact
+          {t('contact.title')}
         </h2>
       </motion.div>
 
@@ -29,34 +31,34 @@ const Contact = () => {
         onSubmit={(e) => e.preventDefault()}
       >
         <div className="flex flex-col space-y-2">
-          <label htmlFor="name" className="font-mono font-bold uppercase tracking-widest text-sm">Name</label>
+          <label htmlFor="name" className="font-mono font-bold uppercase tracking-widest text-sm">{t('contact.name')}</label>
           <input 
             type="text" 
             id="name" 
             className="w-full p-4 border-2 border-black dark:border-white bg-transparent outline-none focus:ring-4 focus:ring-black dark:focus:ring-white transition-all duration-300 font-sans"
-            placeholder="John Doe"
+            placeholder={t('contact.placeholder_name')}
             required
           />
         </div>
 
         <div className="flex flex-col space-y-2">
-          <label htmlFor="email" className="font-mono font-bold uppercase tracking-widest text-sm">Email</label>
+          <label htmlFor="email" className="font-mono font-bold uppercase tracking-widest text-sm">{t('contact.email')}</label>
           <input 
             type="email" 
             id="email" 
             className="w-full p-4 border-2 border-black dark:border-white bg-transparent outline-none focus:ring-4 focus:ring-black dark:focus:ring-white transition-all duration-300 font-sans"
-            placeholder="john@example.com"
+            placeholder={t('contact.placeholder_email')}
             required
           />
         </div>
 
         <div className="flex flex-col space-y-2">
-          <label htmlFor="message" className="font-mono font-bold uppercase tracking-widest text-sm">Message</label>
+          <label htmlFor="message" className="font-mono font-bold uppercase tracking-widest text-sm">{t('contact.message')}</label>
           <textarea 
             id="message" 
             rows="5"
             className="w-full p-4 border-2 border-black dark:border-white bg-transparent outline-none focus:ring-4 focus:ring-black dark:focus:ring-white transition-all duration-300 font-sans resize-y"
-            placeholder="Your transmission here..."
+            placeholder={t('contact.placeholder_message')}
             required
           />
         </div>
@@ -67,7 +69,7 @@ const Contact = () => {
           type="submit"
           className="w-full py-6 mt-4 bg-black text-white dark:bg-white dark:text-black font-mono font-bold text-xl md:text-2xl uppercase tracking-widest hover:invert transition-colors duration-300 border-2 border-black dark:border-white"
         >
-          Send Message
+          {t('contact.send')}
         </motion.button>
       </motion.form>
 
@@ -80,7 +82,7 @@ const Contact = () => {
         className="mt-32 w-full flex flex-col md:flex-row items-center justify-between border-t-2 border-black dark:border-white pt-8 gap-8"
       >
         <p className="font-mono font-bold uppercase text-sm opacity-80">
-          © {new Date().getFullYear()} Huynh Hau. All systems operational.
+          {t('contact.footer').replace('{year}', new Date().getFullYear())}
         </p>
         
         <div className="flex space-x-6">

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, User, Search, Moon, Sun, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Navbar = () => {
   // Theme state: dark by default per requirements
   const [isDark, setIsDark] = useState(true);
   const [hoveredLink, setHoveredLink] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const { lang, toggleLanguage, t } = useLanguage();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -22,7 +24,13 @@ const Navbar = () => {
   const toggleTheme = () => setIsDark(!isDark);
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const navLinks = ['ABOUT', 'SKILL', 'codeser', 'PROJECTS', 'CONTACT'];
+  const navLinks = [
+    { key: 'about', label: t('nav.about') },
+    { key: 'skill', label: t('nav.skill') },
+    { key: 'codeser', label: 'codeser' },
+    { key: 'projects', label: t('nav.projects') },
+    { key: 'contact', label: t('nav.contact') }
+  ];
 
   return (
     <>
@@ -42,7 +50,7 @@ const Navbar = () => {
         </div>
 
         {/* Center: Navigation Links with Plasma Glow (Desktop Only) */}
-        <div className="hidden md:flex items-center space-x-10 relative">
+        <div className="hidden lg:flex items-center space-x-6 xl:space-x-10 relative">
           {/* Plasma Background Element */}
           <div className="absolute inset-0 pointer-events-none flex justify-center items-center">
             <motion.div
@@ -59,14 +67,14 @@ const Navbar = () => {
             />
           </div>
 
-          {navLinks.map((link) => (
+          {navLinks.map((item) => (
             <motion.a
-              key={link}
-              href={`#${link.toLowerCase()}`}
-              onHoverStart={() => setHoveredLink(link)}
+              key={item.key}
+              href={`#${item.key.toLowerCase()}`}
+              onHoverStart={() => setHoveredLink(item.key)}
               onHoverEnd={() => setHoveredLink(null)}
               className={`relative z-10 font-mono text-sm tracking-widest font-bold transition-all duration-300 ${
-                link === 'codeser' 
+                item.key === 'codeser' 
                   ? 'border-2 border-black dark:border-white px-4 py-2 uppercase' 
                   : 'hover:opacity-100 opacity-80'
               }`}
@@ -74,12 +82,12 @@ const Navbar = () => {
               whileTap={{ scale: 0.95 }}
             >
               {/* Link Text - use cosmic glow effect for non-codeser links */}
-              <span className={link !== 'codeser' ? 'cosmic-glow' : ''}>
-                {link}
+              <span className={item.key !== 'codeser' ? 'cosmic-glow' : ''}>
+                {item.label}
               </span>
               
               {/* Link underline or bottom highlight for the hover */}
-              {link !== 'codeser' && hoveredLink === link && (
+              {item.key !== 'codeser' && hoveredLink === item.key && (
                 <motion.div
                   layoutId="nav-indicator"
                   className="absolute -bottom-2 left-0 right-0 h-[2px] bg-black dark:bg-white"
@@ -95,6 +103,13 @@ const Navbar = () => {
         {/* Right side: Theme Toggle & Hamburger */}
         <div className="flex items-center space-x-4">
           <button 
+            onClick={toggleLanguage}
+            className="p-2 font-mono font-bold text-sm tracking-widest border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 min-w-[44px]"
+          >
+            {lang === 'en' ? 'EN' : 'VI'}
+          </button>
+          
+          <button 
             onClick={toggleTheme}
             className="p-2 border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300"
           >
@@ -103,7 +118,7 @@ const Navbar = () => {
           
           <button 
             onClick={toggleMenu}
-            className="md:hidden p-2 border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300"
+            className="lg:hidden p-2 border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300"
           >
             {isOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -117,19 +132,19 @@ const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="fixed top-[69px] left-0 right-0 z-40 bg-white dark:bg-black border-b border-black dark:border-white overflow-hidden md:hidden shadow-2xl"
+            className="fixed top-[69px] left-0 right-0 z-40 bg-white dark:bg-black border-b border-black dark:border-white overflow-hidden lg:hidden shadow-2xl"
           >
             <div className="flex flex-col py-4">
-              {navLinks.map((link) => (
+              {navLinks.map((item) => (
                 <a
-                  key={link}
-                  href={`#${link.toLowerCase()}`}
+                  key={item.key}
+                  href={`#${item.key.toLowerCase()}`}
                   onClick={() => setIsOpen(false)}
                   className={`px-8 py-4 font-mono text-center font-bold tracking-widest border-b border-black/10 dark:border-white/10 last:border-b-0 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors ${
-                    link === 'codeser' ? 'text-lg uppercase underline decoration-2 underline-offset-4' : 'text-sm'
+                    item.key === 'codeser' ? 'text-lg uppercase underline decoration-2 underline-offset-4' : 'text-sm'
                   }`}
                 >
-                  {link}
+                  {item.label}
                 </a>
               ))}
             </div>

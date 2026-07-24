@@ -1,7 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Hero = () => {
+  const { t } = useLanguage();
   return (
     <section 
       id="about" 
@@ -18,14 +20,14 @@ const Hero = () => {
           className="flex flex-col items-center md:items-start space-y-6 md:space-y-8 text-center md:text-left"
         >
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-mono font-bold leading-tight uppercase">
-            Hi, I'm Huynh Hau.<br />
+            {t('hero.greeting')}<br />
             <span className="bg-black text-white dark:bg-white dark:text-black px-2 inline-block mt-2">
-              SOFTWARE ENGINEER
+              {t('hero.role')}
             </span>
           </h1>
           
           <p className="text-base sm:text-lg md:text-xl font-sans leading-relaxed opacity-90 max-w-lg border-l-0 md:border-l-4 border-black dark:border-white pl-0 md:pl-6 text-justify">
-            Committed to a software engineering career since high school, I am a proactive and collaborative developer passionate about mastering new technologies. I strive for clean architecture and performant solutions, seeking a professional environment to refine my technical expertise and contribute meaningfully.
+            {t('hero.description')}
           </p>
           
           <motion.a 
@@ -35,7 +37,7 @@ const Hero = () => {
             whileTap={{ scale: 0.95 }}
             className="px-6 py-3 md:px-8 md:py-4 border-2 border-black dark:border-white bg-transparent text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black font-mono font-bold uppercase transition-colors duration-300 inline-block text-center w-full sm:w-auto"
           >
-            Download CV
+            {t('hero.download_cv')}
           </motion.a>
         </motion.div>
 

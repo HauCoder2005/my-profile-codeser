@@ -7,6 +7,7 @@ import Education from "./components/Education";
 import Skills from "./components/Skills";
 import Projects from "./components/Projects";
 import Contact from "./components/Contact";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import "./App.css";
 
 function App() {
@@ -19,22 +20,24 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen overflow-x-hidden w-full bg-transparent text-black dark:text-white transition-colors duration-300 font-sans">
-      <SpaceBackground />
-      
-      <div className="relative z-10 bg-transparent">
-        <Navbar />
+    <LanguageProvider>
+      <div className="min-h-screen overflow-x-hidden w-full bg-transparent text-black dark:text-white transition-colors duration-300 font-sans">
+        <SpaceBackground />
         
-        <main className="w-full flex flex-col bg-transparent">
-          <Hero />
-          <Inspiration />
-          <Education />
-          <Skills />
-          <Projects />
-          <Contact />
-        </main>
+        <div className="relative z-10 bg-transparent">
+          <Navbar />
+          
+          <main className="w-full flex flex-col bg-transparent">
+            <Hero />
+            <Inspiration />
+            <Education />
+            <Skills />
+            <Projects />
+            <Contact />
+          </main>
+        </div>
       </div>
-    </div>
+    </LanguageProvider>
   );
 }
 

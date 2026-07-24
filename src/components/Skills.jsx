@@ -1,21 +1,24 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Server, Layout, Database } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Skills = () => {
+  const { t } = useLanguage();
+  const skillTitles = t('skills.categories');
   const skillCategories = [
     {
-      title: "Back-End",
+      title: skillTitles[0].title,
       icon: <Server size={24} className="mb-4" />,
       skills: ["NestJS", "Spring Boot (Java)", "Node.js"]
     },
     {
-      title: "Front-End",
+      title: skillTitles[1].title,
       icon: <Layout size={24} className="mb-4" />,
       skills: ["React.js", "Next.js", "TypeScript", "Tailwind CSS"]
     },
     {
-      title: "Database & Tools",
+      title: skillTitles[2].title,
       icon: <Database size={24} className="mb-4" />,
       skills: ["MySQL", "Redis", "Docker", "Git"]
     }
@@ -46,7 +49,7 @@ const Skills = () => {
         className="mb-16"
       >
         <h2 className="text-4xl md:text-5xl font-mono font-bold uppercase border-b-4 border-black dark:border-white inline-block pb-2">
-          Technical Skills
+          {t('skills.title')}
         </h2>
       </motion.div>
 

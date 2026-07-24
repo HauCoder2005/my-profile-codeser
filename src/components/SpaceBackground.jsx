@@ -7,8 +7,8 @@ import * as THREE from 'three';
 const Starfield = ({ isDark }) => {
   const pointsRef = useRef();
   
-  // 3000 tiny stars (optimized for mobile performance)
-  const particlesCount = 3000;
+  // 1500 tiny stars (optimized for maximum performance on all devices)
+  const particlesCount = 1500;
   const positions = useMemo(() => {
     const pos = new Float32Array(particlesCount * 3);
     for (let i = 0; i < particlesCount; i++) {
@@ -227,13 +227,11 @@ const CelestialSystem = ({ isDark }) => {
   // The massive Sun's fixed position (slightly off-center)
   const centerPos = [-8, 0, -10];
 
-  // Configuration for alien bodies / spaceships (SLOWED DOWN, INCREASED RADIUS)
+  // Configuration for alien bodies / spaceships (REDUCED FOR PERFORMANCE)
   const aliens = useMemo(() => [
     { type: 'dodecahedron', radius: 35, speed: 0.03, yOffset: 8, rotSpeed: [0.01, 0.02, 0.005] },
     { type: 'spaceship', radius: 42, speed: 0.05, yOffset: -10, orbitOffset: 0, bankAngle: -Math.PI / 4 },
-    { type: 'octahedron', radius: 30, speed: 0.04, yOffset: 15, rotSpeed: [0.02, 0.01, 0.01] },
-    { type: 'dodecahedron', radius: 38, speed: 0.02, yOffset: -5, rotSpeed: [0.005, 0.03, 0.02] },
-    { type: 'spaceship', radius: 48, speed: -0.03, yOffset: 5, orbitOffset: Math.PI, bankAngle: Math.PI / 4 }
+    { type: 'octahedron', radius: 30, speed: 0.04, yOffset: 15, rotSpeed: [0.02, 0.01, 0.01] }
   ], []);
 
   useFrame((state) => {
@@ -366,7 +364,7 @@ const SpaceBackground = () => {
 
   return (
     <div className="fixed inset-0 -z-50 pointer-events-none transition-colors duration-300">
-      <Canvas camera={{ position: [0, 0, 25], fov: 60 }} dpr={[1, 1.5]}>
+      <Canvas camera={{ position: [0, 0, 25], fov: 60 }} dpr={1} performance={{ min: 0.5 }}>
         <Suspense fallback={null}>
           <Starfield isDark={isDark} />
           <CelestialSystem isDark={isDark} />
