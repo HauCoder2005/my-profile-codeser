@@ -19,7 +19,7 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-transparent text-black dark:text-white transition-colors duration-300 font-sans">
+    <div className="min-h-screen overflow-x-hidden w-full bg-transparent text-black dark:text-white transition-colors duration-300 font-sans">
       <SpaceBackground />
       
       <div className="relative z-10 bg-transparent">

@@ -7,8 +7,8 @@ import * as THREE from 'three';
 const Starfield = ({ isDark }) => {
   const pointsRef = useRef();
   
-  // 8000 tiny stars
-  const particlesCount = 8000;
+  // 3000 tiny stars (optimized for mobile performance)
+  const particlesCount = 3000;
   const positions = useMemo(() => {
     const pos = new Float32Array(particlesCount * 3);
     for (let i = 0; i < particlesCount; i++) {
@@ -366,7 +366,7 @@ const SpaceBackground = () => {
 
   return (
     <div className="fixed inset-0 -z-50 pointer-events-none transition-colors duration-300">
-      <Canvas camera={{ position: [0, 0, 25], fov: 60 }} dpr={[1, 2]}>
+      <Canvas camera={{ position: [0, 0, 25], fov: 60 }} dpr={[1, 1.5]}>
         <Suspense fallback={null}>
           <Starfield isDark={isDark} />
           <CelestialSystem isDark={isDark} />
