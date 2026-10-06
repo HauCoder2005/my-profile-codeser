@@ -137,7 +137,7 @@ const vi = {
     },
     copy_email: "Copy email",
     copied: "Đã copy!",
-    footer: "© {year} Huỳnh Hậu. Làm bằng React & Three.js."
+    footer: "© {year} Huỳnh Hậu. Thiết kế bởi Huỳnh Hậu — Codeser"
   }
 };
 

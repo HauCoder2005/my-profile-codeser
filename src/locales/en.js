@@ -137,7 +137,7 @@ const en = {
     },
     copy_email: "Copy email",
     copied: "Copied!",
-    footer: "© {year} Huynh Hau. Built with React & Three.js."
+    footer: "© {year} Huynh Hau. Designed by Huynh Hau — Codeser"
   }
 };
 
