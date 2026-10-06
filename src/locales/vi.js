@@ -47,18 +47,59 @@ const vi = {
   },
   arcade: {
     title: "Giải lao",
-    start: "Di chuột hoặc chạm để chơi",
-    hint: "Di chuột hoặc kéo ngón tay ngang màn hình để lái tàu, tàu sẽ tự bắn.",
+    menu: "Chọn game",
+    badge: "{count} game",
     game_over: "Hết mạng",
     score: "Điểm",
     best: "Kỷ lục",
     lives: "mạng còn lại",
-    aria: "Mini game: tàu vũ trụ bắn hạ các thiên thạch đang rơi",
-    log: {
-      playing: "phiên chơi mới, chúc may mắn",
-      hit: "bắn hạ thiên thạch +{points}",
-      escape: "một thiên thạch đã lọt qua",
-      over: "tàu đã bị phá hủy"
+    games: {
+      defender: {
+        tagline: "Bắn hạ các thiên thạch đang rơi",
+        start: "Di chuột hoặc chạm để chơi",
+        hint: "Di chuột hoặc kéo ngón tay ngang màn hình để lái tàu, tàu sẽ tự bắn.",
+        aria: "Mini game: tàu vũ trụ bắn hạ các thiên thạch đang rơi",
+        log: {
+          playing: "phiên chơi mới, chúc may mắn",
+          hit: "bắn hạ thiên thạch +{points}",
+          escape: "một thiên thạch đã lọt qua",
+          over: "tàu đã bị phá hủy"
+        }
+      },
+      runner: {
+        tagline: "Nhảy qua hố, lên bậc, né gai. Càng chạy càng nhanh",
+        start: "Chạm hoặc bấm Space để chơi",
+        hint: "Chạm màn hình hoặc bấm Space / ↑ để nhảy qua hố, lên bậc cao và né gai. Tốc độ tăng dần.",
+        aria: "Mini game: nhân vật chạy liên tục, nhảy qua hố và gai",
+        log: {
+          playing: "bắt đầu chạy, nhảy đi!",
+          speed: "tăng tốc · cấp {level}",
+          over: "va chạm rồi, hết lượt"
+        }
+      },
+      stack: {
+        tagline: "Thả khối gạch, chồng tháp càng cao càng tốt",
+        start: "Chạm hoặc bấm Space để chơi",
+        hint: "Chạm hoặc bấm Space để thả khối đang trượt. Phần thò ra ngoài sẽ bị cắt mất.",
+        aria: "Mini game: thả các khối trượt để chồng thành tháp",
+        log: {
+          playing: "bắt đầu xây tháp...",
+          perfect: "thả chuẩn tuyệt đối!",
+          over: "tháp đổ rồi"
+        }
+      },
+      breakout: {
+        tagline: "Phá sạch tường gạch",
+        start: "Di chuột hoặc chạm để chơi",
+        hint: "Di chuột hoặc ngón tay để lái thanh đỡ. Phá hết tường thì bóng sẽ nhanh hơn.",
+        aria: "Mini game: đỡ bóng bằng thanh trượt để phá gạch",
+        log: {
+          playing: "ván mới, giao bóng",
+          clear: "phá sạch tường · bóng nhanh hơn",
+          miss: "rơi bóng rồi",
+          over: "hết bóng"
+        }
+      }
     }
   },
   inspiration: {

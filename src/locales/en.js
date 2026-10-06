@@ -47,18 +47,59 @@ const en = {
   },
   arcade: {
     title: "Break time",
-    start: "Hover or tap to play",
-    hint: "Move your mouse or drag a finger across the screen to steer. The ship fires on its own.",
+    menu: "Choose a game",
+    badge: "{count} games",
     game_over: "Game over",
     score: "Score",
     best: "Best",
     lives: "lives left",
-    aria: "Mini game: a spaceship shooting down falling asteroids",
-    log: {
-      playing: "new session started, good luck",
-      hit: "asteroid destroyed +{points}",
-      escape: "an asteroid got past you",
-      over: "ship destroyed"
+    games: {
+      defender: {
+        tagline: "Shoot down the falling asteroids",
+        start: "Hover or tap to play",
+        hint: "Move your mouse or drag a finger across the screen to steer. The ship fires on its own.",
+        aria: "Mini game: a spaceship shooting down falling asteroids",
+        log: {
+          playing: "new session started, good luck",
+          hit: "asteroid destroyed +{points}",
+          escape: "an asteroid got past you",
+          over: "ship destroyed"
+        }
+      },
+      runner: {
+        tagline: "Jump gaps, ledges and spikes. It keeps getting faster",
+        start: "Tap or press Space to play",
+        hint: "Tap the screen or press Space / ↑ to jump across gaps, up ledges and over spikes. The run keeps speeding up.",
+        aria: "Mini game: an endless runner jumping across gaps and spikes",
+        log: {
+          playing: "run started, jump!",
+          speed: "speed up · level {level}",
+          over: "crashed, run over"
+        }
+      },
+      stack: {
+        tagline: "Drop the blocks and stack them as high as you can",
+        start: "Tap or press Space to play",
+        hint: "Tap or press Space to drop the sliding block. Whatever hangs over the edge gets cut off.",
+        aria: "Mini game: stack sliding blocks into a tower",
+        log: {
+          playing: "deploying the stack...",
+          perfect: "perfect drop!",
+          over: "the stack fell over"
+        }
+      },
+      breakout: {
+        tagline: "Break every brick on the wall",
+        start: "Hover or tap to play",
+        hint: "Move your mouse or finger to steer the paddle. Clear the wall and the ball gets faster.",
+        aria: "Mini game: bounce the ball off a paddle to break bricks",
+        log: {
+          playing: "new game, ball served",
+          clear: "wall cleared · ball speeds up",
+          miss: "dropped the ball",
+          over: "out of balls"
+        }
+      }
     }
   },
   inspiration: {
