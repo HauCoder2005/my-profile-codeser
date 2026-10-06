@@ -5,18 +5,39 @@
 @tailwind utilities;
 
 @layer base {
+  /* Light: warm paper + soft ink, easy on the eyes */
   :root {
-    --bg-color: #ffffff;
-    --text-color: #000000;
+    --c-white: 244 239 227;
+    --c-black: 28 25 21;
+    --c-accent: 234 88 12;
+    /* Light: a touch brighter than the paper, hairline ink border and a soft lift so cards don't vanish */
+    --panel-bg: rgb(255 253 248 / 0.78);
+    --panel-bg-hover: rgb(255 253 248 / 0.95);
+    --panel-border: rgb(var(--c-black) / 0.14);
+    --panel-highlight: 0 1px 2px rgb(var(--c-black) / 0.06), 0 12px 28px -16px rgb(var(--c-black) / 0.25);
+    color-scheme: light;
   }
-  
+
+  /* Dark: pure black & white */
   .dark {
-    --bg-color: #000000;
-    --text-color: #ffffff;
+    --c-white: 255 255 255;
+    --c-black: 0 0 0;
+    --c-accent: 255 106 43;
+    /* Must stay clearly visible on pure black, even on dim laptop screens (~rgb 26–36) */
+    --panel-bg: linear-gradient(180deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.1));
+    --panel-bg-hover: linear-gradient(180deg, rgb(255 255 255 / 0.18), rgb(255 255 255 / 0.13));
+    --panel-highlight: inset 0 1px 0 rgb(255 255 255 / 0.14);
+    --panel-border: transparent;
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
   }
 
   body {
-    @apply bg-[var(--bg-color)] text-[var(--text-color)] font-sans antialiased transition-colors duration-300 overflow-x-hidden;
+    @apply bg-white text-black dark:bg-black dark:text-white font-sans antialiased transition-colors duration-300 overflow-x-hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -25,6 +46,53 @@
 
   * {
     border-radius: 0 !important;
+  }
+
+  ::selection {
+    @apply bg-accent text-white;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@layer components {
+  /* Borderless, minimal card (components/Panel.jsx): a faint frosted backdrop, no frame */
+  .panel {
+    position: relative;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--panel-highlight);
+    /* Stronger blur so stars behind don't compete with the text */
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    backdrop-filter: blur(12px) saturate(120%);
+    transition: transform 0.4s;
+  }
+  .panel:hover {
+    background: var(--panel-bg-hover);
+  }
+
+  /* Phosphor glow + slight RGB split, like text on an old CRT */
+  .crt-text {
+    text-shadow: 0 0 6px rgb(255 255 255 / 0.35), 1px 0 0 rgb(255 0 80 / 0.35), -1px 0 0 rgb(0 200 255 / 0.35);
+    animation: crt-flicker 3s infinite steps(1);
+  }
+  @keyframes crt-flicker {
+    0%, 100% { opacity: 1; }
+    47% { opacity: 0.94; }
+    48% { opacity: 1; }
+    83% { opacity: 0.97; }
+  }
+  @keyframes tv-roll {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(300%); }
+  }
+
+  .chip {
+    @apply px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider border border-black/15 dark:border-white/15 bg-black/[0.03] dark:bg-white/[0.04];
   }
 }
 
@@ -35,11 +103,8 @@
   .glow-plasma-light {
     box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.2);
   }
-  
-  .glow-plasma-dark-hover {
-    box-shadow: 0 0 25px 8px rgba(255, 255, 255, 0.5);
-  }
-  .glow-plasma-light-hover {
-    box-shadow: 0 0 25px 8px rgba(0, 0, 0, 0.5);
+
+  .shadow-brutal-accent {
+    box-shadow: 12px 12px 0 0 rgb(var(--c-accent));
   }
 }

@@ -6,6 +6,12 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      colors: {
+        // "white"/"black" follow the theme: warm paper & ink in light mode, pure white/black in dark mode
+        white: 'rgb(var(--c-white) / <alpha-value>)',
+        black: 'rgb(var(--c-black) / <alpha-value>)',
+        accent: 'rgb(var(--c-accent) / <alpha-value>)',
+      },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],

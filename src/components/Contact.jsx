@@ -1,103 +1,107 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail } from 'lucide-react';
+import { Mail, Send } from 'lucide-react';
 import { FaGithub as Github, FaLinkedin as Linkedin } from 'react-icons/fa';
 import { useLanguage } from '../contexts/LanguageContext';
+import { socials } from '../config/site';
+import SectionHeading from './SectionHeading';
+import Panel from './Panel';
+
+const fieldClass = 'w-full p-4 border border-black/20 dark:border-white/20 bg-black/[0.02] dark:bg-white/[0.03] outline-none focus:border-accent transition-colors duration-300 placeholder:opacity-50';
 
 const Contact = () => {
   const { t } = useLanguage();
+  const [sent, setSent] = useState(false);
+
+  const socialLinks = [
+    { href: socials.email && `mailto:${socials.email}`, label: 'Email', icon: Mail },
+    { href: socials.github, label: 'GitHub', icon: Github },
+    { href: socials.linkedin, label: 'LinkedIn', icon: Linkedin },
+  ].filter((link) => link.href);
+
+  // No backend: open the visitor's mail app with the message pre-filled
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const subject = `Portfolio — ${form.get('name')}`;
+    const body = `${form.get('message')}\n\n— ${form.get('name')} (${form.get('email')})`;
+    window.location.href = `mailto:${socials.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setSent(true);
+  };
+
   return (
-    <section id="contact" className="relative z-10 py-32 px-8 w-full max-w-4xl mx-auto flex flex-col items-center">
-      
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="mb-16 text-center"
-      >
-        <h2 className="text-4xl md:text-5xl font-mono font-bold uppercase border-b-4 border-black dark:border-white inline-block pb-2">
-          {t('contact.title')}
-        </h2>
-      </motion.div>
+    <section id="contact" className="relative z-10 pt-32 pb-12 px-4 md:px-8 w-full max-w-4xl mx-auto flex flex-col">
+      <SectionHeading title={t('contact.title')} align="center" />
 
-      {/* Form Section */}
-      <motion.form 
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6 }}
-        className="w-full flex flex-col space-y-8 bg-white dark:bg-black p-8 md:p-12 border-2 border-black dark:border-white shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] dark:shadow-[16px_16px_0px_0px_rgba(255,255,255,1)]"
-        onSubmit={(e) => e.preventDefault()}
-      >
-        <div className="flex flex-col space-y-2">
-          <label htmlFor="name" className="font-mono font-bold uppercase tracking-widest text-sm">{t('contact.name')}</label>
-          <input 
-            type="text" 
-            id="name" 
-            className="w-full p-4 border-2 border-black dark:border-white bg-transparent outline-none focus:ring-4 focus:ring-black dark:focus:ring-white transition-all duration-300 font-sans"
-            placeholder={t('contact.placeholder_name')}
-            required
-          />
-        </div>
+      <p className="-mt-8 mb-12 text-center text-lg opacity-80 max-w-xl mx-auto">
+        {t('contact.subtitle')}
+      </p>
 
-        <div className="flex flex-col space-y-2">
-          <label htmlFor="email" className="font-mono font-bold uppercase tracking-widest text-sm">{t('contact.email')}</label>
-          <input 
-            type="email" 
-            id="email" 
-            className="w-full p-4 border-2 border-black dark:border-white bg-transparent outline-none focus:ring-4 focus:ring-black dark:focus:ring-white transition-all duration-300 font-sans"
-            placeholder={t('contact.placeholder_email')}
-            required
-          />
-        </div>
-
-        <div className="flex flex-col space-y-2">
-          <label htmlFor="message" className="font-mono font-bold uppercase tracking-widest text-sm">{t('contact.message')}</label>
-          <textarea 
-            id="message" 
-            rows="5"
-            className="w-full p-4 border-2 border-black dark:border-white bg-transparent outline-none focus:ring-4 focus:ring-black dark:focus:ring-white transition-all duration-300 font-sans resize-y"
-            placeholder={t('contact.placeholder_message')}
-            required
-          />
-        </div>
-
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          type="submit"
-          className="w-full py-6 mt-4 bg-black text-white dark:bg-white dark:text-black font-mono font-bold text-xl md:text-2xl uppercase tracking-widest hover:invert transition-colors duration-300 border-2 border-black dark:border-white"
+      {socials.email && (
+        <Panel
+          as={motion.form}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="w-full flex flex-col gap-6 p-6 sm:p-8 md:p-12"
+          onSubmit={handleSubmit}
         >
-          {t('contact.send')}
-        </motion.button>
-      </motion.form>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <label className="flex flex-col gap-2">
+              <span className="font-mono font-bold uppercase tracking-widest text-xs">{t('contact.name')}</span>
+              <input name="name" type="text" autoComplete="name" required className={fieldClass} placeholder={t('contact.placeholder_name')} />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="font-mono font-bold uppercase tracking-widest text-xs">{t('contact.email')}</span>
+              <input name="email" type="email" autoComplete="email" required className={fieldClass} placeholder={t('contact.placeholder_email')} />
+            </label>
+          </div>
 
-      {/* Footer / Socials */}
-      <motion.footer 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className="mt-32 w-full flex flex-col md:flex-row items-center justify-between border-t-2 border-black dark:border-white pt-8 gap-8"
-      >
-        <p className="font-mono font-bold uppercase text-sm opacity-80">
+          <label className="flex flex-col gap-2">
+            <span className="font-mono font-bold uppercase tracking-widest text-xs">{t('contact.message')}</span>
+            <textarea name="message" rows="5" required className={`${fieldClass} resize-y`} placeholder={t('contact.placeholder_message')} />
+          </label>
+
+          <motion.button
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            className="group w-full py-5 mt-2 inline-flex items-center justify-center gap-3 bg-black text-white dark:bg-white dark:text-black font-mono font-bold text-lg md:text-xl uppercase tracking-widest border-2 border-black dark:border-white hover:bg-accent hover:border-accent hover:text-white dark:hover:bg-accent dark:hover:border-accent dark:hover:text-white transition-colors duration-300"
+          >
+            {t('contact.send')}
+            <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+          </motion.button>
+
+          {sent && (
+            <p role="status" className="font-mono text-sm text-accent text-center">
+              {t('contact.sent')}
+            </p>
+          )}
+        </Panel>
+      )}
+
+      <footer className="mt-24 w-full flex flex-col md:flex-row items-center justify-between border-t-2 border-black/20 dark:border-white/20 pt-8 gap-6">
+        <p className="font-mono text-xs md:text-sm uppercase tracking-wider opacity-70 text-center md:text-left">
           {t('contact.footer').replace('{year}', new Date().getFullYear())}
         </p>
-        
-        <div className="flex space-x-6">
-          <a href="mailto:contact@example.com" className="p-3 border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300" aria-label="Email">
-            <Mail size={24} />
-          </a>
-          <a href="https://github.com" target="_blank" rel="noreferrer" className="p-3 border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300" aria-label="GitHub">
-            <Github size={24} />
-          </a>
-          <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="p-3 border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300" aria-label="LinkedIn">
-            <Linkedin size={24} />
-          </a>
-        </div>
-      </motion.footer>
 
+        <div className="flex gap-4">
+          {socialLinks.map(({ href, label, icon: Icon }) => (
+            <motion.a
+              key={label}
+              href={href}
+              target={href.startsWith('mailto:') ? undefined : '_blank'}
+              rel="noreferrer"
+              aria-label={label}
+              whileHover={{ y: -4 }}
+              className="p-3 border border-black/30 dark:border-white/30 hover:border-accent hover:text-accent transition-colors duration-300"
+            >
+              <Icon size={22} />
+            </motion.a>
+          ))}
+        </div>
+      </footer>
     </section>
   );
 };

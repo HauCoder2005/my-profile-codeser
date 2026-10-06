@@ -1,67 +1,120 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Download } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import Panel from './Panel';
+
+const GLYPHS = '!<>-_\\/[]{}=+*^?#01';
+
+// Decode-style text reveal: random glyphs resolve into the target text from left to right
+const useScramble = (text, duration = 900) => {
+  const reduceMotion = useReducedMotion();
+  const [output, setOutput] = useState(text);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      setOutput(text);
+      return undefined;
+    }
+    let frame;
+    const start = performance.now();
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const revealed = Math.floor(progress * text.length);
+      let next = text.slice(0, revealed);
+      for (let i = revealed; i < text.length; i++) {
+        next += text[i] === ' ' ? ' ' : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+      }
+      setOutput(next);
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [text, duration, reduceMotion]);
+
+  return output;
+};
+
+// Portrait in natural colour, framed like the other photos on the page (no filters or effects)
+const Portrait = () => (
+  <Panel className="p-2">
+    <img
+      src="/images/codeser.jpg"
+      alt="Huynh Hau"
+      className="block w-full max-w-[280px] sm:max-w-sm aspect-[3/4] object-cover object-top"
+    />
+  </Panel>
+);
 
 const Hero = () => {
   const { t } = useLanguage();
+  const role = useScramble(t('hero.role'));
+
   return (
-    <section 
-      id="about" 
-      className="relative z-10 min-h-screen flex items-center pt-24 pb-12 px-4 md:px-8 max-w-7xl mx-auto"
+    <section
+      id="about"
+      className="relative z-10 min-h-screen flex flex-col justify-center pt-28 pb-16 px-4 md:px-8 max-w-7xl mx-auto"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center w-full mt-8 md:mt-0">
-        
-        {/* Left Column: Text */}
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col items-center md:items-start space-y-6 md:space-y-8 text-center md:text-left"
+      <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-12 items-start w-full">
+
+        {/* Text */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col items-start space-y-6 md:space-y-8"
         >
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-mono font-bold leading-tight uppercase">
-            {t('hero.greeting')}<br />
-            <span className="bg-black text-white dark:bg-white dark:text-black px-2 inline-block mt-2">
-              {t('hero.role')}
+          <p className="font-mono text-sm md:text-base tracking-[0.3em] uppercase">
+            <span className="text-accent">&gt;</span> {t('hero.hello')}
+          </p>
+
+          <h1 className="font-mono font-bold uppercase leading-[0.95]">
+            <span className="block text-5xl sm:text-6xl md:text-7xl xl:text-8xl">{t('hero.name')}</span>
+            <span className="mt-4 inline-flex items-center bg-black text-white dark:bg-white dark:text-black px-3 py-1 text-2xl sm:text-3xl md:text-4xl tracking-wide">
+              {role}
+              <span className="ml-1 inline-block w-[0.5em] h-[1em] bg-accent animate-pulse" />
             </span>
           </h1>
-          
-          <p className="text-base sm:text-lg md:text-xl font-sans leading-relaxed opacity-90 max-w-lg border-l-0 md:border-l-4 border-black dark:border-white pl-0 md:pl-6 text-justify">
-            {t('hero.description')}
-          </p>
-          
-          <motion.a 
-            href="/images/cv.pdf"
-            download="Huynh_Hau_CV.pdf"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 md:px-8 md:py-4 border-2 border-black dark:border-white bg-transparent text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black font-mono font-bold uppercase transition-colors duration-300 inline-block text-center w-full sm:w-auto"
-          >
-            {t('hero.download_cv')}
-          </motion.a>
+
+          <div className="max-w-xl border-l-4 border-accent pl-5 space-y-4 text-[15px] sm:text-base leading-relaxed opacity-80 text-left sm:text-justify">
+            {t('hero.description').map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <motion.a
+              href="/images/cv.pdf"
+              download="Huynh_Hau_CV.pdf"
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center justify-center gap-3 px-7 py-4 bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white font-mono font-bold uppercase tracking-wider hover:shadow-brutal-accent transition-shadow duration-300"
+            >
+              <Download size={18} />
+              {t('hero.download_cv')}
+            </motion.a>
+            <motion.a
+              href="#contact"
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center justify-center px-7 py-4 border-2 border-black dark:border-white font-mono font-bold uppercase tracking-wider hover:border-accent hover:text-accent transition-colors duration-300"
+            >
+              {t('hero.contact_cta')}
+            </motion.a>
+          </div>
         </motion.div>
 
-        {/* Right Column: Image */}
-        <motion.div 
-          initial={{ opacity: 0, x: 50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex justify-center md:justify-end mt-8 md:mt-0"
+        {/* Portrait */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="flex justify-center md:justify-end md:sticky md:top-32"
         >
-          <img 
-            src="/images/codeser.jpg" 
-            alt="Huynh Hau Portrait" 
-            className="w-full max-w-[280px] sm:max-w-sm aspect-[3/4] object-cover border-2 border-black dark:border-white bg-white dark:bg-black rounded-none"
-            onError={(e) => {
-              // Fallback if image doesn't exist yet
-              e.target.onerror = null; 
-              e.target.src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 400'%3E%3Crect width='100%25' height='100%25' fill='%23ccc'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-size='20' fill='%23333'%3E[Portrait Placeholder]%3C/text%3E%3C/svg%3E";
-            }}
-          />
+          <Portrait />
         </motion.div>
-
       </div>
+
     </section>
   );
 };

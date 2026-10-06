@@ -18,6 +18,10 @@ export const LanguageProvider = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   const toggleLanguage = () => {
     if (isChangingLang) return; // Prevent spam clicking
 
