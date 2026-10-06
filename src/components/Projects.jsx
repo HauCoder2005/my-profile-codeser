@@ -8,8 +8,8 @@ import SectionHeading from './SectionHeading';
 import Panel from './Panel';
 
 const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.2 } }
 };
 
 const itemVariants = {

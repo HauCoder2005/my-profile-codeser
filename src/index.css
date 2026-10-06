@@ -69,6 +69,8 @@
     /* Stronger blur so stars behind don't compete with the text */
     -webkit-backdrop-filter: blur(12px) saturate(120%);
     backdrop-filter: blur(12px) saturate(120%);
+    /* Own compositing layer: stops mobile browsers from dropping blurred cards when scrolling back up over the WebGL canvas */
+    will-change: transform;
     transition: transform 0.4s;
   }
   .panel:hover {

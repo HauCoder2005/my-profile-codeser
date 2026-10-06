@@ -39,8 +39,8 @@ const skillGroups = [
 ];
 
 const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15 } }
 };
 
 const itemVariants = {
