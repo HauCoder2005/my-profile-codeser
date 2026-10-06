@@ -65,9 +65,9 @@ const vi = {
     title: "Triết lý",
     quote_by: "Terry A. Davis",
     rules: [
-      { label: "Nguyên tắc 01", text: "Kẻ ngốc thích phức tạp,\nngười giỏi chọn đơn giản." },
-      { label: "Nguyên tắc 02", text: "Code nằm ngay trước mắt.\nKhông có hộp đen.\nMọi thứ trong tay bạn." },
-      { label: "Nguyên tắc 03", text: "Tôi đã tự viết trình biên dịch,\ntrình hợp dịch và cả nhân\nhệ điều hành từ đầu." }
+      { text: "Kẻ ngốc thích phức tạp,\nngười giỏi chọn đơn giản." },
+      { text: "Code nằm ngay trước mắt.\nKhông có hộp đen.\nMọi thứ trong tay bạn." },
+      { text: "Tôi đã tự viết trình biên dịch,\ntrình hợp dịch và cả nhân\nhệ điều hành từ đầu." }
     ]
   },
   education: {
@@ -83,8 +83,8 @@ const vi = {
       {
         school: "Aptech Computer Education",
         degree: "Kỹ sư Phần mềm Quốc tế",
-        timeline: "2023 – 2025",
-        status: "Đã tốt nghiệp",
+        timeline: "2023 – 2026",
+        status: "Tốt nghiệp loại Distinction",
         description: "Học thực hành full-stack, thiết kế cơ sở dữ liệu và xây dựng ứng dụng cho doanh nghiệp.",
       }
     ]

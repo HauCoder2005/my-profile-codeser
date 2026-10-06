@@ -11,12 +11,21 @@ const damp = THREE.MathUtils.damp;
 const useInputRefs = () => {
   const scroll = useRef(0);
   const maxScroll = useRef(0);
+  const viewportHeight = useRef(window.innerHeight);
   const mouse = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const onScroll = () => { scroll.current = window.scrollY; };
+    let lastWidth = window.innerWidth;
     // Cached so useFrame never forces a layout read
     const measure = () => {
+      // Mobile browsers change innerHeight while scrolling (address bar showing/hiding).
+      // Only take a new height when the width changes too (rotation, window resize),
+      // otherwise the whole scene would jump on every scroll.
+      if (window.innerWidth !== lastWidth) {
+        lastWidth = window.innerWidth;
+        viewportHeight.current = window.innerHeight;
+      }
       maxScroll.current = document.documentElement.scrollHeight - window.innerHeight;
     };
     const resizeObserver = new ResizeObserver(measure);
@@ -37,16 +46,16 @@ const useInputRefs = () => {
     };
   }, []);
 
-  return { scroll, maxScroll, mouse };
+  return { scroll, maxScroll, viewportHeight, mouse };
 };
 
 // World units the camera travels per scrolled pixel: the 3D scene scrolls at ~60% of the page speed (parallax)
-const unitsPerPixel = () => 27 / window.innerHeight;
+const unitsPerPixel = (viewportHeight) => 27 / viewportHeight.current;
 
 // 1. Camera rig: follows the scroll position and leans toward the cursor
-const CameraRig = ({ scroll, mouse, reducedMotion }) => {
+const CameraRig = ({ scroll, viewportHeight, mouse, reducedMotion }) => {
   useFrame(({ camera }, delta) => {
-    const targetY = -scroll.current * unitsPerPixel();
+    const targetY = -scroll.current * unitsPerPixel(viewportHeight);
     const mx = reducedMotion ? 0 : mouse.current.x;
     const my = reducedMotion ? 0 : mouse.current.y;
 
@@ -430,7 +439,8 @@ const CelestialSystem = ({ palette, isDark, speedScale }) => {
 };
 
 // 6. Wireframe debris scattered along the scroll path, mostly in the side margins,
-//    so every section has something drifting past as you scroll.
+//    so every section has something drifting past as you scroll. Each piece wanders on its own
+//    slow loop. The layout is rolled once: resizing only rescales it, so pieces never jump around.
 const DEBRIS_GEOMETRIES = [
   new THREE.IcosahedronGeometry(1.4, 0),
   new THREE.OctahedronGeometry(1.2, 0),
@@ -441,39 +451,47 @@ const DEBRIS_GEOMETRIES = [
 
 const Debris = ({ palette, speedScale }) => {
   const groupRef = useRef();
-  const { size } = useThree();
-  const aspect = size.width / size.height;
-  const items = useMemo(() => Array.from({ length: 18 }, (_, i) => {
-    const side = i % 2 === 0 ? 1 : -1;
-    const z = -6 - Math.random() * 18;
-    // Half the visible width at this depth (camera at z=25, fov 60) -> hug the screen edges
-    const halfWidth = Math.tan(Math.PI / 6) * (25 - z) * aspect;
-    return {
-      geometry: DEBRIS_GEOMETRIES[i % DEBRIS_GEOMETRIES.length],
-      position: [side * halfWidth * (0.88 + Math.random() * 0.15), -28 - i * 11 - Math.random() * 6, z],
-      scale: 0.6 + Math.random() * 1.1,
-      spin: [(Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.3],
-      bob: Math.random() * Math.PI * 2,
-    };
-  }), [aspect]);
+  const time = useRef(0);
+  const items = useMemo(() => Array.from({ length: 18 }, (_, i) => ({
+    geometry: DEBRIS_GEOMETRIES[i % DEBRIS_GEOMETRIES.length],
+    side: i % 2 === 0 ? 1 : -1,
+    edge: 0.88 + Math.random() * 0.15, // share of the half screen width: hugs the edges
+    y: -28 - i * 11 - Math.random() * 6,
+    z: -6 - Math.random() * 18,
+    scale: 0.6 + Math.random() * 1.1,
+    spin: [(Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.3],
+    // Free drift: a slow Lissajous loop with its own speed and phase
+    drift: [1.2 + Math.random() * 1.5, 1.5 + Math.random() * 2],
+    driftSpeed: [0.08 + Math.random() * 0.1, 0.06 + Math.random() * 0.08],
+    phase: Math.random() * Math.PI * 2,
+  })), []);
 
-  useFrame(({ clock }, delta) => {
+  useFrame(({ size }, delta) => {
     const group = groupRef.current;
     if (!group) return;
     const step = delta * speedScale;
+    time.current += step;
+    const t = time.current;
+    const aspect = size.width / size.height;
     group.children.forEach((mesh, i) => {
       const item = items[i];
+      // Half the visible width at this depth (camera at z=25, fov 60)
+      const halfWidth = Math.tan(Math.PI / 6) * (25 - item.z) * aspect;
+      mesh.position.set(
+        item.side * halfWidth * item.edge + Math.sin(t * item.driftSpeed[0] + item.phase) * item.drift[0],
+        item.y + Math.sin(t * item.driftSpeed[1] + item.phase * 1.7) * item.drift[1],
+        item.z
+      );
       mesh.rotation.x += item.spin[0] * step;
       mesh.rotation.y += item.spin[1] * step;
       mesh.rotation.z += item.spin[2] * step;
-      mesh.position.y = item.position[1] + Math.sin(clock.elapsedTime * 0.4 * speedScale + item.bob) * 0.6;
     });
   });
 
   return (
     <group ref={groupRef}>
       {items.map((item, i) => (
-        <mesh key={i} geometry={item.geometry} position={item.position} scale={item.scale}>
+        <mesh key={i} geometry={item.geometry} scale={item.scale}>
           <meshBasicMaterial color={palette.fg} wireframe transparent opacity={0.18} />
         </mesh>
       ))}
@@ -482,7 +500,7 @@ const Debris = ({ palette, speedScale }) => {
 };
 
 // 7. Ringed planet waiting at the bottom of the page (next to the contact section)
-const RingedPlanet = ({ palette, isDark, speedScale, maxScroll }) => {
+const RingedPlanet = ({ palette, isDark, speedScale, maxScroll, viewportHeight }) => {
   const ref = useRef();
   const { size } = useThree();
   const isPortrait = size.width < size.height;
@@ -493,7 +511,7 @@ const RingedPlanet = ({ palette, isDark, speedScale, maxScroll }) => {
     const planet = ref.current;
     if (!planet) return;
     // Sit just below the camera's final resting point, on the left side
-    planet.position.set(x, -maxScroll.current * unitsPerPixel() - 6, -22);
+    planet.position.set(x, -maxScroll.current * unitsPerPixel(viewportHeight) - 6, -22);
     planet.rotation.y += delta * 0.08 * speedScale;
   });
 
@@ -519,7 +537,7 @@ const RingedPlanet = ({ palette, isDark, speedScale, maxScroll }) => {
 const SpaceBackground = () => {
   const isDark = useIsDark();
   const reducedMotion = usePrefersReducedMotion();
-  const { scroll, maxScroll, mouse } = useInputRefs();
+  const { scroll, maxScroll, viewportHeight, mouse } = useInputRefs();
   const palette = isDark ? PALETTE.dark : PALETTE.light;
   const speedScale = reducedMotion ? 0.15 : 1;
 
@@ -532,12 +550,12 @@ const SpaceBackground = () => {
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       >
         <AdaptiveDpr pixelated={false} />
-        <CameraRig scroll={scroll} mouse={mouse} reducedMotion={reducedMotion} />
+        <CameraRig scroll={scroll} viewportHeight={viewportHeight} mouse={mouse} reducedMotion={reducedMotion} />
         <Suspense fallback={null}>
           <Starfield palette={palette} reducedMotion={reducedMotion} />
           <CelestialSystem palette={palette} isDark={isDark} speedScale={speedScale} />
           <Debris palette={palette} speedScale={speedScale} />
-          <RingedPlanet palette={palette} isDark={isDark} speedScale={speedScale} maxScroll={maxScroll} />
+          <RingedPlanet palette={palette} isDark={isDark} speedScale={speedScale} maxScroll={maxScroll} viewportHeight={viewportHeight} />
         </Suspense>
       </Canvas>
     </div>

@@ -52,7 +52,7 @@ const Inspiration = () => {
         {/* Rules */}
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {rules.map((rule, i) => (
-            <div key={rule.label} className="flex flex-col items-center">
+            <div key={rule.text} className="flex flex-col items-center">
               <motion.div
                 initial={{ scaleY: 0 }}
                 whileInView={{ scaleY: 1 }}
@@ -68,10 +68,6 @@ const Inspiration = () => {
                 transition={{ duration: 0.5, delay: 0.9 + i * 0.15 }}
                 className="w-full h-full p-8 text-center"
               >
-                <span className="block font-mono text-xs tracking-[0.3em] uppercase text-accent">
-                  {rule.label}
-                </span>
-                <span aria-hidden className="block w-8 h-px bg-accent/70 mx-auto my-4" />
                 <p className="font-mono font-bold text-sm md:text-base leading-relaxed whitespace-pre-line">
                   {rule.text}
                 </p>

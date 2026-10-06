@@ -65,9 +65,9 @@ const en = {
     title: "Philosophy",
     quote_by: "Terry A. Davis",
     rules: [
-      { label: "Rule 01", text: "An idiot admires complexity,\na genius admires simplicity." },
-      { label: "Rule 02", text: "You can see the code.\nNo black boxes.\nYou're in full control." },
-      { label: "Rule 03", text: "I built a compiler,\nan assembler, and a kernel\nfrom scratch." }
+      { text: "An idiot admires complexity,\na genius admires simplicity." },
+      { text: "You can see the code.\nNo black boxes.\nYou're in full control." },
+      { text: "I built a compiler,\nan assembler, and a kernel\nfrom scratch." }
     ]
   },
   education: {
@@ -83,8 +83,8 @@ const en = {
       {
         school: "Aptech Computer Education",
         degree: "Advanced Diploma in Software Engineering",
-        timeline: "2023 – 2025",
-        status: "Graduated",
+        timeline: "2023 – 2026",
+        status: "Graduated with Distinction",
         description: "Hands-on training in full-stack development, database design, and building business applications.",
       }
     ]
