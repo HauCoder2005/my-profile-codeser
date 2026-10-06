@@ -76,7 +76,7 @@ const Hero = () => {
             </span>
           </h1>
 
-          <div className="max-w-xl border-l-4 border-accent pl-5 space-y-4 text-[15px] sm:text-base leading-relaxed opacity-80 text-left sm:text-justify">
+          <div className="max-w-xl border-l-4 border-accent pl-5 space-y-4 text-[15px] sm:text-base leading-relaxed opacity-80 text-justify">
             {t('hero.description').map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
