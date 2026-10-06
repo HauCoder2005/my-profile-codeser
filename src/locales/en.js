@@ -45,6 +45,22 @@ const en = {
       cpp: { focus: "Algorithms · Systems", description: "For practising data structures and algorithms, and for small native tools like toolz-create-folder." }
     }
   },
+  arcade: {
+    title: "Break time",
+    start: "Hover or tap to play",
+    hint: "Move your mouse or drag a finger across the screen to steer. The ship fires on its own.",
+    game_over: "Game over",
+    score: "Score",
+    best: "Best",
+    lives: "lives left",
+    aria: "Mini game: a spaceship shooting down falling asteroids",
+    log: {
+      playing: "new session started, good luck",
+      hit: "asteroid destroyed +{points}",
+      escape: "an asteroid got past you",
+      over: "ship destroyed"
+    }
+  },
   inspiration: {
     title: "Philosophy",
     quote_by: "Terry A. Davis",

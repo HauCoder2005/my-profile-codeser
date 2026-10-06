@@ -88,6 +88,11 @@
     48% { opacity: 1; }
     83% { opacity: 0.97; }
   }
+  /* Faint CRT scanlines in the current text colour (terminal arcade screen) */
+  .scanlines {
+    background: repeating-linear-gradient(to bottom, currentColor 0 1px, transparent 1px 3px);
+    opacity: 0.05;
+  }
   @keyframes tv-roll {
     from { transform: translateY(-100%); }
     to { transform: translateY(300%); }

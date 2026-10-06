@@ -45,6 +45,22 @@ const vi = {
       cpp: { focus: "Thuật toán · Hệ thống", description: "Dùng để luyện cấu trúc dữ liệu, thuật toán và viết những công cụ nhỏ chạy trực tiếp trên máy, như toolz-create-folder." }
     }
   },
+  arcade: {
+    title: "Giải lao",
+    start: "Di chuột hoặc chạm để chơi",
+    hint: "Di chuột hoặc kéo ngón tay ngang màn hình để lái tàu, tàu sẽ tự bắn.",
+    game_over: "Hết mạng",
+    score: "Điểm",
+    best: "Kỷ lục",
+    lives: "mạng còn lại",
+    aria: "Mini game: tàu vũ trụ bắn hạ các thiên thạch đang rơi",
+    log: {
+      playing: "phiên chơi mới, chúc may mắn",
+      hit: "bắn hạ thiên thạch +{points}",
+      escape: "một thiên thạch đã lọt qua",
+      over: "tàu đã bị phá hủy"
+    }
+  },
   inspiration: {
     title: "Triết lý",
     quote_by: "Terry A. Davis",

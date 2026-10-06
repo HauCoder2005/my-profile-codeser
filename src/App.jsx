@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import SpaceBackground from "./components/SpaceBackground";
 import Hero from "./components/Hero";
 import LanguageDial from "./components/LanguageDial";
+import TerminalArcade from "./components/TerminalArcade";
 import Inspiration from "./components/Inspiration";
 import Education from "./components/Education";
 import Skills from "./components/Skills";
@@ -22,6 +23,7 @@ function App() {
           <main className="w-full flex flex-col bg-transparent">
             <Hero />
             <LanguageDial />
+            <TerminalArcade />
             <Inspiration />
             <Education />
             <Skills />
