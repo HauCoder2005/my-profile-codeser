@@ -12,6 +12,12 @@ module.exports = {
         black: 'rgb(var(--c-black) / <alpha-value>)',
         accent: 'rgb(var(--c-accent) / <alpha-value>)',
       },
+      keyframes: {
+        'orbit-dash': { to: { strokeDashoffset: '-120' } },
+      },
+      animation: {
+        'orbit-dash': 'orbit-dash 6s linear infinite',
+      },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],

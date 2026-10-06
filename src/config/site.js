@@ -1,6 +1,9 @@
-// Real links used across the site. Leave a field empty ('') to hide its button.
+// Real links used across the site. Leave a field empty ('') to hide its sticker.
 export const socials = {
   email: 'haucoderfullstack05@gmail.com',
+  facebook: 'https://www.facebook.com/huynh.hau.360484',
+  instagram: 'https://www.instagram.com/codeser_dev',
+  x: 'https://x.com', // TODO: replace with the real profile URL
   github: 'https://github.com/HauCoder2005',
   linkedin: 'https://www.linkedin.com/in/huynhhau',
 };

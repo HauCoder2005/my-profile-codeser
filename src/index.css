@@ -98,6 +98,50 @@
     to { transform: translateY(300%); }
   }
 
+  /* Social sticker on the contact orbit (contact/SocialOrbit.jsx): monochrome and tilted at rest,
+     straightens up in its brand colour on hover/focus */
+  .sticker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border: 2px solid currentColor;
+    /* Page colours ("white" is the paper in light mode but the ink in dark mode) */
+    background: rgb(var(--c-white));
+    color: rgb(var(--c-black));
+    transform: rotate(var(--tilt));
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s, color 0.3s, box-shadow 0.3s;
+  }
+  .dark .sticker {
+    background: rgb(var(--c-black));
+    color: rgb(var(--c-white));
+  }
+  @media (min-width: 768px) {
+    .sticker {
+      width: 4.25rem;
+      height: 4.25rem;
+    }
+  }
+  /* After the theme rules so hover wins over them */
+  .sticker:hover,
+  .sticker:focus-visible {
+    background: var(--brand);
+    color: #fff;
+    transform: rotate(0) scale(1.15);
+    box-shadow: 5px 5px 0 0 var(--brand-shadow);
+    outline: none;
+  }
+  .sticker:hover .sticker-icon,
+  .sticker:focus-visible .sticker-icon {
+    animation: sticker-wiggle 0.5s ease-in-out;
+  }
+  @keyframes sticker-wiggle {
+    25% { rotate: -14deg; }
+    75% { rotate: 14deg; }
+  }
+
   .chip {
     @apply px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider border border-black/15 dark:border-white/15 bg-black/[0.03] dark:bg-white/[0.04];
   }

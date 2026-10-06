@@ -125,8 +125,18 @@ const en = {
     placeholder_name: "Your name",
     placeholder_email: "you@email.com",
     placeholder_message: "What's on your mind?",
-    send: "Send",
-    sent: "Your mail app should open with the message ready to send.",
+    button: {
+      idle: "Send",
+      sending: "Sending…",
+      sent: "Sent!",
+      error: "Try again"
+    },
+    status: {
+      sent: "Message delivered. I'll get back to you soon ✓",
+      error: "Couldn't send it. Check your connection and try again."
+    },
+    copy_email: "Copy email",
+    copied: "Copied!",
     footer: "© {year} Huynh Hau. Built with React & Three.js."
   }
 };

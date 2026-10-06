@@ -125,8 +125,18 @@ const vi = {
     placeholder_name: "Tên của bạn",
     placeholder_email: "ban@email.com",
     placeholder_message: "Bạn muốn nói gì?",
-    send: "Gửi",
-    sent: "Ứng dụng email sẽ mở ra với nội dung đã soạn sẵn.",
+    button: {
+      idle: "Gửi",
+      sending: "Đang gửi…",
+      sent: "Đã gửi!",
+      error: "Gửi lại"
+    },
+    status: {
+      sent: "Đã gửi tin nhắn. Mình sẽ phản hồi sớm nhé ✓",
+      error: "Chưa gửi được. Kiểm tra kết nối mạng rồi thử lại nhé."
+    },
+    copy_email: "Copy email",
+    copied: "Đã copy!",
     footer: "© {year} Huỳnh Hậu. Làm bằng React & Three.js."
   }
 };
