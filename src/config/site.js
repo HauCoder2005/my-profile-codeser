@@ -11,19 +11,16 @@ export const socials = {
 // Same order as `projects.items` in the locale files
 export const projectMeta = [
   {
-    techs: ['Next.js', 'NestJS', 'Docker', 'Redis', 'MinIO'],
-    github: '',
+    techs: ['Next.js', 'NestJS', 'Docker', 'Redis', 'BLE Beacon', 'MinIO'],
+    github: 'https://github.com/HauCoder2005/roombeacon-system.git',
     demo: '',
+    image: '/images/roombeacon-preview.png',
   },
   {
-    techs: ['Java 21', 'Spring Boot', 'Next.js', 'MySQL'],
-    github: 'https://github.com/HauCoder2005/cinema-booking-projects',
-    demo: 'https://frontend-cinema-booking-five.vercel.app',
-  },
-  {
-    techs: ['React.js', 'Node.js', 'Media Pipeline', 'Logistics'],
-    github: '',
-    demo: '',
+    techs: ['Java 21', 'Spring Boot', 'Next.js', 'MySQL', 'Redis'],
+    github: 'https://github.com/HauCoder2005/cinema-booking-projects.git',
+    demo: 'https://www.cinema-booking.io.vn/',
+    image: '/images/cinema-booking-mockup.png',
   },
 ];
 

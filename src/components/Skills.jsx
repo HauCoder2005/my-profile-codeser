@@ -38,14 +38,13 @@ const skillGroups = [
   },
 ];
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.15 } }
-};
-
-const itemVariants = {
+const cardVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }
+  })
 };
 
 const Skills = () => {
@@ -56,20 +55,18 @@ const Skills = () => {
     <section id="skills" className="relative z-10 py-32 px-4 md:px-8 w-full max-w-7xl mx-auto">
       <SectionHeading title={t('skills.title')} />
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-8"
-      >
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {skillGroups.map((group, idx) => {
           const GroupIcon = group.icon;
           return (
             <Panel
               as={motion.div}
               key={titles[idx].title}
-              variants={itemVariants}
+              custom={idx}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.15 }}
               className="p-8"
             >
               <div className="flex items-center justify-between">
@@ -90,7 +87,7 @@ const Skills = () => {
             </Panel>
           );
         })}
-      </motion.div>
+      </div>
     </section>
   );
 };

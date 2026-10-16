@@ -142,18 +142,41 @@ const en = {
     title: "Projects",
     source: "Source code",
     demo: "Live demo",
+    view_details: "View details",
+    close: "Close",
+    modal_overview: "Overview",
+    modal_highlights: "Key Highlights",
+    modal_architecture: "Technical Architecture",
     items: [
       {
-        title: "AI Mock Interview",
-        description: "Practice technical interviews with AI: role-based questions, CV review, and instant feedback. Built with Whisper for speech-to-text and Qwen 2.5 running on Ollama.",
+        title: "RoomBeacon System",
+        description: "Smart room and indoor location management system using BLE Beacon technology, optimizing real-time automated attendance and classroom/facility monitoring.",
+        details: {
+          tagline: "Smart space management & automated attendance system",
+          overview: "RoomBeacon System is an IoT-enabled solution leveraging BLE Beacons for indoor presence detection and facility management. It automates attendance tracking, monitors room resource occupancy, and provides real-time administrative analytics.",
+          highlights: [
+            "Indoor micro-positioning and presence verification using high-precision BLE Beacon signals.",
+            "Automated real-time attendance logging and room access monitoring.",
+            "Intuitive administrative dashboard displaying room occupancy rates, history, and usage density.",
+            "Scalable API architecture designed for seamless IoT device integration and mobile clients."
+          ],
+          architecture: "Engineered with microservices architecture: high-throughput NestJS backend, Redis in-memory cache for real-time telemetry, and MinIO for distributed asset storage."
+        }
       },
       {
         title: "Cinema Booking",
-        description: "Movie ticket booking for a multi-branch cinema chain, with online payment. I designed the 25+ table database and the core booking logic.",
-      },
-      {
-        title: "Shopping Now (Giao)",
-        description: "An e-commerce marketplace built around same-day regional delivery, with a pipeline for processing product media.",
+        description: "Movie ticket reservation system for a multi-branch cinema chain with secure online payments. Designed a 25+ table relational database and real-time seat booking architecture.",
+        details: {
+          tagline: "Multi-branch movie ticket reservation platform with secure payments",
+          overview: "Cinema Booking is a full-featured cinema chain reservation platform built to handle heavy concurrent traffic during blockbuster releases, with complex query optimization and multi-user seat synchronization.",
+          highlights: [
+            "Designed a robust 25+ table relational schema, highly normalized with query indexing optimizations.",
+            "Distributed session-based seat locking to eliminate race conditions and double bookings.",
+            "Integrated secure online payment gateway, automated order lifecycle tracking, and electronic ticketing.",
+            "Dynamic showtime and pricing engine adjusting across time slots, screens, and seat tiers (VIP/Standard/Couple)."
+          ],
+          architecture: "Core backend built with Java 21 & Spring Boot on MySQL. Redis manages distributed locks and active checkout sessions. Next.js powers a responsive, interactive frontend."
+        }
       }
     ]
   },

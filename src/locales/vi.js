@@ -142,18 +142,41 @@ const vi = {
     title: "Dự án",
     source: "Mã nguồn",
     demo: "Xem demo",
+    view_details: "Xem chi tiết",
+    close: "Đóng",
+    modal_overview: "Tổng quan",
+    modal_highlights: "Điểm nổi bật",
+    modal_architecture: "Kiến trúc kỹ thuật",
     items: [
       {
-        title: "AI Mock Interview",
-        description: "Luyện phỏng vấn kỹ thuật cùng AI: câu hỏi theo vị trí, góp ý CV và phản hồi ngay. Dùng Whisper để chuyển giọng nói thành chữ và Qwen 2.5 chạy trên Ollama.",
+        title: "RoomBeacon System",
+        description: "Hệ thống quản lý không gian thông minh và giám sát vị trí trong nhà sử dụng công nghệ BLE Beacon, tối ưu hóa điểm danh tự động và kiểm soát phòng học/thiết bị theo thời gian thực.",
+        details: {
+          tagline: "Hệ thống quản lý không gian thông minh & điểm danh tự động",
+          overview: "RoomBeacon System là giải pháp ứng dụng công nghệ Beacon để nhận diện hiện diện và tối ưu hóa việc quản lý phòng học, không gian làm việc. Hệ thống giúp tự động hóa điểm danh, theo dõi tình trạng sử dụng tài nguyên và cung cấp báo cáo phân tích trực quan.",
+          highlights: [
+            "Định vị và nhận diện sự hiện diện trong không gian phòng bằng tín hiệu BLE Beacon độ chính xác cao.",
+            "Tự động hóa hoàn toàn quy trình điểm danh và quản lý ra vào theo thời gian thực.",
+            "Bảng điều khiển quản trị trực quan, theo dõi trạng thái phòng học, lịch sử truy cập và mật độ sử dụng.",
+            "Hệ thống API tối ưu cho việc tích hợp mở rộng các thiết bị IoT và ứng dụng di động."
+          ],
+          architecture: "Xây dựng với kiến trúc hướng dịch vụ microservices, backend hiệu năng cao với NestJS kết hợp cache Redis để xử lý dữ liệu realtime và MinIO lưu trữ tệp tin phân tán."
+        }
       },
       {
         title: "Cinema Booking",
-        description: "Đặt vé xem phim cho chuỗi rạp nhiều chi nhánh, có thanh toán online. Mình thiết kế cơ sở dữ liệu hơn 25 bảng và phần logic đặt vé chính.",
-      },
-      {
-        title: "Shopping Now (Giao)",
-        description: "Sàn thương mại điện tử tập trung vào giao hàng trong ngày theo khu vực, có pipeline xử lý hình ảnh và video sản phẩm.",
+        description: "Hệ thống đặt vé xem phim quy mô chuỗi rạp đa chi nhánh, tích hợp thanh toán trực tuyến bảo mật. Thiết kế cơ sở dữ liệu hơn 25 bảng và kiến trúc xử lý đặt chỗ thời gian thực.",
+        details: {
+          tagline: "Nền tảng đặt vé xem phim trực tuyến đa chi nhánh & thanh toán bảo mật",
+          overview: "Cinema Booking là hệ thống quản lý và bán vé xem phim toàn diện dành cho chuỗi cụm rạp. Dự án tập trung giải quyết bài toán tải cao khi mở bán các suất chiếu hot, tối ưu truy vấn dữ liệu phức tạp và quản lý trạng thái ghế đa người dùng.",
+          highlights: [
+            "Thiết kế cơ sở dữ liệu quan hệ chuyên sâu với hơn 25 bảng, chuẩn hóa cấu trúc và tối ưu hóa chỉ mục (indexing).",
+            "Cơ chế khóa ghế theo phiên (distributed seat locking) chống tình trạng trùng lặp ghế khi nhiều người cùng đặt vé một lúc.",
+            "Tích hợp cổng thanh toán trực tuyến an toàn, quản lý trạng thái đơn hàng và xuất vé điện tử tự động.",
+            "Hệ thống quản lý suất chiếu, giá vé linh hoạt theo khung giờ, phòng chiếu và loại ghế (VIP/Standard/Couple)."
+          ],
+          architecture: "Lõi backend phát triển trên nền Java 21 & Spring Boot kết hợp MySQL. Tích hợp Redis quản lý trạng thái khóa ghế và phiên người dùng. Giao diện frontend xây dựng bằng Next.js mang lại trải nghiệm mượt mà."
+        }
       }
     ]
   },

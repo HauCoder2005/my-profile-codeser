@@ -9,14 +9,13 @@ const logos = [
   "/images/aptech.png"
 ];
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.2 } }
-};
-
-const itemVariants = {
+const cardVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }
+  })
 };
 
 const Education = () => {
@@ -24,22 +23,20 @@ const Education = () => {
   const educationData = t('education.items');
 
   return (
-    <section id="education" className="relative z-10 py-32 px-4 md:px-8 w-full max-w-6xl mx-auto">
+    <section id="education" className="relative z-10 py-32 px-4 md:px-8 w-full max-w-7xl mx-auto">
       <SectionHeading title={t('education.title')} />
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
-        className="grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch"
-      >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
         {educationData.map((item, index) => (
           <Panel
             as={motion.article}
             key={item.school}
-            variants={itemVariants}
-            className="flex flex-col p-8"
+            custom={index}
+            variants={cardVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            className="flex flex-col p-8 md:p-10 group hover:border-accent/50 transition-all duration-300"
           >
             <div className="flex items-center gap-5 mb-6">
               <div className="w-20 h-20 shrink-0 border border-black/15 dark:border-white/15 bg-[#fff] p-2 flex items-center justify-center">
@@ -73,7 +70,7 @@ const Education = () => {
             </p>
           </Panel>
         ))}
-      </motion.div>
+      </div>
     </section>
   );
 };

@@ -64,7 +64,7 @@ const ContactForm = () => {
       as={motion.form}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
+      viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.6 }}
       className="w-full flex flex-col gap-6 p-6 sm:p-8"
       onSubmit={handleSubmit}
