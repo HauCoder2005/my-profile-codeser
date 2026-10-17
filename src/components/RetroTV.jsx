@@ -64,14 +64,19 @@ const RetroTV = ({ lang, Icon, index, count, copy, dial, t, onPrev, onNext }) =>
   const staticRef = useRef(null);
   const knobRef = useRef(null);
   const rootRef = useRef(null);
-  const visible = useRef(true);
+  const visible = useRef(false);
   const burst = useRef(0);
+  const isFirstMount = useRef(true);
   const sound = useRef(null);
   const soundOnRef = useRef(false);
   soundOnRef.current = soundOn;
 
   // Channel change: burst of static, then tune in to the new channel once the dial settles
   useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
     burst.current = 1;
     const timer = setTimeout(() => setShown({ lang, Icon, index, copy }), TUNE_DELAY_MS);
     return () => clearTimeout(timer);
@@ -80,24 +85,14 @@ const RetroTV = ({ lang, Icon, index, count, copy, dial, t, onPrev, onNext }) =>
   // Skip all per-frame work while the TV is off screen
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => { visible.current = entry.isIntersecting; });
-    observer.observe(rootRef.current);
+    if (rootRef.current) observer.observe(rootRef.current);
     return () => observer.disconnect();
   }, []);
 
   // Animation loop: static noise, picture jitter, knob rotation, static sound level.
   // Only touches the DOM when a value actually changes.
   useEffect(() => {
-    const ctx = canvasRef.current.getContext('2d');
-    // Pre-render a few frames of noise once, then just cycle through them
-    const noise = Array.from({ length: NOISE_FRAMES }, () => {
-      const image = ctx.createImageData(NOISE_W, NOISE_H);
-      const pixels = new Uint32Array(image.data.buffer);
-      for (let i = 0; i < pixels.length; i++) {
-        const v = (Math.random() * 255) | 0;
-        pixels[i] = 0xff000000 | (v << 16) | (v << 8) | v;
-      }
-      return image;
-    });
+    let noise = null;
     let frame;
     let last = performance.now();
     let lastNoise = 0;
@@ -107,9 +102,9 @@ const RetroTV = ({ lang, Icon, index, count, copy, dial, t, onPrev, onNext }) =>
 
     const tick = (now) => {
       frame = requestAnimationFrame(tick);
+      if (!visible.current) return;
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
-      if (!visible.current) return;
 
       const d = dial.current;
       // Static while the dial is moving, plus a short burst on every channel change
@@ -119,9 +114,24 @@ const RetroTV = ({ lang, Icon, index, count, copy, dial, t, onPrev, onNext }) =>
       const intensity = Math.round(Math.min(1, raw) * 50) / 50;
 
       if (intensity > 0 && now - lastNoise > NOISE_INTERVAL_MS) {
-        ctx.putImageData(noise[noiseIndex], 0, 0);
-        noiseIndex = (noiseIndex + 1) % NOISE_FRAMES;
-        lastNoise = now;
+        if (!noise && canvasRef.current) {
+          const ctx = canvasRef.current.getContext('2d');
+          noise = Array.from({ length: NOISE_FRAMES }, () => {
+            const image = ctx.createImageData(NOISE_W, NOISE_H);
+            const pixels = new Uint32Array(image.data.buffer);
+            for (let i = 0; i < pixels.length; i++) {
+              const v = (Math.random() * 255) | 0;
+              pixels[i] = 0xff000000 | (v << 16) | (v << 8) | v;
+            }
+            return image;
+          });
+        }
+        if (noise && canvasRef.current) {
+          const ctx = canvasRef.current.getContext('2d');
+          ctx.putImageData(noise[noiseIndex], 0, 0);
+          noiseIndex = (noiseIndex + 1) % NOISE_FRAMES;
+          lastNoise = now;
+        }
       }
       if (intensity !== shownIntensity || intensity > 0) {
         staticRef.current.style.opacity = String(intensity);

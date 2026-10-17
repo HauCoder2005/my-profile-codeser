@@ -8,15 +8,16 @@ const LanguageContext = createContext();
 export const translations = { en, vi };
 
 export const LanguageProvider = ({ children }) => {
-  const [lang, setLang] = useState('en');
+  const [lang, setLang] = useState(() => {
+    try {
+      const savedLang = localStorage.getItem('app_lang');
+      if (savedLang === 'en' || savedLang === 'vi') {
+        return savedLang;
+      }
+    } catch (e) {}
+    return 'vi';
+  });
   const [isChangingLang, setIsChangingLang] = useState(false);
-
-  useEffect(() => {
-    const savedLang = localStorage.getItem('app_lang');
-    if (savedLang && (savedLang === 'en' || savedLang === 'vi')) {
-      setLang(savedLang);
-    }
-  }, []);
 
   useEffect(() => {
     document.documentElement.lang = lang;

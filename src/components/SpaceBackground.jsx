@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useMemo, Suspense } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useTexture, AdaptiveDpr } from '@react-three/drei';
 import * as THREE from 'three';
+
 import Rocket from './three/Rocket';
 import CyberGrid from './three/CyberGrid';
 import SpatialDust from './three/SpatialDust';
 import SpatialGyro from './three/SpatialGyro';
-import UfoVessel from './three/UfoVessel';
 import { PALETTE, useIsDark, usePrefersReducedMotion } from './three/theme';
 
 const damp = THREE.MathUtils.damp;
@@ -17,17 +16,14 @@ const useInputRefs = () => {
   const scroll = useRef(0);
   const maxScroll = useRef(0);
   const viewportHeight = useRef(window.innerHeight);
+  const viewportWidth = useRef(window.innerWidth);
   const mouse = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const onScroll = () => { scroll.current = window.scrollY; };
-    let lastWidth = window.innerWidth;
-    // Cached so useFrame never forces a layout read
     const measure = () => {
-      if (window.innerWidth !== lastWidth) {
-        lastWidth = window.innerWidth;
-        viewportHeight.current = window.innerHeight;
-      }
+      viewportWidth.current = window.innerWidth;
+      viewportHeight.current = window.innerHeight;
       maxScroll.current = document.documentElement.scrollHeight - window.innerHeight;
     };
     const resizeObserver = new ResizeObserver(measure);
@@ -36,16 +32,16 @@ const useInputRefs = () => {
 
     // 1. Desktop cursor / pointer move
     const onMove = (e) => {
-      mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
+      mouse.current.x = (e.clientX / (viewportWidth.current || window.innerWidth)) * 2 - 1;
+      mouse.current.y = -((e.clientY / (viewportHeight.current || window.innerHeight)) * 2 - 1);
     };
 
     // 2. Mobile touch pan (joystick / touch drag fallback)
     const onTouch = (e) => {
       if (e.touches && e.touches.length > 0) {
         const t = e.touches[0];
-        mouse.current.x = (t.clientX / window.innerWidth) * 2 - 1;
-        mouse.current.y = -((t.clientY / window.innerHeight) * 2 - 1);
+        mouse.current.x = (t.clientX / (viewportWidth.current || window.innerWidth)) * 2 - 1;
+        mouse.current.y = -((t.clientY / (viewportHeight.current || window.innerHeight)) * 2 - 1);
       }
     };
 
@@ -128,8 +124,7 @@ const useInputRefs = () => {
 // World units the camera travels per scrolled pixel: the 3D scene scrolls at ~60% of the page speed (parallax)
 const unitsPerPixel = (viewportHeight) => 27 / viewportHeight.current;
 
-// 1. Camera rig: Exaggerated 3D VR perspective camera with Mobile Gyroscope support
-// Rotating/panning according to phone tilt and cursor
+// 1. Camera rig: Smooth desktop mouse parallax & immersive Mobile Gyroscope VR camera
 const CameraRig = ({ scroll, viewportHeight, mouse, reducedMotion }) => {
   useFrame(({ camera, size }, delta) => {
     const isPortrait = size.width < size.height;
@@ -137,27 +132,39 @@ const CameraRig = ({ scroll, viewportHeight, mouse, reducedMotion }) => {
     const mx = reducedMotion ? 0 : mouse.current.x;
     const my = reducedMotion ? 0 : mouse.current.y;
 
-    // On mobile phones, provide large rotation angles (up to ~50 deg) for an immersive AR/VR window
-    const rotYMultiplier = isPortrait ? 0.85 : 0.20;
-    const rotXMultiplier = isPortrait ? 0.65 : 0.15;
-    const rotZMultiplier = isPortrait ? 0.12 : 0.04;
-    const posMultiplier = isPortrait ? 8.2 : 5.2;
+    if (isPortrait) {
+      // Mobile portrait AR/VR window: responsive wide tilt
+      const rotYMultiplier = 0.85;
+      const rotXMultiplier = 0.65;
+      const rotZMultiplier = 0.12;
+      const posMultiplier = 8.2;
+      const dampRate = 4.5;
 
-    const targetX = mx * posMultiplier;
-    const targetCamY = targetY + my * (isPortrait ? 5.2 : 3.4);
-    // Spatial depth: push into 3D space when tilting
-    const targetZ = 24.5 - Math.min(Math.hypot(mx, my) * 1.5, 2.2);
+      const targetX = mx * posMultiplier;
+      const targetCamY = targetY + my * 5.2;
+      const targetZ = 24.5 - Math.min(Math.hypot(mx, my) * 1.5, 2.2);
 
-    // Responsive damping: fast reaction on mobile (4.5) to feel instantly alive
-    const dampRate = isPortrait ? 4.5 : 3.2;
-    camera.position.x = damp(camera.position.x, targetX, dampRate, delta);
-    camera.position.y = damp(camera.position.y, targetCamY, dampRate, delta);
-    camera.position.z = damp(camera.position.z, targetZ, dampRate * 0.8, delta);
+      camera.position.x = damp(camera.position.x, targetX, dampRate, delta);
+      camera.position.y = damp(camera.position.y, targetCamY, dampRate, delta);
+      camera.position.z = damp(camera.position.z, targetZ, dampRate * 0.8, delta);
 
-    // Full 3-axis VR tilt (Yaw, Pitch, Roll)
-    camera.rotation.y = damp(camera.rotation.y, -mx * rotYMultiplier, dampRate, delta);
-    camera.rotation.x = damp(camera.rotation.x, my * rotXMultiplier, dampRate, delta);
-    camera.rotation.z = damp(camera.rotation.z, -mx * rotZMultiplier, dampRate * 0.9, delta);
+      camera.rotation.y = damp(camera.rotation.y, -mx * rotYMultiplier, dampRate, delta);
+      camera.rotation.x = damp(camera.rotation.x, my * rotXMultiplier, dampRate, delta);
+      camera.rotation.z = damp(camera.rotation.z, -mx * rotZMultiplier, dampRate * 0.9, delta);
+    } else {
+      // Desktop cursor: buttery smooth, subtle cinematic parallax with zero hitching
+      const targetX = mx * 1.8;
+      const targetCamY = targetY + my * 0.9;
+      const dampRate = 2.4;
+
+      camera.position.x = damp(camera.position.x, targetX, dampRate, delta);
+      camera.position.y = damp(camera.position.y, targetCamY, dampRate, delta);
+      camera.position.z = damp(camera.position.z, 24.5, dampRate, delta);
+
+      camera.rotation.y = damp(camera.rotation.y, -mx * 0.08, dampRate, delta);
+      camera.rotation.x = damp(camera.rotation.x, my * 0.05, dampRate, delta);
+      camera.rotation.z = damp(camera.rotation.z, 0, dampRate, delta);
+    }
   });
   return null;
 };
@@ -331,7 +338,10 @@ const atmosphereFragment = `
 `;
 
 const EarthGlobe = ({ palette, isDark, radius }) => {
-  const earthMap = useTexture('/images/earth-map.jpg');
+  const earthMap = useMemo(() => {
+    const loader = new THREE.TextureLoader();
+    return loader.load('/images/earth-map.jpg');
+  }, []);
 
   const landUniforms = useMemo(() => ({
     map: { value: earthMap },
@@ -640,25 +650,20 @@ const SpaceBackground = () => {
     <div className="fixed inset-0 -z-50 pointer-events-none">
       <Canvas
         camera={{ position: [0, 0, 24.5], fov: 68 }}
-        dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.35)]}
-        performance={{ min: 0.5 }}
+        dpr={[1, 1.25]}
         gl={{ antialias: false, alpha: true, powerPreference: 'high-performance', stencil: false }}
       >
-        <AdaptiveDpr pixelated={false} />
         <fog attach="fog" args={[palette.bg, 32, 130]} />
         <ambientLight intensity={isDark ? 1.4 : 1.1} />
         <directionalLight position={[12, 18, 14]} intensity={isDark ? 1.5 : 1.1} />
         <CameraRig scroll={scroll} viewportHeight={viewportHeight} mouse={mouse} reducedMotion={reducedMotion} />
-        <Suspense fallback={null}>
-          <CyberGrid palette={palette} isDark={isDark} scroll={scroll} speedScale={speedScale} />
-          <UfoVessel palette={palette} isDark={isDark} speedScale={speedScale} />
-          <SpatialDust palette={palette} isDark={isDark} speedScale={speedScale} />
-          <SpatialGyro palette={palette} isDark={isDark} position={[16, 7, -10]} speedScale={speedScale} />
-          <Starfield palette={palette} reducedMotion={reducedMotion} />
-          <CelestialSystem palette={palette} isDark={isDark} speedScale={speedScale} />
-          <Debris palette={palette} speedScale={speedScale} />
-          <RingedPlanet palette={palette} isDark={isDark} speedScale={speedScale} maxScroll={maxScroll} viewportHeight={viewportHeight} />
-        </Suspense>
+        <CyberGrid palette={palette} isDark={isDark} scroll={scroll} speedScale={speedScale} />
+        <SpatialDust palette={palette} isDark={isDark} speedScale={speedScale} />
+        <SpatialGyro palette={palette} isDark={isDark} position={[16, 7, -10]} speedScale={speedScale} />
+        <Starfield palette={palette} reducedMotion={reducedMotion} />
+        <CelestialSystem palette={palette} isDark={isDark} speedScale={speedScale} />
+        <Debris palette={palette} speedScale={speedScale} />
+        <RingedPlanet palette={palette} isDark={isDark} speedScale={speedScale} maxScroll={maxScroll} viewportHeight={viewportHeight} />
       </Canvas>
     </div>
   );

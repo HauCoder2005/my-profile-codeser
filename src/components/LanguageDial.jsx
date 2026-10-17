@@ -270,10 +270,10 @@ const LanguageDial = () => {
     return scrollYProgress.on('change', update);
   }, [scrollYProgress, reducedMotion]);
 
-  // Only render the canvas while it's on screen
+  // Only render the canvas frames while it's on screen
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { rootMargin: '100px' });
-    observer.observe(stageRef.current);
+    if (stageRef.current) observer.observe(stageRef.current);
     return () => observer.disconnect();
   }, []);
 
@@ -410,7 +410,7 @@ const LanguageDial = () => {
             frameloop={inView ? 'always' : 'never'}
             camera={{ position: [0, 0, 12], fov: 35 }}
             dpr={[1, 1.5]}
-            gl={{ antialias: true, alpha: true }}
+            gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
           >
             <DialScene
               dial={dial}

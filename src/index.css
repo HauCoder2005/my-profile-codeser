@@ -11,23 +11,23 @@
     --c-black: 28 25 21;
     --c-accent: 234 88 12;
     /* Light: crisp frosted paper backdrop */
-    --panel-bg: rgb(255 253 248 / 0.88);
-    --panel-bg-hover: rgb(255 253 248 / 0.98);
-    --panel-border: rgb(var(--c-black) / 0.14);
-    --panel-highlight: 0 1px 2px rgb(var(--c-black) / 0.06), 0 12px 28px -16px rgb(var(--c-black) / 0.25);
+    --panel-bg: linear-gradient(150deg, rgb(255 253 248 / 0.94) 0%, rgb(246 241 230 / 0.97) 100%);
+    --panel-bg-hover: linear-gradient(150deg, rgb(255 255 255 / 0.98) 0%, rgb(250 246 238 / 0.99) 100%);
+    --panel-border: rgb(var(--c-black) / 0.16);
+    --panel-highlight: 0 1px 3px rgb(var(--c-black) / 0.08), 0 16px 36px -16px rgb(var(--c-black) / 0.18);
     color-scheme: light;
   }
 
-  /* Dark: pure black & white */
+  /* Dark: pure black & white with cyber depth */
   .dark {
     --c-white: 255 255 255;
     --c-black: 0 0 0;
     --c-accent: 255 106 43;
-    /* High contrast dark panel with subtle translucent depth */
-    --panel-bg: rgb(16 16 20 / 0.85);
-    --panel-bg-hover: rgb(24 24 30 / 0.92);
-    --panel-highlight: inset 0 1px 0 rgb(255 255 255 / 0.12);
-    --panel-border: rgb(255 255 255 / 0.1);
+    /* High tech obsidian cyber glass with spatial gradient depth */
+    --panel-bg: linear-gradient(150deg, rgb(16 20 28 / 0.88) 0%, rgb(9 11 16 / 0.94) 100%);
+    --panel-bg-hover: linear-gradient(150deg, rgb(22 28 38 / 0.92) 0%, rgb(13 16 23 / 0.96) 100%);
+    --panel-highlight: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 8px 32px -8px rgb(0 0 0 / 0.7);
+    --panel-border: rgb(255 255 255 / 0.12);
     color-scheme: dark;
   }
 
@@ -60,12 +60,31 @@
 }
 
 @layer components {
-  /* Borderless, minimal card (components/Panel.jsx): a faint frosted backdrop, no frame */
+  /* High-tech Cyber HUD Panel: translucent glass, specular accent highlight, smooth hover */
   .panel {
     position: relative;
     isolation: isolate;
     border: 1px solid var(--panel-border);
     box-shadow: var(--panel-highlight);
+    transition: border-color 0.2s ease;
+  }
+  .panel:hover {
+    border-color: rgb(var(--c-accent) / 0.55);
+  }
+  .panel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 12px;
+    right: 12px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(var(--c-accent) / 0.6), transparent);
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .panel:hover::after {
+    opacity: 1;
   }
   .panel::before {
     content: '';
@@ -73,17 +92,8 @@
     inset: 0;
     z-index: -1;
     background: var(--panel-bg);
-    /* Lightweight backdrop blur on desktop, disabled on mobile for 60fps smooth scrolling */
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
     pointer-events: none;
-    transition: background 0.3s ease;
-  }
-  @media (max-width: 768px) {
-    .panel::before {
-      -webkit-backdrop-filter: none !important;
-      backdrop-filter: none !important;
-    }
+    transition: background 0.2s ease;
   }
   .panel:hover::before {
     background: var(--panel-bg-hover);

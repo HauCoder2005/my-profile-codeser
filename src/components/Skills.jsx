@@ -11,6 +11,7 @@ import Panel from './Panel';
 
 const skillGroups = [
   {
+    id: 'backend',
     icon: Server,
     skills: [
       { name: 'NestJS', icon: SiNestjs },
@@ -19,6 +20,7 @@ const skillGroups = [
     ],
   },
   {
+    id: 'frontend',
     icon: Layout,
     skills: [
       { name: 'React.js', icon: SiReact },
@@ -28,6 +30,7 @@ const skillGroups = [
     ],
   },
   {
+    id: 'database',
     icon: Database,
     skills: [
       { name: 'MySQL', icon: SiMysql },
@@ -39,11 +42,11 @@ const skillGroups = [
 ];
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }
   })
 };
 
@@ -55,35 +58,50 @@ const Skills = () => {
     <section id="skills" className="relative z-10 py-32 px-4 md:px-8 w-full max-w-7xl mx-auto">
       <SectionHeading title={t('skills.title')} />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
         {skillGroups.map((group, idx) => {
           const GroupIcon = group.icon;
+          const categoryTitle = titles[idx]?.title || group.id;
+
           return (
             <Panel
               as={motion.div}
-              key={titles[idx].title}
+              key={`skill-card-${group.id}`}
               custom={idx}
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }}
-              className="p-8"
+              viewport={{ once: true, amount: 0.1 }}
+              className="p-7 sm:p-8 flex flex-col justify-between"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl md:text-2xl font-mono font-bold uppercase">{titles[idx].title}</h3>
-                <GroupIcon size={24} className="opacity-60 group-hover:text-accent group-hover:opacity-100 transition-colors" />
+              <div>
+                {/* Header: Category Title & Icon */}
+                <div className="flex items-center justify-between pb-5 border-b border-black/10 dark:border-white/10">
+                  <h3 className="text-xl sm:text-2xl font-mono font-bold uppercase tracking-tight">
+                    {categoryTitle}
+                  </h3>
+                  <div className="w-10 h-10 shrink-0 border border-black/15 dark:border-white/15 bg-black/[0.03] dark:bg-white/[0.04] flex items-center justify-center group-hover:border-accent/60 group-hover:text-accent transition-colors">
+                    <GroupIcon size={20} className="opacity-75 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+
+                {/* Skills list */}
+                <ul className="mt-6 space-y-3.5">
+                  {group.skills.map(({ name, icon: Icon }) => (
+                    <li
+                      key={name}
+                      className="group/item flex items-center gap-3.5 p-2 -mx-2 hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors"
+                    >
+                      <div className="w-8 h-8 shrink-0 border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.03] flex items-center justify-center group-hover/item:border-accent/60 group-hover/item:text-accent transition-colors">
+                        <Icon size={17} className="opacity-75 group-hover/item:opacity-100" />
+                      </div>
+                      <span className="font-mono font-bold text-base sm:text-lg group-hover/item:text-accent group-hover/item:translate-x-1 transition-all">
+                        {name}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              <span aria-hidden className="block w-8 h-px bg-accent/70 my-6" />
-
-              <ul className="space-y-4">
-                {group.skills.map(({ name, icon: Icon }) => (
-                  <li key={name} className="flex items-center gap-4 text-lg group/item">
-                    <Icon size={20} className="opacity-70 group-hover/item:text-accent group-hover/item:opacity-100 transition-colors" />
-                    <span className="group-hover/item:translate-x-1 transition-transform">{name}</span>
-                  </li>
-                ))}
-              </ul>
             </Panel>
           );
         })}

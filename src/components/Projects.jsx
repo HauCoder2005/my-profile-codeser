@@ -18,19 +18,19 @@ const LiveServerMockup = ({ image, title, url, isLive = false, className = '' })
   if (!image) return null;
   return (
     <div className={`overflow-hidden border border-black/15 dark:border-white/15 bg-black/[0.03] dark:bg-white/[0.03] shadow-lg group/mockup ${className}`}>
-      {/* Browser Chrome Header */}
-      <div className="px-3.5 py-2 border-b border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.04] flex items-center justify-between gap-3 text-xs font-mono select-none">
+      {/* Browser Header */}
+      <div className="px-3.5 py-2 border-b border-black/10 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.04] flex items-center justify-between gap-3 text-xs font-mono select-none">
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]/85" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]/85" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f]/85" />
+          <span className="w-2.5 h-2.5 rounded-full bg-accent/80" />
+          <span className="w-2.5 h-2.5 rounded-full bg-black/20 dark:bg-white/20" />
+          <span className="w-2.5 h-2.5 rounded-full bg-black/20 dark:bg-white/20" />
         </div>
-        <div className="flex-1 min-w-0 max-w-xs px-2.5 py-0.5 border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/60 rounded-sm text-[11px] truncate text-center opacity-70">
+        <div className="flex-1 min-w-0 max-w-xs px-2.5 py-0.5 border border-black/10 dark:border-white/10 bg-white/70 dark:bg-black/70 text-[11px] truncate text-center opacity-75 font-mono">
           {url ? url.replace(/^https?:\/\//, '') : 'localhost:3000'}
         </div>
         <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-accent shrink-0">
-          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-          <span>{isLive ? 'LIVE' : 'SERVER'}</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+          <span>{isLive ? 'LIVE' : 'DEMO'}</span>
         </div>
       </div>
       {/* Preview Viewport */}
@@ -81,11 +81,11 @@ const Projects = () => {
           return (
             <Panel
               as={motion.article}
-              key={project.title}
+              key={`project-card-${idx}`}
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }}
+              viewport={{ once: true, amount: 0.1 }}
               onClick={() => setSelectedIdx(idx)}
               className="p-6 sm:p-8 md:p-10 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-8 items-center cursor-pointer transition-all duration-300 hover:border-accent/60 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_30px_rgba(255,106,43,0.12)] group"
             >
