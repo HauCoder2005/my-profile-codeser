@@ -61,7 +61,6 @@ const gridFragment = `
 
 const CyberGrid = ({ palette, isDark, scroll, speedScale = 1 }) => {
   const floorRef = useRef();
-  const ceilingRef = useRef();
   const time = useRef(0);
 
   const uniforms = useMemo(() => ({
@@ -88,48 +87,27 @@ const CyberGrid = ({ palette, isDark, scroll, speedScale = 1 }) => {
     const isPortrait = size.width < size.height;
     // On mobile portrait, raise floor grid slightly so the 3D landscape lines are directly visible on phone
     const floorY = isPortrait ? camera.position.y - 10.5 : camera.position.y - 13.5;
-    const ceilY = isPortrait ? camera.position.y + 17.0 : camera.position.y + 21.0;
 
     if (floorRef.current) {
       floorRef.current.position.y = floorY;
       floorRef.current.position.x = camera.position.x * 0.3;
     }
-    if (ceilingRef.current) {
-      ceilingRef.current.position.y = ceilY;
-      ceilingRef.current.position.x = camera.position.x * 0.3;
-    }
   });
 
   return (
-    <group>
-      {/* 3D Infinite Perspective Floor Grid */}
-      <mesh ref={floorRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -13.5, -25]}>
-        <planeGeometry args={[180, 160, 1, 1]} />
-        <shaderMaterial
-          vertexShader={gridVertex}
-          fragmentShader={gridFragment}
-          uniforms={uniforms}
-          transparent
-          depthWrite={false}
-          extensions={{ derivatives: true }}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-
-      {/* 3D Infinite Perspective Ceiling Grid (Cyber Chamber/Holodeck Enclosure) */}
-      <mesh ref={ceilingRef} rotation={[Math.PI / 2, 0, 0]} position={[0, 21.0, -25]}>
-        <planeGeometry args={[180, 160, 1, 1]} />
-        <shaderMaterial
-          vertexShader={gridVertex}
-          fragmentShader={gridFragment}
-          uniforms={uniforms}
-          transparent
-          depthWrite={false}
-          extensions={{ derivatives: true }}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-    </group>
+    /* 3D Infinite Perspective Floor Grid */
+    <mesh ref={floorRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -13.5, -25]}>
+      <planeGeometry args={[180, 160, 1, 1]} />
+      <shaderMaterial
+        vertexShader={gridVertex}
+        fragmentShader={gridFragment}
+        uniforms={uniforms}
+        transparent
+        depthWrite={false}
+        extensions={{ derivatives: true }}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
   );
 };
 

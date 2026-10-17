@@ -40,7 +40,7 @@ const useInputRefs = () => {
       mouse.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
     };
 
-    // 2. Mobile touch pan
+    // 2. Mobile touch pan (joystick / touch drag fallback)
     const onTouch = (e) => {
       if (e.touches && e.touches.length > 0) {
         const t = e.touches[0];
@@ -50,22 +50,40 @@ const useInputRefs = () => {
     };
 
     // 3. Mobile Gyroscope / Device Orientation ("di điện thoại tới đâu thì nó xoay")
+    // Auto-calibrating baseline so any resting posture is neutral
+    let baseBeta = null;
+    let baseGamma = null;
+
     const onDeviceOrientation = (e) => {
       if (e.gamma === null && e.beta === null) return;
       const gamma = e.gamma || 0; // Left-to-right tilt [-90, 90]
       const beta = e.beta || 0;   // Front-to-back tilt [-180, 180]
 
-      // Map gamma to -1.5..1.5 with comfortable ±25 deg tilt range
-      const gx = Math.max(-1.8, Math.min(1.8, gamma / 22));
-      // Handheld reference angle in portrait is ~48 degrees
-      const gy = Math.max(-1.8, Math.min(1.8, (beta - 48) / 22));
+      if (baseBeta === null || baseGamma === null) {
+        baseBeta = beta;
+        baseGamma = gamma;
+      } else {
+        // Slowly adapt baseline (0.5% per event) so shifting posture doesn't drift off screen
+        baseBeta += (beta - baseBeta) * 0.005;
+        baseGamma += (gamma - baseGamma) * 0.005;
+      }
+
+      const deltaGamma = gamma - baseGamma;
+      const deltaBeta = beta - baseBeta;
+
+      // Sensitivity: comfortable ±16 degree tilt gives full range
+      const gx = Math.max(-2.2, Math.min(2.2, deltaGamma / 10));
+      const gy = Math.max(-2.2, Math.min(2.2, deltaBeta / 10));
 
       mouse.current.x = gx;
       mouse.current.y = -gy;
     };
 
-    // Auto-request iOS 13+ permission on first touch if required by Safari
+    // Auto-request iOS 13+ permission on first user gesture (touch or click)
+    let permissionRequested = false;
     const requestPermission = () => {
+      if (permissionRequested) return;
+      permissionRequested = true;
       if (
         typeof DeviceOrientationEvent !== 'undefined' &&
         typeof DeviceOrientationEvent.requestPermission === 'function'
@@ -85,7 +103,10 @@ const useInputRefs = () => {
     window.addEventListener('pointermove', onMove, { passive: true });
     window.addEventListener('touchmove', onTouch, { passive: true });
     window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
-    window.addEventListener('touchstart', requestPermission, { once: true, passive: true });
+    window.addEventListener('deviceorientationabsolute', onDeviceOrientation, { passive: true });
+    window.addEventListener('touchstart', requestPermission, { passive: true });
+    window.addEventListener('touchend', requestPermission, { passive: true });
+    window.addEventListener('click', requestPermission, { passive: true });
 
     return () => {
       resizeObserver.disconnect();
@@ -94,7 +115,10 @@ const useInputRefs = () => {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('touchmove', onTouch);
       window.removeEventListener('deviceorientation', onDeviceOrientation);
+      window.removeEventListener('deviceorientationabsolute', onDeviceOrientation);
       window.removeEventListener('touchstart', requestPermission);
+      window.removeEventListener('touchend', requestPermission);
+      window.removeEventListener('click', requestPermission);
     };
   }, []);
 
@@ -113,46 +137,29 @@ const CameraRig = ({ scroll, viewportHeight, mouse, reducedMotion }) => {
     const mx = reducedMotion ? 0 : mouse.current.x;
     const my = reducedMotion ? 0 : mouse.current.y;
 
-    // On mobile phone portrait mode, amplify rotation for an immersive AR/VR window ("di điện thoại tới đâu thì nó xoay")
-    const rotYMultiplier = isPortrait ? 0.28 : 0.15;
-    const rotXMultiplier = isPortrait ? 0.24 : 0.12;
-    const posMultiplier = isPortrait ? 6.2 : 5.2;
+    // On mobile phones, provide large rotation angles (up to ~50 deg) for an immersive AR/VR window
+    const rotYMultiplier = isPortrait ? 0.85 : 0.20;
+    const rotXMultiplier = isPortrait ? 0.65 : 0.15;
+    const rotZMultiplier = isPortrait ? 0.12 : 0.04;
+    const posMultiplier = isPortrait ? 8.2 : 5.2;
 
     const targetX = mx * posMultiplier;
-    const targetCamY = targetY + my * (isPortrait ? 4.2 : 3.4);
-    // Spatial depth: slight push into the 3D space when moving away from center
-    const targetZ = 24.5 - Math.min(Math.hypot(mx, my) * 1.8, 2.2);
+    const targetCamY = targetY + my * (isPortrait ? 5.2 : 3.4);
+    // Spatial depth: push into 3D space when tilting
+    const targetZ = 24.5 - Math.min(Math.hypot(mx, my) * 1.5, 2.2);
 
-    camera.position.x = damp(camera.position.x, targetX, 3.0, delta);
-    camera.position.y = damp(camera.position.y, targetCamY, 3.4, delta);
-    camera.position.z = damp(camera.position.z, targetZ, 2.8, delta);
+    // Responsive damping: fast reaction on mobile (4.5) to feel instantly alive
+    const dampRate = isPortrait ? 4.5 : 3.2;
+    camera.position.x = damp(camera.position.x, targetX, dampRate, delta);
+    camera.position.y = damp(camera.position.y, targetCamY, dampRate, delta);
+    camera.position.z = damp(camera.position.z, targetZ, dampRate * 0.8, delta);
 
     // Full 3-axis VR tilt (Yaw, Pitch, Roll)
-    camera.rotation.y = damp(camera.rotation.y, -mx * rotYMultiplier, 3.0, delta);
-    camera.rotation.x = damp(camera.rotation.x, my * rotXMultiplier, 3.0, delta);
-    camera.rotation.z = damp(camera.rotation.z, -mx * 0.04, 2.8, delta);
+    camera.rotation.y = damp(camera.rotation.y, -mx * rotYMultiplier, dampRate, delta);
+    camera.rotation.x = damp(camera.rotation.x, my * rotXMultiplier, dampRate, delta);
+    camera.rotation.z = damp(camera.rotation.z, -mx * rotZMultiplier, dampRate * 0.9, delta);
   });
   return null;
-};
-
-// Dynamic 3D point light following the cursor in spatial coordinates
-const InteractiveLight = ({ mouse, isDark, reducedMotion }) => {
-  const lightRef = useRef();
-  useFrame(({ camera }) => {
-    if (!lightRef.current) return;
-    const mx = reducedMotion ? 0 : mouse.current.x;
-    const my = reducedMotion ? 0 : mouse.current.y;
-    lightRef.current.position.set(camera.position.x + mx * 14, camera.position.y + my * 9, 14);
-  });
-  return (
-    <pointLight
-      ref={lightRef}
-      color="#ff6a2b"
-      intensity={isDark ? 2.8 : 1.2}
-      distance={65}
-      decay={2}
-    />
-  );
 };
 
 // 2. Twinkling starfield (custom shader: per-star size + phase). Follows the camera at 85% so it feels far away.
@@ -633,14 +640,15 @@ const SpaceBackground = () => {
     <div className="fixed inset-0 -z-50 pointer-events-none">
       <Canvas
         camera={{ position: [0, 0, 24.5], fov: 68 }}
-        dpr={[1, 1.75]}
+        dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.35)]}
         performance={{ min: 0.5 }}
-        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        gl={{ antialias: false, alpha: true, powerPreference: 'high-performance', stencil: false }}
       >
         <AdaptiveDpr pixelated={false} />
         <fog attach="fog" args={[palette.bg, 32, 130]} />
+        <ambientLight intensity={isDark ? 1.4 : 1.1} />
+        <directionalLight position={[12, 18, 14]} intensity={isDark ? 1.5 : 1.1} />
         <CameraRig scroll={scroll} viewportHeight={viewportHeight} mouse={mouse} reducedMotion={reducedMotion} />
-        <InteractiveLight mouse={mouse} isDark={isDark} reducedMotion={reducedMotion} />
         <Suspense fallback={null}>
           <CyberGrid palette={palette} isDark={isDark} scroll={scroll} speedScale={speedScale} />
           <UfoVessel palette={palette} isDark={isDark} speedScale={speedScale} />

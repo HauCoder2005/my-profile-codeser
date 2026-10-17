@@ -10,9 +10,9 @@
     --c-white: 244 239 227;
     --c-black: 28 25 21;
     --c-accent: 234 88 12;
-    /* Light: a touch brighter than the paper, hairline ink border and a soft lift so cards don't vanish */
-    --panel-bg: rgb(255 253 248 / 0.78);
-    --panel-bg-hover: rgb(255 253 248 / 0.95);
+    /* Light: crisp frosted paper backdrop */
+    --panel-bg: rgb(255 253 248 / 0.88);
+    --panel-bg-hover: rgb(255 253 248 / 0.98);
     --panel-border: rgb(var(--c-black) / 0.14);
     --panel-highlight: 0 1px 2px rgb(var(--c-black) / 0.06), 0 12px 28px -16px rgb(var(--c-black) / 0.25);
     color-scheme: light;
@@ -23,11 +23,11 @@
     --c-white: 255 255 255;
     --c-black: 0 0 0;
     --c-accent: 255 106 43;
-    /* Must stay clearly visible on pure black, even on dim laptop screens (~rgb 26–36) */
-    --panel-bg: linear-gradient(180deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.1));
-    --panel-bg-hover: linear-gradient(180deg, rgb(255 255 255 / 0.18), rgb(255 255 255 / 0.13));
-    --panel-highlight: inset 0 1px 0 rgb(255 255 255 / 0.14);
-    --panel-border: transparent;
+    /* High contrast dark panel with subtle translucent depth */
+    --panel-bg: rgb(16 16 20 / 0.85);
+    --panel-bg-hover: rgb(24 24 30 / 0.92);
+    --panel-highlight: inset 0 1px 0 rgb(255 255 255 / 0.12);
+    --panel-border: rgb(255 255 255 / 0.1);
     color-scheme: dark;
   }
 
@@ -73,11 +73,17 @@
     inset: 0;
     z-index: -1;
     background: var(--panel-bg);
-    /* Stronger blur so stars behind don't compete with the text */
-    -webkit-backdrop-filter: blur(12px) saturate(120%);
-    backdrop-filter: blur(12px) saturate(120%);
+    /* Lightweight backdrop blur on desktop, disabled on mobile for 60fps smooth scrolling */
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
     pointer-events: none;
     transition: background 0.3s ease;
+  }
+  @media (max-width: 768px) {
+    .panel::before {
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+    }
   }
   .panel:hover::before {
     background: var(--panel-bg-hover);

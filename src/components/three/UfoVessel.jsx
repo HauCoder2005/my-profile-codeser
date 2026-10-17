@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const TRAIL_LENGTH = 75;
+const TRAIL_LENGTH = 45;
 
 const UfoVessel = ({ palette, isDark, speedScale = 1 }) => {
   const groupRef = useRef();
@@ -190,13 +190,11 @@ const UfoVessel = ({ palette, isDark, speedScale = 1 }) => {
           {/* Glass Cockpit Dome */}
           <mesh position={[0, 0, 0]}>
             <sphereGeometry args={[1.08, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.5]} />
-            <meshPhysicalMaterial
+            <meshStandardMaterial
               color="#80deea"
               transparent
-              opacity={0.42}
-              roughness={0.1}
-              transmission={0.6}
-              thickness={0.5}
+              opacity={0.38}
+              roughness={0.15}
               depthWrite={false}
             />
           </mesh>

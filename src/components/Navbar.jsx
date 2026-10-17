@@ -53,7 +53,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-8 h-[72px] backdrop-blur-md bg-white/60 dark:bg-black/50 border-b border-black/20 dark:border-white/20 transition-colors duration-300">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-8 h-[72px] backdrop-blur-none md:backdrop-blur-md bg-white/92 md:bg-white/60 dark:bg-black/92 md:dark:bg-black/50 border-b border-black/20 dark:border-white/20 transition-colors duration-300">
 
         {/* Logo */}
         <a
