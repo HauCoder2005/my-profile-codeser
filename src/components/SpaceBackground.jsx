@@ -3,11 +3,16 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useTexture, AdaptiveDpr } from '@react-three/drei';
 import * as THREE from 'three';
 import Rocket from './three/Rocket';
+import CyberGrid from './three/CyberGrid';
+import SpatialDust from './three/SpatialDust';
+import SpatialGyro from './three/SpatialGyro';
+import UfoVessel from './three/UfoVessel';
 import { PALETTE, useIsDark, usePrefersReducedMotion } from './three/theme';
 
 const damp = THREE.MathUtils.damp;
 
 // Shared, mutable input state read inside useFrame (no React re-renders on scroll/mouse)
+// Shared, mutable input state read inside useFrame (supports Mouse, Touch & Mobile Gyroscope)
 const useInputRefs = () => {
   const scroll = useRef(0);
   const maxScroll = useRef(0);
@@ -19,9 +24,6 @@ const useInputRefs = () => {
     let lastWidth = window.innerWidth;
     // Cached so useFrame never forces a layout read
     const measure = () => {
-      // Mobile browsers change innerHeight while scrolling (address bar showing/hiding).
-      // Only take a new height when the width changes too (rotation, window resize),
-      // otherwise the whole scene would jump on every scroll.
       if (window.innerWidth !== lastWidth) {
         lastWidth = window.innerWidth;
         viewportHeight.current = window.innerHeight;
@@ -31,18 +33,68 @@ const useInputRefs = () => {
     const resizeObserver = new ResizeObserver(measure);
     resizeObserver.observe(document.body);
     window.addEventListener('resize', measure);
+
+    // 1. Desktop cursor / pointer move
     const onMove = (e) => {
       mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
     };
+
+    // 2. Mobile touch pan
+    const onTouch = (e) => {
+      if (e.touches && e.touches.length > 0) {
+        const t = e.touches[0];
+        mouse.current.x = (t.clientX / window.innerWidth) * 2 - 1;
+        mouse.current.y = -((t.clientY / window.innerHeight) * 2 - 1);
+      }
+    };
+
+    // 3. Mobile Gyroscope / Device Orientation ("di điện thoại tới đâu thì nó xoay")
+    const onDeviceOrientation = (e) => {
+      if (e.gamma === null && e.beta === null) return;
+      const gamma = e.gamma || 0; // Left-to-right tilt [-90, 90]
+      const beta = e.beta || 0;   // Front-to-back tilt [-180, 180]
+
+      // Map gamma to -1.5..1.5 with comfortable ±25 deg tilt range
+      const gx = Math.max(-1.8, Math.min(1.8, gamma / 22));
+      // Handheld reference angle in portrait is ~48 degrees
+      const gy = Math.max(-1.8, Math.min(1.8, (beta - 48) / 22));
+
+      mouse.current.x = gx;
+      mouse.current.y = -gy;
+    };
+
+    // Auto-request iOS 13+ permission on first touch if required by Safari
+    const requestPermission = () => {
+      if (
+        typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function'
+      ) {
+        DeviceOrientationEvent.requestPermission()
+          .then((state) => {
+            if (state === 'granted') {
+              window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
+            }
+          })
+          .catch(() => {});
+      }
+    };
+
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('touchmove', onTouch, { passive: true });
+    window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
+    window.addEventListener('touchstart', requestPermission, { once: true, passive: true });
+
     return () => {
       resizeObserver.disconnect();
       window.removeEventListener('resize', measure);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('touchmove', onTouch);
+      window.removeEventListener('deviceorientation', onDeviceOrientation);
+      window.removeEventListener('touchstart', requestPermission);
     };
   }, []);
 
@@ -52,19 +104,55 @@ const useInputRefs = () => {
 // World units the camera travels per scrolled pixel: the 3D scene scrolls at ~60% of the page speed (parallax)
 const unitsPerPixel = (viewportHeight) => 27 / viewportHeight.current;
 
-// 1. Camera rig: follows the scroll position and leans toward the cursor
+// 1. Camera rig: Exaggerated 3D VR perspective camera with Mobile Gyroscope support
+// Rotating/panning according to phone tilt and cursor
 const CameraRig = ({ scroll, viewportHeight, mouse, reducedMotion }) => {
-  useFrame(({ camera }, delta) => {
+  useFrame(({ camera, size }, delta) => {
+    const isPortrait = size.width < size.height;
     const targetY = -scroll.current * unitsPerPixel(viewportHeight);
     const mx = reducedMotion ? 0 : mouse.current.x;
     const my = reducedMotion ? 0 : mouse.current.y;
 
-    camera.position.x = damp(camera.position.x, mx * 1.5, 2.5, delta);
-    camera.position.y = damp(camera.position.y, targetY + my * 1.0, 4, delta);
-    camera.rotation.y = damp(camera.rotation.y, -mx * 0.04, 2.5, delta);
-    camera.rotation.x = damp(camera.rotation.x, my * 0.03, 2.5, delta);
+    // On mobile phone portrait mode, amplify rotation for an immersive AR/VR window ("di điện thoại tới đâu thì nó xoay")
+    const rotYMultiplier = isPortrait ? 0.28 : 0.15;
+    const rotXMultiplier = isPortrait ? 0.24 : 0.12;
+    const posMultiplier = isPortrait ? 6.2 : 5.2;
+
+    const targetX = mx * posMultiplier;
+    const targetCamY = targetY + my * (isPortrait ? 4.2 : 3.4);
+    // Spatial depth: slight push into the 3D space when moving away from center
+    const targetZ = 24.5 - Math.min(Math.hypot(mx, my) * 1.8, 2.2);
+
+    camera.position.x = damp(camera.position.x, targetX, 3.0, delta);
+    camera.position.y = damp(camera.position.y, targetCamY, 3.4, delta);
+    camera.position.z = damp(camera.position.z, targetZ, 2.8, delta);
+
+    // Full 3-axis VR tilt (Yaw, Pitch, Roll)
+    camera.rotation.y = damp(camera.rotation.y, -mx * rotYMultiplier, 3.0, delta);
+    camera.rotation.x = damp(camera.rotation.x, my * rotXMultiplier, 3.0, delta);
+    camera.rotation.z = damp(camera.rotation.z, -mx * 0.04, 2.8, delta);
   });
   return null;
+};
+
+// Dynamic 3D point light following the cursor in spatial coordinates
+const InteractiveLight = ({ mouse, isDark, reducedMotion }) => {
+  const lightRef = useRef();
+  useFrame(({ camera }) => {
+    if (!lightRef.current) return;
+    const mx = reducedMotion ? 0 : mouse.current.x;
+    const my = reducedMotion ? 0 : mouse.current.y;
+    lightRef.current.position.set(camera.position.x + mx * 14, camera.position.y + my * 9, 14);
+  });
+  return (
+    <pointLight
+      ref={lightRef}
+      color="#ff6a2b"
+      intensity={isDark ? 2.8 : 1.2}
+      distance={65}
+      decay={2}
+    />
+  );
 };
 
 // 2. Twinkling starfield (custom shader: per-star size + phase). Follows the camera at 85% so it feels far away.
@@ -544,14 +632,20 @@ const SpaceBackground = () => {
   return (
     <div className="fixed inset-0 -z-50 pointer-events-none">
       <Canvas
-        camera={{ position: [0, 0, 25], fov: 60 }}
+        camera={{ position: [0, 0, 24.5], fov: 68 }}
         dpr={[1, 1.75]}
         performance={{ min: 0.5 }}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       >
         <AdaptiveDpr pixelated={false} />
+        <fog attach="fog" args={[palette.bg, 32, 130]} />
         <CameraRig scroll={scroll} viewportHeight={viewportHeight} mouse={mouse} reducedMotion={reducedMotion} />
+        <InteractiveLight mouse={mouse} isDark={isDark} reducedMotion={reducedMotion} />
         <Suspense fallback={null}>
+          <CyberGrid palette={palette} isDark={isDark} scroll={scroll} speedScale={speedScale} />
+          <UfoVessel palette={palette} isDark={isDark} speedScale={speedScale} />
+          <SpatialDust palette={palette} isDark={isDark} speedScale={speedScale} />
+          <SpatialGyro palette={palette} isDark={isDark} position={[16, 7, -10]} speedScale={speedScale} />
           <Starfield palette={palette} reducedMotion={reducedMotion} />
           <CelestialSystem palette={palette} isDark={isDark} speedScale={speedScale} />
           <Debris palette={palette} speedScale={speedScale} />

@@ -11,7 +11,7 @@ export const socials = {
 // Same order as `projects.items` in the locale files
 export const projectMeta = [
   {
-    techs: ['Next.js', 'NestJS', 'Docker', 'Redis', 'BLE Beacon', 'MinIO'],
+    techs: ['Python 3.11+', 'Docker Compose', 'ClickHouse (OLAP)', 'MySQL 8.4', 'MinIO (S3)', 'Apache Parquet', 'Playwright / HTTPX'],
     github: 'https://github.com/HauCoder2005/roombeacon-system.git',
     demo: '',
     image: '/images/roombeacon-preview.png',

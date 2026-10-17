@@ -145,22 +145,31 @@ const vi = {
     view_details: "Xem chi tiết",
     close: "Đóng",
     modal_overview: "Tổng quan",
-    modal_highlights: "Điểm nổi bật",
-    modal_architecture: "Kiến trúc kỹ thuật",
+    modal_vision: "Bài toán & Tầm nhìn",
+    modal_highlights: "Tính năng cốt lõi (Key Features)",
+    modal_architecture: "Kiến trúc hệ thống (System Architecture)",
+    view_architecture: "Bản vẽ kiến trúc (PDF)",
+    view_docs: "Tài liệu hệ thống (Docs)",
     items: [
       {
-        title: "RoomBeacon System",
-        description: "Hệ thống quản lý không gian thông minh và giám sát vị trí trong nhà sử dụng công nghệ BLE Beacon, tối ưu hóa điểm danh tự động và kiểm soát phòng học/thiết bị theo thời gian thực.",
+        title: "RoomBeacons",
+        description: "Nền tảng thu thập, xử lý và phân tích dữ liệu bất động sản cho thuê tại TP. Hồ Chí Minh. Xây dựng Data Platform toàn diện kết hợp Software & Data Engineering với Python 3.11+, ClickHouse OLAP, MySQL 8.4, MinIO và Apache Parquet, giải quyết triệt để bài toán phân tán thông tin thị trường.",
         details: {
-          tagline: "Hệ thống quản lý không gian thông minh & điểm danh tự động",
-          overview: "RoomBeacon System là giải pháp ứng dụng công nghệ Beacon để nhận diện hiện diện và tối ưu hóa việc quản lý phòng học, không gian làm việc. Hệ thống giúp tự động hóa điểm danh, theo dõi tình trạng sử dụng tài nguyên và cung cấp báo cáo phân tích trực quan.",
+          tagline: "Location-Aware Rental Discovery & Data Intelligence Platform",
+          subtags: "Multi-source Web Crawling · Data Engineering · Data Warehouse · Analytics · Machine Learning",
+          overview: "RoomBeacons là nền tảng thu thập, xử lý và phân tích dữ liệu bất động sản cho thuê tại TP. Hồ Chí Minh, kết hợp toàn diện giữa Software Engineering, Data Engineering, Data Analytics và Machine Learning.\n\nDự án giải quyết bài toán thông tin phòng trọ/nhà thuê bị phân tán trên nhiều website, thiếu đồng nhất về giá, diện tích, vị trí và thường xuyên bị lỗi thời.\n\nVòng đời dữ liệu (Data Lifecycle): Nguồn dữ liệu ➔ Thu thập đa nguồn (HTTPX / Playwright) ➔ Lưu trữ Raw Parquet trên MinIO ➔ Xử lý dữ liệu & Kiểm định chất lượng (Data Quality) ➔ Tách 2 nhánh độc lập: MySQL 8.4 (Application DB) & ClickHouse (Data Warehouse OLAP) ➔ Tìm kiếm không gian, EDA / Phân tích thị trường & Machine Learning ➔ Rental Intelligence.",
+          vision: "Thực trạng bài toán: Tin đăng bất động sản bị phân tán trên nhiều website, trùng lặp nhiều nguồn, giá cả không đồng nhất định dạng, tin ảo/hết hạn và sai lệch tọa độ địa lý.\n\nTầm nhìn (Vision): Hướng đến một nền tảng hỗ trợ người dùng tìm phòng gần địa điểm mong muốn (bán kính 2 km), lọc theo ngân sách/tiêu chí, so sánh giá tương đương, phân tích xu hướng giá theo khu vực và thời gian, gợi ý thông minh dựa trên nhu cầu cá nhân.\n\nSứ mệnh: 'From fragmented rental listings to structured rental intelligence'.",
           highlights: [
-            "Định vị và nhận diện sự hiện diện trong không gian phòng bằng tín hiệu BLE Beacon độ chính xác cao.",
-            "Tự động hóa hoàn toàn quy trình điểm danh và quản lý ra vào theo thời gian thực.",
-            "Bảng điều khiển quản trị trực quan, theo dõi trạng thái phòng học, lịch sử truy cập và mật độ sử dụng.",
-            "Hệ thống API tối ưu cho việc tích hợp mở rộng các thiết bị IoT và ứng dụng di động."
+            "Multi-source Web Crawling: Động cơ thu thập đa nguồn qua Source Adapters, tích hợp HTTPX cho web tĩnh và Playwright khi cần render JavaScript, kiểm soát Rate Limiting theo domain, incremental crawling và batch processing.",
+            "Raw Data Preservation: Lưu trữ dữ liệu gốc phân vùng theo (Source → Crawl Date → Batch) dưới định dạng Apache Parquet nén ZSTD trên MinIO Object Storage, bảo toàn lịch sử phục vụ replay và Machine Learning.",
+            "Data Quality & Validation: Chuẩn hóa giá thuê về VND/tháng, diện tích m², địa chỉ chuẩn hóa, giới hạn phạm vi TP.HCM, kiểm tra tọa độ địa lý, phát hiện dữ liệu trùng lặp và loại bỏ tin không hợp lệ.",
+            "Nearby Rental Search (Planned): Tìm kiếm phòng thuê tối ưu trong bán kính 2 km từ vị trí người dùng, tự động kiểm tra tính hợp lệ của tin đăng và sắp xếp theo giá thuê tăng dần.",
+            "Rental Price Assessment & Analytics: Phân tích và đánh giá giá thuê dựa trên khu vực, loại hình, diện tích, tiện ích và giá rao thuê của các bất động sản tương đương trên ClickHouse OLAP.",
+            "Smart Recommendation (Planned): Gợi ý bất động sản thông minh theo vị trí, ngân sách, diện tích và tiện ích (giai đoạn đầu ưu tiên Rule-based, tiếp nối bởi Machine Learning Ranking)."
           ],
-          architecture: "Xây dựng với kiến trúc hướng dịch vụ microservices, backend hiệu năng cao với NestJS kết hợp cache Redis để xử lý dữ liệu realtime và MinIO lưu trữ tệp tin phân tán."
+          architecture: "RoomBeacons sử dụng kiến trúc Data Platform phân tách hai luồng xử lý độc lập từ Raw Parquet trên MinIO:\n• Ingestion Engine: Python Crawler Manager điều phối các Source Adapters thu thập đa nguồn, xuất dữ liệu theo Raw Data Contract chuẩn hóa thành các file Parquet nén ZSTD lưu lên MinIO.\n• Application Processing: Pipeline đọc Raw Parquet, làm sạch, chuẩn hóa, lọc tin trùng lặp và ghi vào MySQL 8.4 (Application OLTP) phục vụ tìm kiếm bất động sản.\n• Warehouse Processing: Pipeline độc lập đọc lịch sử từ Parquet, kiểm tra Data Quality, theo dõi biến động giá và nạp vào ClickHouse (OLAP Data Warehouse) phục vụ EDA và Machine Learning.\n• Infrastructure: Đóng gói toàn bộ services bằng Docker Engine & Docker Compose V2, vận hành tối ưu tài nguyên trên Ubuntu Linux.",
+          architectureUrl: "https://github.com/HauCoder2005/roombeacon-system/blob/main/architecture/RoomBeacons_Architecture.pdf",
+          docsUrl: "https://github.com/HauCoder2005/roombeacon-system/blob/main/docs"
         }
       },
       {

@@ -145,22 +145,31 @@ const en = {
     view_details: "View details",
     close: "Close",
     modal_overview: "Overview",
-    modal_highlights: "Key Highlights",
-    modal_architecture: "Technical Architecture",
+    modal_vision: "Business Problem & Vision",
+    modal_highlights: "Key Features",
+    modal_architecture: "System Architecture",
+    view_architecture: "Architecture Blueprint (PDF)",
+    view_docs: "System Documentation (Docs)",
     items: [
       {
-        title: "RoomBeacon System",
-        description: "Smart room and indoor location management system using BLE Beacon technology, optimizing real-time automated attendance and classroom/facility monitoring.",
+        title: "RoomBeacons",
+        description: "Rental housing data platform for Ho Chi Minh City combining Software & Data Engineering with Python 3.11+, ClickHouse OLAP, MySQL 8.4, MinIO, and Apache Parquet. Resolves fragmented rental market data from multi-source crawling to exploratory analytics and machine learning.",
         details: {
-          tagline: "Smart space management & automated attendance system",
-          overview: "RoomBeacon System is an IoT-enabled solution leveraging BLE Beacons for indoor presence detection and facility management. It automates attendance tracking, monitors room resource occupancy, and provides real-time administrative analytics.",
+          tagline: "Location-Aware Rental Discovery & Data Intelligence Platform",
+          subtags: "Multi-source Web Crawling · Data Engineering · Data Warehouse · Analytics · Machine Learning",
+          overview: "RoomBeacons is a rental data platform focused on Ho Chi Minh City, bridging Software Engineering, Data Engineering, Data Analytics, and Machine Learning.\n\nThe project addresses fragmented, duplicate, and stale rental listings across disparate websites by establishing a unified data pipeline.\n\nData Lifecycle: Data Sources ➔ Multi-source Ingestion (HTTPX / Playwright) ➔ Raw Parquet on MinIO ➔ Data Processing & Quality Validation ➔ Dual-pipeline split: MySQL 8.4 (Application DB) & ClickHouse (Data Warehouse OLAP) ➔ Spatial Rental Search, EDA / Market Analytics & Machine Learning ➔ Rental Intelligence.",
+          vision: "Business Problem: Rental listings are scattered across dozens of platforms with heavy duplicates, inconsistent pricing, invalid/expired ads, and inaccurate coordinates.\n\nVision: Deliver a platform empowering tenants to find rentals within a 2 km radius, filter by budget/criteria, compare fair market prices, analyze neighborhood trends over time, and receive personalized recommendations.\n\nMission: 'From fragmented rental listings to structured rental intelligence'.",
           highlights: [
-            "Indoor micro-positioning and presence verification using high-precision BLE Beacon signals.",
-            "Automated real-time attendance logging and room access monitoring.",
-            "Intuitive administrative dashboard displaying room occupancy rates, history, and usage density.",
-            "Scalable API architecture designed for seamless IoT device integration and mobile clients."
+            "Multi-source Web Crawling: Modular crawling engine with Source Adapters, leveraging HTTPX for fast HTTP requests and Playwright for dynamic JavaScript rendering, per-domain rate limiting, and batch processing.",
+            "Raw Data Preservation: Raw datasets stored as ZSTD-compressed Apache Parquet on MinIO Object Storage partitioned by (Source → Crawl Date → Batch), preserving historical data for re-processing and ML modeling.",
+            "Data Quality & Validation: Rigorous transformation rules normalizing prices to VND/month, areas to m², address cleansing constrained to HCMC, coordinate verification, deduplication, and invalid listing filtering.",
+            "Nearby Rental Search (Planned): Spatial proximity discovery within a default 2 km radius from any selected location, filtering verified listings and ranking by ascending rental price.",
+            "Rental Price Assessment & Analytics: Market analytics on ClickHouse Data Warehouse, benchmarking rental prices against comparable nearby properties and estimating fair value by district.",
+            "Smart Recommendation (Planned): Multi-criteria recommendation engine matching user location, budget, size, and amenities (Rule-based initially, transitioning to ML ranking)."
           ],
-          architecture: "Engineered with microservices architecture: high-throughput NestJS backend, Redis in-memory cache for real-time telemetry, and MinIO for distributed asset storage."
+          architecture: "RoomBeacons employs an end-to-end Data Platform architecture splitting two independent processing pipelines from Raw Parquet on MinIO:\n• Ingestion Engine: Python Crawler Manager orchestrating Source Adapters, enforcing the Raw Data Contract, and streaming ZSTD-compressed Parquet files to MinIO.\n• Application Processing: Pipeline reading Raw Parquet, cleaning, normalizing, deduplicating, and persisting application records to MySQL 8.4 (Application OLTP) for real-time rental search.\n• Warehouse Processing: Dedicated pipeline processing historical observations, validating data quality, tracking price fluctuations, and loading analytical datasets into ClickHouse (OLAP Data Warehouse) for EDA and ML.\n• Infrastructure: Services containerized with Docker Engine & Docker Compose V2, running as lightweight containers on Ubuntu Linux.",
+          architectureUrl: "https://github.com/HauCoder2005/roombeacon-system/blob/main/architecture/RoomBeacons_Architecture.pdf",
+          docsUrl: "https://github.com/HauCoder2005/roombeacon-system/blob/main/docs"
         }
       },
       {

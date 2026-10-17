@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, CheckCircle2, ChevronRight, Cpu, Layers, X } from 'lucide-react';
+import { ArrowUpRight, BookOpen, CheckCircle2, ChevronRight, Compass, Cpu, FileText, Layers, X } from 'lucide-react';
 import { FaGithub as Github } from 'react-icons/fa';
 import { useLanguage } from '../contexts/LanguageContext';
 import { projectMeta } from '../config/site';
@@ -194,6 +194,11 @@ const Projects = () => {
                     {selectedProject.details.tagline}
                   </p>
                 )}
+                {selectedProject.details?.subtags && (
+                  <p className="font-mono text-xs opacity-60 tracking-wider uppercase">
+                    {selectedProject.details.subtags}
+                  </p>
+                )}
               </div>
 
               {/* Live Server Mockup in Modal */}
@@ -215,10 +220,23 @@ const Projects = () => {
                   <Layers size={16} />
                   {t('projects.modal_overview') || 'TỔNG QUAN'}
                 </h4>
-                <p className="text-base sm:text-lg leading-relaxed opacity-90 text-justify">
+                <p className="text-base sm:text-lg leading-relaxed opacity-90 whitespace-pre-line text-justify">
                   {selectedProject.details?.overview || selectedProject.description}
                 </p>
               </div>
+
+              {/* Business Problem & Vision */}
+              {selectedProject.details?.vision && (
+                <div className="space-y-3">
+                  <h4 className="font-mono text-xs uppercase tracking-widest text-accent font-bold flex items-center gap-2">
+                    <Compass size={16} />
+                    {t('projects.modal_vision') || 'BÀI TOÁN & TẦM NHÌN'}
+                  </h4>
+                  <p className="text-sm sm:text-base leading-relaxed opacity-85 whitespace-pre-line text-justify">
+                    {selectedProject.details.vision}
+                  </p>
+                </div>
+              )}
 
               {/* Key Highlights */}
               {selectedProject.details?.highlights?.length > 0 && (
@@ -245,7 +263,7 @@ const Projects = () => {
                     <Cpu size={16} />
                     {t('projects.modal_architecture') || 'KIẾN TRÚC KỸ THUẬT'}
                   </h4>
-                  <div className="p-4 border border-black/15 dark:border-white/15 bg-black/[0.02] dark:bg-white/[0.03] text-sm sm:text-base leading-relaxed opacity-90 font-mono">
+                  <div className="p-4 sm:p-5 border border-black/15 dark:border-white/15 bg-black/[0.02] dark:bg-white/[0.03] text-sm sm:text-base leading-relaxed opacity-90 font-mono whitespace-pre-line">
                     {selectedProject.details.architecture}
                   </div>
                 </div>
@@ -288,6 +306,28 @@ const Projects = () => {
                     >
                       {t('projects.demo')}
                       <ArrowUpRight size={18} />
+                    </a>
+                  )}
+                  {selectedProject.details?.architectureUrl && (
+                    <a
+                      href={selectedProject.details.architectureUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-3 border border-accent/40 bg-accent/5 text-accent font-mono text-xs sm:text-sm font-bold uppercase tracking-wider hover:bg-accent hover:text-white transition-colors duration-300"
+                    >
+                      <FileText size={16} />
+                      {t('projects.view_architecture') || 'Bản vẽ kiến trúc (PDF)'}
+                    </a>
+                  )}
+                  {selectedProject.details?.docsUrl && (
+                    <a
+                      href={selectedProject.details.docsUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-3 border border-black/30 dark:border-white/30 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300"
+                    >
+                      <BookOpen size={16} />
+                      {t('projects.view_docs') || 'Tài liệu (Docs)'}
                     </a>
                   )}
                 </div>
