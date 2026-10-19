@@ -6,10 +6,10 @@ const SectionHeading = ({ title, align = 'left' }) => {
   const centered = align === 'center';
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
+      initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      viewport={{ once: true, margin: '0px 0px -40px 0px' }}
+      transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
       className={`mb-16 flex flex-col ${centered ? 'items-center text-center' : 'items-start'}`}
     >
       <h2 className="text-4xl md:text-6xl font-mono font-bold uppercase">
@@ -19,7 +19,7 @@ const SectionHeading = ({ title, align = 'left' }) => {
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
         className={`h-1 w-24 bg-black dark:bg-white mt-6 ${centered ? 'origin-center' : 'origin-left'}`}
       />
     </motion.div>

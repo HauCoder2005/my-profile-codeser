@@ -16,10 +16,10 @@ const Inspiration = () => {
         {/* ROOT NODE: Terry A. Davis */}
         <Panel
           as={motion.figure}
-          initial={{ opacity: 0, y: -10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
-          transition={{ duration: 0.4 }}
+          initial={{ opacity: 0, y: 20, filter: 'blur(5px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="p-6 sm:p-7 flex flex-col sm:flex-row items-center gap-6 max-w-xl w-full"
         >
           <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 border border-black/20 dark:border-white/20 p-1 bg-white dark:bg-[#121212] shadow-sm">
@@ -70,10 +70,10 @@ const Inspiration = () => {
             <Panel
               as={motion.blockquote}
               key={`philosophy-card-${i}`}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.1 }}
-              transition={{ duration: 0.4, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, y: 22, filter: 'blur(5px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
+              transition={{ duration: 0.8, delay: i * 0.14, ease: [0.16, 1, 0.3, 1] }}
               className="p-6 sm:p-7 flex flex-col justify-between"
             >
               <div className="space-y-4">

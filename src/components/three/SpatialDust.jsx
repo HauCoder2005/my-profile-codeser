@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const DUST_COUNT = 150;
+const DUST_COUNT = 220;
 
 const dustVertex = `
   attribute vec3 aVelocity;

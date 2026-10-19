@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import Rocket from './three/Rocket';
 import CyberGrid from './three/CyberGrid';
 import SpatialDust from './three/SpatialDust';
-import SpatialGyro from './three/SpatialGyro';
 import { PALETTE, useIsDark, usePrefersReducedMotion } from './three/theme';
 
 const damp = THREE.MathUtils.damp;
@@ -32,17 +31,39 @@ const useInputRefs = () => {
 
     let isTouching = false;
     let touchEndTimer = null;
+    let decayTimer = null;
+    let hasGyro = false;
+
+    const isInsideArcade = (e) => {
+      if (typeof window !== 'undefined' && window.__arcadeActive) return true;
+      const target = e?.target;
+      if (target && typeof target.closest === 'function') {
+        return Boolean(target.closest('#arcade') || target.closest('[data-arcade]'));
+      }
+      return false;
+    };
 
     // 1. Desktop cursor / pointer move
     const onMove = (e) => {
+      if (isInsideArcade(e)) {
+        mouse.current.x *= 0.88;
+        mouse.current.y *= 0.88;
+        return;
+      }
       mouse.current.x = (e.clientX / (viewportWidth.current || window.innerWidth)) * 2 - 1;
       mouse.current.y = -((e.clientY / (viewportHeight.current || window.innerHeight)) * 2 - 1);
     };
 
     // 2. Mobile touch pan (joystick / touch drag)
     const onTouch = (e) => {
+      if (isInsideArcade(e)) {
+        mouse.current.x *= 0.88;
+        mouse.current.y *= 0.88;
+        return;
+      }
       isTouching = true;
       clearTimeout(touchEndTimer);
+      clearInterval(decayTimer);
       if (e.touches && e.touches.length > 0) {
         const t = e.touches[0];
         mouse.current.x = (t.clientX / (viewportWidth.current || window.innerWidth)) * 2 - 1;
@@ -52,9 +73,21 @@ const useInputRefs = () => {
 
     const onTouchEnd = () => {
       clearTimeout(touchEndTimer);
+      clearInterval(decayTimer);
       touchEndTimer = setTimeout(() => {
         isTouching = false;
-      }, 500);
+        if (!hasGyro) {
+          decayTimer = setInterval(() => {
+            mouse.current.x *= 0.94;
+            mouse.current.y *= 0.94;
+            if (Math.abs(mouse.current.x) < 0.01 && Math.abs(mouse.current.y) < 0.01) {
+              mouse.current.x = 0;
+              mouse.current.y = 0;
+              clearInterval(decayTimer);
+            }
+          }, 16);
+        }
+      }, 300);
     };
 
     // 3. Mobile Gyroscope / Device Orientation
@@ -62,8 +95,9 @@ const useInputRefs = () => {
     let baseGamma = null;
 
     const onDeviceOrientation = (e) => {
-      // When user is actively touching/dragging, let touch drive mouse smoothly without gyro fighting
-      if (isTouching) return;
+      if (e.gamma !== null || e.beta !== null) hasGyro = true;
+      // When user is actively touching or arcade is active, let background float freely without gyro shaking
+      if (isTouching || (typeof window !== 'undefined' && window.__arcadeActive)) return;
       if (e.gamma === null && e.beta === null) return;
       const gamma = e.gamma || 0; // Left-to-right tilt [-90, 90]
       const beta = e.beta || 0;   // Front-to-back tilt [-180, 180]
@@ -121,6 +155,7 @@ const useInputRefs = () => {
 
     return () => {
       clearTimeout(touchEndTimer);
+      clearInterval(decayTimer);
       resizeObserver.disconnect();
       window.removeEventListener('resize', measure);
       window.removeEventListener('scroll', onScroll);
@@ -143,45 +178,63 @@ const useInputRefs = () => {
 // World units the camera travels per scrolled pixel: the 3D scene scrolls at ~60% of the page speed (parallax)
 const unitsPerPixel = (viewportHeight) => 27 / viewportHeight.current;
 
-// 1. Camera rig: Smooth desktop mouse parallax & comfortable Mobile Gyroscope VR camera
-const CameraRig = ({ scroll, viewportHeight, mouse, reducedMotion }) => {
+// 1. Camera rig: Smooth desktop mouse parallax & comfortable Mobile Gyroscope VR camera with autonomous float
+const CameraRig = ({ scroll, viewportHeight, mouse, reducedMotion, speedScale = 1 }) => {
+  const floatTime = useRef(0);
+
   useFrame(({ camera, size }, delta) => {
     const isPortrait = size.width < size.height;
     const targetY = -scroll.current * unitsPerPixel(viewportHeight);
-    const mx = reducedMotion ? 0 : mouse.current.x;
-    const my = reducedMotion ? 0 : mouse.current.y;
+    const isArcadeActive = Boolean(typeof window !== 'undefined' && window.__arcadeActive);
+    const mx = (reducedMotion || isArcadeActive) ? 0 : mouse.current.x;
+    const my = (reducedMotion || isArcadeActive) ? 0 : mouse.current.y;
+
+    floatTime.current += delta * (reducedMotion ? 0.25 : speedScale);
+    const ft = floatTime.current;
+
+    // Organic zero-G deep space autonomous floating drift (multi-frequency Lissajous curves)
+    const floatX = Math.sin(ft * 0.42) * 1.5 + Math.cos(ft * 0.21) * 0.8;
+    const floatY = Math.cos(ft * 0.36) * 1.2 + Math.sin(ft * 0.17) * 0.6;
+    const floatRotY = Math.sin(ft * 0.26) * 0.025;
+    const floatRotX = Math.cos(ft * 0.28) * 0.018;
+    const floatRotZ = Math.sin(ft * 0.22) * 0.015;
 
     if (isPortrait) {
-      // Mobile portrait AR/VR window: gentle, smooth, comfortable movement (no dizzying flips)
-      const rotYMultiplier = 0.10; // ~5.7 deg max tilt
-      const rotXMultiplier = 0.08; // ~4.6 deg max tilt
-      const posMultiplier = 2.0;   // gentle 2.0 units
-      const dampRate = 2.5;
+      // Mobile portrait: comfortable, immersive viewport parallax + autonomous float
+      const rotYMultiplier = 0.12; // ~6.9 deg max tilt
+      const rotXMultiplier = 0.09; // ~5.1 deg max tilt
+      const posMultiplier = 2.8;   // comfortable 2.8 units
+      const dampRate = 2.4;
 
-      const targetX = mx * posMultiplier;
-      const targetCamY = targetY + my * 1.2;
+      const targetX = mx * posMultiplier + floatX * 0.7;
+      const targetCamY = targetY + my * 1.6 + floatY * 0.7;
       const targetZ = 24.5;
 
       camera.position.x = damp(camera.position.x, targetX, dampRate, delta);
       camera.position.y = damp(camera.position.y, targetCamY, dampRate, delta);
       camera.position.z = damp(camera.position.z, targetZ, dampRate, delta);
 
-      camera.rotation.y = damp(camera.rotation.y, -mx * rotYMultiplier, dampRate, delta);
-      camera.rotation.x = damp(camera.rotation.x, my * rotXMultiplier, dampRate, delta);
-      camera.rotation.z = damp(camera.rotation.z, 0, dampRate, delta); // no roll tilt
+      camera.rotation.y = damp(camera.rotation.y, -mx * rotYMultiplier + floatRotY, dampRate, delta);
+      camera.rotation.x = damp(camera.rotation.x, my * rotXMultiplier + floatRotX, dampRate, delta);
+      camera.rotation.z = damp(camera.rotation.z, floatRotZ, dampRate, delta);
     } else {
-      // Desktop cursor: buttery smooth, subtle cinematic parallax with zero hitching
-      const targetX = mx * 1.6;
-      const targetCamY = targetY + my * 0.8;
-      const dampRate = 2.2;
+      // Desktop cursor: buttery smooth, cinematic parallax + autonomous float
+      const posMultiplier = 3.6;
+      const rotYMultiplier = 0.13;
+      const rotXMultiplier = 0.08;
+      const dampRate = 2.4;
+
+      const targetX = mx * posMultiplier + floatX;
+      const targetCamY = targetY + my * 1.5 + floatY;
+      const targetZ = 24.5;
 
       camera.position.x = damp(camera.position.x, targetX, dampRate, delta);
       camera.position.y = damp(camera.position.y, targetCamY, dampRate, delta);
-      camera.position.z = damp(camera.position.z, 24.5, dampRate, delta);
+      camera.position.z = damp(camera.position.z, targetZ, dampRate, delta);
 
-      camera.rotation.y = damp(camera.rotation.y, -mx * 0.06, dampRate, delta);
-      camera.rotation.x = damp(camera.rotation.x, my * 0.04, dampRate, delta);
-      camera.rotation.z = damp(camera.rotation.z, 0, dampRate, delta);
+      camera.rotation.y = damp(camera.rotation.y, -mx * rotYMultiplier + floatRotY, dampRate, delta);
+      camera.rotation.x = damp(camera.rotation.x, my * rotXMultiplier + floatRotX, dampRate, delta);
+      camera.rotation.z = damp(camera.rotation.z, floatRotZ, dampRate, delta);
     }
   });
   return null;
@@ -250,8 +303,8 @@ const Starfield = ({ palette, reducedMotion, speedScale = 1 }) => {
     const points = pointsRef.current;
     if (!points) return;
     points.position.y = camera.position.y * 0.85;
-    points.rotation.y += delta * 0.012 * speed;
-    points.rotation.x += delta * 0.004 * speed;
+    points.rotation.y += delta * 0.035 * speed;
+    points.rotation.x += delta * 0.015 * speed;
   });
 
   return (
@@ -286,7 +339,7 @@ const WireframeSpaceship = ({ palette, config, centerRef, speedScale }) => {
     const angle = t * speed + orbitOffset;
     return target.set(
       Math.sin(angle) * radius + c.x,
-      Math.cos(t * Math.abs(speed) * 0.5 + orbitOffset) * 5 + yOffset + c.y,
+      Math.cos(t * Math.abs(speed) * 0.6 + orbitOffset) * 6 + yOffset + c.y,
       Math.cos(angle) * radius + c.z
     );
   };
@@ -296,10 +349,10 @@ const WireframeSpaceship = ({ palette, config, centerRef, speedScale }) => {
     const group = groupRef.current;
     if (!group) return;
     pathAt(time.current, group.position);
-    // Nose points along the flight path, then bank for a bit of drama
+    // Nose points along the flight path, then bank for dynamic space flight
     group.lookAt(pathAt(time.current + 0.1, ahead));
     group.rotateZ(bankAngle);
-    if (fireRef.current) fireRef.current.scale.y = 1 + Math.sin(time.current * 12) * 0.25;
+    if (fireRef.current) fireRef.current.scale.y = 1 + Math.sin(time.current * 16) * 0.35;
   });
 
   return (
@@ -409,9 +462,9 @@ const EarthGlobe = ({ palette, isDark, radius }) => {
 // 5. Sun + Earth + Moon + alien bodies. Placed top-right of the hero (peeking around the portrait)
 //    so it never sits behind the headline, then scrolls away with the camera.
 const ALIENS = [
-  { type: 'dodecahedron', radius: 35, speed: 0.03, yOffset: 8, rotSpeed: [0.6, 1.2, 0.3] },
-  { type: 'spaceship', radius: 42, speed: 0.05, yOffset: -10, orbitOffset: 0, bankAngle: -Math.PI / 4 },
-  { type: 'octahedron', radius: 30, speed: 0.04, yOffset: 15, rotSpeed: [1.2, 0.6, 0.6] },
+  { type: 'dodecahedron', radius: 28, speed: 0.18, yOffset: 7, rotSpeed: [0.9, 1.4, 0.6] },
+  { type: 'spaceship', radius: 36, speed: 0.24, yOffset: -8, orbitOffset: 0, bankAngle: -Math.PI / 4 },
+  { type: 'octahedron', radius: 24, speed: 0.20, yOffset: 12, rotSpeed: [1.4, 0.8, 0.9] },
 ];
 
 // Soft radial-gradient texture for cheap glow sprites (a full-screen bloom pass was ~6x slower)
@@ -442,17 +495,16 @@ const Glow = ({ color, scale, opacity, isDark }) => (
   </sprite>
 );
 
-const EARTH_ORBIT = 12;
+const EARTH_ORBIT = 13.5;
 const SUN_DEPTH = -30;
-const SUN_LOOP_SECONDS = 45; // one lap around the screen
-const SUN_START_ANGLE = Math.PI * 0.75; // start near the top-left, then travel clockwise
+const SUN_LOOP_SECONDS = 32; // visible and lively orbit across the sky
+const SUN_START_ANGLE = Math.PI * 0.75;
 
 const CelestialSystem = ({ palette, isDark, speedScale }) => {
   const { size } = useThree();
   const aspect = size.width / size.height;
 
-  // The sun travels a wide loop around the whole screen and follows the camera as you scroll,
-  // so it (with Earth, Moon and the orbiting bodies) drifts past every section.
+  // The sun travels a wide loop around the whole screen and follows the camera with depth parallax lag
   const center = useMemo(() => new THREE.Vector3(), []);
   const centerRef = useRef(center);
 
@@ -467,36 +519,47 @@ const CelestialSystem = ({ palette, isDark, speedScale }) => {
     time.current += step;
     const t = time.current;
 
-    // Visible half-size of the screen at the sun's depth; the loop covers most of it
+    // Visible half-size of the screen at the sun's depth
     const halfHeight = Math.tan(Math.PI / 6) * (camera.position.z - SUN_DEPTH);
     const halfWidth = halfHeight * aspect;
     const a = SUN_START_ANGLE - (t / SUN_LOOP_SECONDS) * Math.PI * 2;
+
+    // True 3D depth parallax relative to camera:
+    // camera.position.x * 0.35 gives 65% depth parallax separation from camera
+    // camera.position.y * 0.85 gently drifts past all sections as you scroll
     center.set(
-      camera.position.x + Math.cos(a) * halfWidth * 0.8,
-      camera.position.y + Math.sin(a) * halfHeight * 0.7 + Math.sin(a * 2) * halfHeight * 0.08,
+      camera.position.x * 0.35 + Math.cos(a) * halfWidth * 0.72 + Math.sin(t * 0.22) * 2.5,
+      camera.position.y * 0.85 + Math.sin(a) * halfHeight * 0.65 + Math.cos(t * 0.18) * 2.0,
       SUN_DEPTH
     );
 
     if (sunRef.current) {
       sunRef.current.position.copy(center);
-      // Smaller on narrow (portrait) screens so it doesn't swallow the text
-      sunRef.current.scale.setScalar(aspect < 1 ? 0.55 : 1);
-      sunRef.current.rotation.y += step * 0.12;
-      sunRef.current.rotation.x += step * 0.03;
+      // Gentle breathing scale and lively multi-axis wireframe spin
+      const baseScale = (aspect < 1 ? 0.6 : 1.0) * (1 + Math.sin(t * 1.5) * 0.03);
+      sunRef.current.scale.setScalar(baseScale);
+      sunRef.current.rotation.y += step * 0.22;
+      sunRef.current.rotation.x += step * 0.07;
+      sunRef.current.rotation.z += step * 0.04;
     }
 
     let ex = 0, ey = 0, ez = 0;
     if (earthRef.current) {
-      ex = center.x + Math.sin(t * 0.1) * EARTH_ORBIT;
-      ey = center.y + Math.sin(t * 0.1) * 5;
-      ez = center.z + Math.cos(t * 0.1) * EARTH_ORBIT;
+      ex = center.x + Math.sin(t * 0.24) * EARTH_ORBIT;
+      ey = center.y + Math.cos(t * 0.2) * 5.5;
+      ez = center.z + Math.cos(t * 0.24) * EARTH_ORBIT;
       earthRef.current.position.set(ex, ey, ez);
-      earthRef.current.rotation.y += step * 0.3;
+      earthRef.current.rotation.y += step * 0.55;
+      earthRef.current.rotation.x = Math.sin(t * 0.15) * 0.18;
     }
 
     if (moonRef.current) {
-      moonRef.current.position.set(ex + Math.sin(t * 0.5) * 2.2, ey - Math.cos(t * 0.5) * 0.5, ez + Math.cos(t * 0.5) * 2.2);
-      moonRef.current.rotation.y += step * 0.6;
+      moonRef.current.position.set(
+        ex + Math.sin(t * 1.1) * 2.6,
+        ey + Math.sin(t * 0.85) * 0.8,
+        ez + Math.cos(t * 1.1) * 2.6
+      );
+      moonRef.current.rotation.y += step * 1.1;
     }
 
     alienRefs.current.forEach((mesh, i) => {
@@ -504,7 +567,7 @@ const CelestialSystem = ({ palette, isDark, speedScale }) => {
       if (!mesh || conf.type === 'spaceship') return;
       mesh.position.set(
         center.x + Math.sin(t * conf.speed + i * 10) * conf.radius,
-        center.y + Math.cos(t * conf.speed * 0.5 + i * 10) * 5 + conf.yOffset,
+        center.y + Math.cos(t * conf.speed * 0.5 + i * 10) * 6 + conf.yOffset,
         center.z + Math.cos(t * conf.speed + i * 10) * conf.radius
       );
       mesh.rotation.x += step * conf.rotSpeed[0];
@@ -575,35 +638,42 @@ const DEBRIS_GEOMETRIES = [
 const Debris = ({ palette, speedScale }) => {
   const groupRef = useRef();
   const time = useRef(0);
-  const items = useMemo(() => Array.from({ length: 18 }, (_, i) => ({
+  const items = useMemo(() => Array.from({ length: 24 }, (_, i) => ({
     geometry: DEBRIS_GEOMETRIES[i % DEBRIS_GEOMETRIES.length],
     side: i % 2 === 0 ? 1 : -1,
-    edge: 0.88 + Math.random() * 0.15, // share of the half screen width: hugs the edges
-    y: -28 - i * 11 - Math.random() * 6,
-    z: -6 - Math.random() * 18,
-    scale: 0.6 + Math.random() * 1.1,
-    spin: [(Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.3],
-    // Free drift: a slow Lissajous loop with its own speed and phase
-    drift: [1.2 + Math.random() * 1.5, 1.5 + Math.random() * 2],
-    driftSpeed: [0.08 + Math.random() * 0.1, 0.06 + Math.random() * 0.08],
+    edge: 0.52 + Math.random() * 0.42, // comfortably placed in margin windows
+    y: -18 - i * 9.5 - Math.random() * 5,
+    z: -4 - Math.random() * 20,
+    scale: 0.7 + Math.random() * 1.1,
+    spin: [
+      (Math.random() > 0.5 ? 1 : -1) * (0.5 + Math.random() * 0.8),
+      (Math.random() > 0.5 ? 1 : -1) * (0.6 + Math.random() * 0.9),
+      (Math.random() > 0.5 ? 1 : -1) * (0.3 + Math.random() * 0.5),
+    ],
+    // Free drift: 3D Lissajous floating motion
+    drift: [2.5 + Math.random() * 2.5, 2.8 + Math.random() * 2.8, 1.8 + Math.random() * 1.8],
+    driftSpeed: [0.32 + Math.random() * 0.32, 0.26 + Math.random() * 0.28, 0.2 + Math.random() * 0.25],
     phase: Math.random() * Math.PI * 2,
   })), []);
 
-  useFrame(({ size }, delta) => {
+  useFrame(({ size, camera }, delta) => {
     const group = groupRef.current;
     if (!group) return;
     const step = delta * speedScale;
     time.current += step;
     const t = time.current;
     const aspect = size.width / size.height;
+
+    // React to camera horizontal motion with gentle depth parallax
+    const camLagX = camera.position.x * 0.22;
+
     group.children.forEach((mesh, i) => {
       const item = items[i];
-      // Half the visible width at this depth (camera at z=25, fov 60)
       const halfWidth = Math.tan(Math.PI / 6) * (25 - item.z) * aspect;
       mesh.position.set(
-        item.side * halfWidth * item.edge + Math.sin(t * item.driftSpeed[0] + item.phase) * item.drift[0],
-        item.y + Math.sin(t * item.driftSpeed[1] + item.phase * 1.7) * item.drift[1],
-        item.z
+        item.side * halfWidth * item.edge + Math.sin(t * item.driftSpeed[0] + item.phase) * item.drift[0] + camLagX,
+        item.y + Math.sin(t * item.driftSpeed[1] + item.phase * 1.6) * item.drift[1],
+        item.z + Math.cos(t * item.driftSpeed[2] + item.phase) * item.drift[2]
       );
       mesh.rotation.x += item.spin[0] * step;
       mesh.rotation.y += item.spin[1] * step;
@@ -615,7 +685,7 @@ const Debris = ({ palette, speedScale }) => {
     <group ref={groupRef}>
       {items.map((item, i) => (
         <mesh key={i} geometry={item.geometry} scale={item.scale}>
-          <meshBasicMaterial color={palette.fg} wireframe transparent opacity={0.18} />
+          <meshBasicMaterial color={palette.fg} wireframe transparent opacity={0.22} />
         </mesh>
       ))}
     </group>
@@ -625,17 +695,24 @@ const Debris = ({ palette, speedScale }) => {
 // 7. Ringed planet waiting at the bottom of the page (next to the contact section)
 const RingedPlanet = ({ palette, isDark, speedScale, maxScroll, viewportHeight }) => {
   const ref = useRef();
+  const time = useRef(0);
   const { size } = useThree();
   const isPortrait = size.width < size.height;
-  // Left edge of the screen at the planet's depth (camera z=25 -> planet z=-22)
-  const x = -Math.tan(Math.PI / 6) * 47 * (size.width / size.height) * (isPortrait ? 0.95 : 0.75);
+  const baseX = -Math.tan(Math.PI / 6) * 47 * (size.width / size.height) * (isPortrait ? 0.92 : 0.72);
 
   useFrame((_, delta) => {
     const planet = ref.current;
     if (!planet) return;
-    // Sit just below the camera's final resting point, on the left side
-    planet.position.set(x, -maxScroll.current * unitsPerPixel(viewportHeight) - 6, -22);
-    planet.rotation.y += delta * 0.08 * speedScale;
+    const s = delta * speedScale;
+    time.current += s;
+    const t = time.current;
+    const targetY = -maxScroll.current * unitsPerPixel(viewportHeight) - 6;
+    planet.position.set(
+      baseX + Math.sin(t * 0.35) * 2.0,
+      targetY + Math.cos(t * 0.28) * 1.6,
+      -22 + Math.sin(t * 0.22) * 1.8
+    );
+    planet.rotation.y += s * 0.16;
   });
 
   return (
@@ -674,10 +751,9 @@ const SpaceBackground = () => {
         <fog attach="fog" args={[palette.bg, 32, 130]} />
         <ambientLight intensity={isDark ? 1.4 : 1.1} />
         <directionalLight position={[12, 18, 14]} intensity={isDark ? 1.5 : 1.1} />
-        <CameraRig scroll={scroll} viewportHeight={viewportHeight} mouse={mouse} reducedMotion={reducedMotion} />
+        <CameraRig scroll={scroll} viewportHeight={viewportHeight} mouse={mouse} reducedMotion={reducedMotion} speedScale={speedScale} />
         <CyberGrid palette={palette} isDark={isDark} scroll={scroll} speedScale={speedScale} />
         <SpatialDust palette={palette} isDark={isDark} speedScale={speedScale} />
-        <SpatialGyro palette={palette} isDark={isDark} position={[16, 7, -10]} speedScale={speedScale} />
         <Starfield palette={palette} reducedMotion={reducedMotion} speedScale={speedScale} />
         <CelestialSystem palette={palette} isDark={isDark} speedScale={speedScale} />
         <Debris palette={palette} speedScale={speedScale} />

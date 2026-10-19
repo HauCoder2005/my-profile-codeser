@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useIsDark, usePrefersReducedMotion } from './three/theme';
 import { GAMES } from './arcade/games';
@@ -133,6 +134,7 @@ const TerminalArcade = () => {
   };
 
   const handlePointerDown = (event) => {
+    window.__arcadeActive = true;
     try {
       event.currentTarget.setPointerCapture(event.pointerId);
     } catch {
@@ -149,6 +151,9 @@ const TerminalArcade = () => {
     } catch {
       // ignore
     }
+    if (hud.phase !== 'playing') {
+      window.__arcadeActive = false;
+    }
   };
 
   const handleKey = (event) => {
@@ -157,13 +162,37 @@ const TerminalArcade = () => {
     game.input(stateRef.current, { type: 'press' });
   };
 
+  useEffect(() => {
+    if (hud.phase === 'playing') {
+      window.__arcadeActive = true;
+    } else {
+      window.__arcadeActive = false;
+    }
+    return () => {
+      window.__arcadeActive = false;
+    };
+  }, [hud.phase]);
+
   const { phase, score, lives, maxLives, best } = hud;
 
   return (
-    <section id="arcade" className="relative z-10 py-32 px-4 md:px-8 w-full max-w-6xl mx-auto">
+    <section
+      id="arcade"
+      data-arcade="true"
+      onPointerEnter={() => { window.__arcadeActive = true; }}
+      onPointerLeave={() => { if (hud.phase !== 'playing') window.__arcadeActive = false; }}
+      className="relative z-10 py-32 px-4 md:px-8 w-full max-w-6xl mx-auto"
+    >
       <SectionHeading title={t('arcade.title')} />
 
-      <Panel className="font-mono text-xs md:text-sm">
+      <Panel
+        as={motion.div}
+        initial={{ opacity: 0, y: 22, filter: 'blur(5px)' }}
+        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
+        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        className="font-mono text-xs md:text-sm"
+      >
         {/* Title bar */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-black/10 dark:border-white/10">
           <span aria-hidden className="hidden sm:flex gap-1.5">
@@ -181,10 +210,14 @@ const TerminalArcade = () => {
             role="application"
             tabIndex={0}
             aria-label={copy('aria')}
+            onPointerEnter={() => { window.__arcadeActive = true; }}
             onPointerMove={handlePointer('move')}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
+            onTouchStart={() => { window.__arcadeActive = true; }}
+            onTouchEnd={() => { if (hud.phase !== 'playing') window.__arcadeActive = false; }}
+            onTouchCancel={() => { if (hud.phase !== 'playing') window.__arcadeActive = false; }}
             onKeyDown={handleKey}
             className="block w-full h-[320px] md:h-[420px] text-black dark:text-white cursor-crosshair touch-none outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
           />

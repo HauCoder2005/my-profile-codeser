@@ -62,10 +62,10 @@ const ContactForm = () => {
   return (
     <Panel
       as={motion.form}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.6 }}
+      initial={{ opacity: 0, y: 22, filter: 'blur(5px)' }}
+      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
+      transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
       className="w-full flex flex-col gap-6 p-6 sm:p-8"
       onSubmit={handleSubmit}
       onChange={handleChange}

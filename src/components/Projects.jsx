@@ -8,8 +8,17 @@ import SectionHeading from './SectionHeading';
 import Panel from './Panel';
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 35 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+  hidden: { opacity: 0, y: 22, filter: 'blur(5px)' },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: {
+      duration: 0.8,
+      delay: (i % 2) * 0.12,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  }),
 };
 
 const linkClass = 'inline-flex items-center gap-2 px-4 py-2 border border-black dark:border-white font-mono text-sm font-bold uppercase tracking-wider hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300';
@@ -82,10 +91,11 @@ const Projects = () => {
             <Panel
               as={motion.article}
               key={`project-card-${idx}`}
+              custom={idx}
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.1 }}
+              viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
               onClick={() => setSelectedIdx(idx)}
               className="p-6 sm:p-8 md:p-10 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-8 items-center cursor-pointer transition-all duration-300 hover:border-accent/60 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_30px_rgba(255,106,43,0.12)] group"
             >

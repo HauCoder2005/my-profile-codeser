@@ -10,11 +10,12 @@ const logos = [
 ];
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 22, filter: 'blur(5px)' },
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.45, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }
+    filter: 'blur(0px)',
+    transition: { duration: 0.8, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }
   })
 };
 
@@ -35,7 +36,7 @@ const Education = () => {
             variants={cardVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
+            viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
             className="flex flex-col justify-between p-7 sm:p-8 md:p-10"
           >
             <div>

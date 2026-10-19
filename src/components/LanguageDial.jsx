@@ -387,7 +387,12 @@ const LanguageDial = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] gap-6 lg:gap-16 items-center">
         {/* Old TV: static while the dial spins, then tunes in to the selected language */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 22, filter: 'blur(5px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
           <RetroTV
             lang={lang}
             Icon={ActiveIcon}
@@ -399,10 +404,14 @@ const LanguageDial = () => {
             onPrev={prev}
             onNext={next}
           />
-        </div>
+        </motion.div>
         {/* Dial */}
-        <div
+        <motion.div
           ref={stageRef}
+          initial={{ opacity: 0, y: 22, filter: 'blur(5px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
+          transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="relative w-full aspect-square select-none cursor-grab"
           aria-label={t('languages.hint')}
         >
@@ -464,7 +473,7 @@ const LanguageDial = () => {
               </motion.div>
             </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
 
       </div>
 
