@@ -1,14 +1,14 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-const SpatialGyro = ({ palette, isDark, position = [18, 8, -12], scale = 1.4, speedScale = 1, arcadeActive }) => {
+const SpatialGyro = ({ palette, isDark, position = [18, 8, -12], scale = 1.4, speedScale = 1 }) => {
   const outerRingRef = useRef();
   const midRingRef = useRef();
   const innerRingRef = useRef();
   const coreRef = useRef();
 
   useFrame((_, delta) => {
-    const s = delta * (arcadeActive?.current ? 0 : speedScale);
+    const s = delta * speedScale;
     if (outerRingRef.current) outerRingRef.current.rotation.z += s * 0.35;
     if (midRingRef.current) midRingRef.current.rotation.x += s * 0.45;
     if (innerRingRef.current) innerRingRef.current.rotation.y += s * 0.55;

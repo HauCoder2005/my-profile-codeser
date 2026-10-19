@@ -43,7 +43,7 @@ const dustFragment = `
   }
 `;
 
-const SpatialDust = ({ palette, isDark, speedScale = 1, arcadeActive }) => {
+const SpatialDust = ({ palette, isDark, speedScale = 1 }) => {
   const pointsRef = useRef();
 
   const { positions, velocities, scales, alphas } = useMemo(() => {
@@ -82,8 +82,7 @@ const SpatialDust = ({ palette, isDark, speedScale = 1, arcadeActive }) => {
   }, [palette, uniforms]);
 
   useFrame(({ camera }, delta) => {
-    const s = arcadeActive?.current ? 0 : speedScale;
-    uniforms.uTime.value += delta * s;
+    uniforms.uTime.value += delta * speedScale;
     uniforms.uCamPos.value.copy(camera.position);
   });
 

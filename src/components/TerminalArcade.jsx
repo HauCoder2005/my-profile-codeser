@@ -58,21 +58,6 @@ const TerminalArcade = () => {
   gameRef.current = game;
   const copy = (key) => t(`arcade.games.${game.id}.${key}`);
 
-  // Broadcast arcade status so the 3D space background freezes motion while playing or interacting
-  useEffect(() => {
-    window.dispatchEvent(new CustomEvent('arcade-status', {
-      detail: { isPlaying: hud.phase === 'playing' }
-    }));
-  }, [hud.phase]);
-
-  useEffect(() => {
-    return () => {
-      window.dispatchEvent(new CustomEvent('arcade-status', {
-        detail: { isPlaying: false, active: false }
-      }));
-    };
-  }, []);
-
   useEffect(() => {
     paletteRef.current = readPalette(canvasRef.current);
   }, [isDark]);
@@ -172,20 +157,10 @@ const TerminalArcade = () => {
     game.input(stateRef.current, { type: 'press' });
   };
 
-  const notifyArcade = (active) => {
-    window.dispatchEvent(new CustomEvent('arcade-status', { detail: { active } }));
-  };
-
   const { phase, score, lives, maxLives, best } = hud;
 
   return (
-    <section
-      id="arcade"
-      className="relative z-10 py-32 px-4 md:px-8 w-full max-w-6xl mx-auto"
-      onPointerEnter={() => notifyArcade(true)}
-      onPointerLeave={() => notifyArcade(false)}
-      onTouchStart={() => notifyArcade(true)}
-    >
+    <section id="arcade" className="relative z-10 py-32 px-4 md:px-8 w-full max-w-6xl mx-auto">
       <SectionHeading title={t('arcade.title')} />
 
       <Panel className="font-mono text-xs md:text-sm">

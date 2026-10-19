@@ -11,16 +11,13 @@ import { PALETTE, useIsDark, usePrefersReducedMotion } from './three/theme';
 const damp = THREE.MathUtils.damp;
 
 // Shared, mutable input state read inside useFrame (supports Mouse, Touch, Mobile Gyroscope & Arcade isolation)
+// Shared, mutable input state read inside useFrame (supports Mouse, Touch & Mobile Gyroscope)
 const useInputRefs = () => {
   const scroll = useRef(0);
   const maxScroll = useRef(0);
   const viewportHeight = useRef(window.innerHeight);
   const viewportWidth = useRef(window.innerWidth);
   const mouse = useRef({ x: 0, y: 0 });
-  const arcadeActive = useRef(false);
-  const isPlayingArcade = useRef(false);
-  const touchActiveOnArcade = useRef(false);
-  const mouseOverArcade = useRef(false);
 
   useEffect(() => {
     const onScroll = () => { scroll.current = window.scrollY; };
@@ -33,76 +30,19 @@ const useInputRefs = () => {
     resizeObserver.observe(document.body);
     window.addEventListener('resize', measure);
 
-    let touchTimeout = null;
-
-    const updateArcadeActive = () => {
-      arcadeActive.current = isPlayingArcade.current || mouseOverArcade.current || touchActiveOnArcade.current;
-      if (arcadeActive.current) {
-        mouse.current.x = 0;
-        mouse.current.y = 0;
-      }
-    };
-
-    const onArcadeStatus = (e) => {
-      if (e.detail?.isPlaying !== undefined) {
-        isPlayingArcade.current = !!e.detail.isPlaying;
-      }
-      if (e.detail?.active !== undefined) {
-        mouseOverArcade.current = !!e.detail.active;
-      }
-      updateArcadeActive();
-    };
-    window.addEventListener('arcade-status', onArcadeStatus);
+    let isTouching = false;
+    let touchEndTimer = null;
 
     // 1. Desktop cursor / pointer move
     const onMove = (e) => {
-      const isArcade = !!e.target?.closest?.('#arcade');
-      mouseOverArcade.current = isArcade;
-      updateArcadeActive();
-
-      if (arcadeActive.current) {
-        mouse.current.x = 0;
-        mouse.current.y = 0;
-        return;
-      }
-
       mouse.current.x = (e.clientX / (viewportWidth.current || window.innerWidth)) * 2 - 1;
       mouse.current.y = -((e.clientY / (viewportHeight.current || window.innerHeight)) * 2 - 1);
     };
 
-    // Immediate tap or click on arcade
-    const onPointerDown = (e) => {
-      const isArcade = !!e.target?.closest?.('#arcade');
-      if (isArcade) {
-        if (e.pointerType === 'touch') {
-          touchActiveOnArcade.current = true;
-          clearTimeout(touchTimeout);
-        } else {
-          mouseOverArcade.current = true;
-        }
-        updateArcadeActive();
-      } else {
-        if (touchActiveOnArcade.current && !isPlayingArcade.current) {
-          touchActiveOnArcade.current = false;
-          updateArcadeActive();
-        }
-      }
-    };
-
-    // 2. Mobile touch pan (joystick / touch drag fallback)
+    // 2. Mobile touch pan (joystick / touch drag)
     const onTouch = (e) => {
-      const isArcade = !!e.target?.closest?.('#arcade');
-      if (isArcade) {
-        touchActiveOnArcade.current = true;
-        clearTimeout(touchTimeout);
-        updateArcadeActive();
-        mouse.current.x = 0;
-        mouse.current.y = 0;
-        return;
-      }
-
-      if (arcadeActive.current) return;
-
+      isTouching = true;
+      clearTimeout(touchEndTimer);
       if (e.touches && e.touches.length > 0) {
         const t = e.touches[0];
         mouse.current.x = (t.clientX / (viewportWidth.current || window.innerWidth)) * 2 - 1;
@@ -110,32 +50,20 @@ const useInputRefs = () => {
       }
     };
 
-    const onTouchEnd = (e) => {
-      const isArcade = !!e.target?.closest?.('#arcade');
-      if (isArcade) {
-        // Keep active for grace period so rapid taps don't cause background flicker
-        clearTimeout(touchTimeout);
-        touchTimeout = setTimeout(() => {
-          touchActiveOnArcade.current = false;
-          updateArcadeActive();
-        }, 1500);
-      } else {
-        clearTimeout(touchTimeout);
-        touchActiveOnArcade.current = false;
-        updateArcadeActive();
-      }
+    const onTouchEnd = () => {
+      clearTimeout(touchEndTimer);
+      touchEndTimer = setTimeout(() => {
+        isTouching = false;
+      }, 500);
     };
 
-    // 3. Mobile Gyroscope / Device Orientation ("di điện thoại tới đâu thì nó xoay")
+    // 3. Mobile Gyroscope / Device Orientation
     let baseBeta = null;
     let baseGamma = null;
 
     const onDeviceOrientation = (e) => {
-      if (arcadeActive.current) {
-        mouse.current.x = 0;
-        mouse.current.y = 0;
-        return;
-      }
+      // When user is actively touching/dragging, let touch drive mouse smoothly without gyro fighting
+      if (isTouching) return;
       if (e.gamma === null && e.beta === null) return;
       const gamma = e.gamma || 0; // Left-to-right tilt [-90, 90]
       const beta = e.beta || 0;   // Front-to-back tilt [-180, 180]
@@ -151,9 +79,9 @@ const useInputRefs = () => {
       const deltaGamma = gamma - baseGamma;
       const deltaBeta = beta - baseBeta;
 
-      // Sensitivity: comfortable ±16 degree tilt gives full range
-      const gx = Math.max(-2.2, Math.min(2.2, deltaGamma / 10));
-      const gy = Math.max(-2.2, Math.min(2.2, deltaBeta / 10));
+      // Sensitivity: comfortable range
+      const gx = Math.max(-1.5, Math.min(1.5, deltaGamma / 12));
+      const gy = Math.max(-1.5, Math.min(1.5, deltaBeta / 12));
 
       mouse.current.x = gx;
       mouse.current.y = -gy;
@@ -181,8 +109,8 @@ const useInputRefs = () => {
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('pointermove', onMove, { passive: true });
-    window.addEventListener('pointerdown', onPointerDown, { passive: true });
     window.addEventListener('touchmove', onTouch, { passive: true });
+    window.addEventListener('touchstart', onTouch, { passive: true });
     window.addEventListener('touchend', onTouchEnd, { passive: true });
     window.addEventListener('touchcancel', onTouchEnd, { passive: true });
     window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
@@ -192,14 +120,13 @@ const useInputRefs = () => {
     window.addEventListener('click', requestPermission, { passive: true });
 
     return () => {
-      clearTimeout(touchTimeout);
-      window.removeEventListener('arcade-status', onArcadeStatus);
+      clearTimeout(touchEndTimer);
       resizeObserver.disconnect();
       window.removeEventListener('resize', measure);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('touchmove', onTouch);
+      window.removeEventListener('touchstart', onTouch);
       window.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('touchcancel', onTouchEnd);
       window.removeEventListener('deviceorientation', onDeviceOrientation);
@@ -210,52 +137,50 @@ const useInputRefs = () => {
     };
   }, []);
 
-  return { scroll, maxScroll, viewportHeight, mouse, arcadeActive };
+  return { scroll, maxScroll, viewportHeight, mouse };
 };
 
 // World units the camera travels per scrolled pixel: the 3D scene scrolls at ~60% of the page speed (parallax)
 const unitsPerPixel = (viewportHeight) => 27 / viewportHeight.current;
 
-// 1. Camera rig: Smooth desktop mouse parallax & immersive Mobile Gyroscope VR camera
-const CameraRig = ({ scroll, viewportHeight, mouse, reducedMotion, arcadeActive }) => {
+// 1. Camera rig: Smooth desktop mouse parallax & comfortable Mobile Gyroscope VR camera
+const CameraRig = ({ scroll, viewportHeight, mouse, reducedMotion }) => {
   useFrame(({ camera, size }, delta) => {
     const isPortrait = size.width < size.height;
     const targetY = -scroll.current * unitsPerPixel(viewportHeight);
-    const isArcade = arcadeActive?.current;
-    const mx = (reducedMotion || isArcade) ? 0 : mouse.current.x;
-    const my = (reducedMotion || isArcade) ? 0 : mouse.current.y;
+    const mx = reducedMotion ? 0 : mouse.current.x;
+    const my = reducedMotion ? 0 : mouse.current.y;
 
     if (isPortrait) {
-      // Mobile portrait AR/VR window
-      const rotYMultiplier = isArcade ? 0 : 0.85;
-      const rotXMultiplier = isArcade ? 0 : 0.65;
-      const rotZMultiplier = isArcade ? 0 : 0.12;
-      const posMultiplier = isArcade ? 0 : 8.2;
-      const dampRate = isArcade ? 6.0 : 4.5;
+      // Mobile portrait AR/VR window: gentle, smooth, comfortable movement (no dizzying flips)
+      const rotYMultiplier = 0.10; // ~5.7 deg max tilt
+      const rotXMultiplier = 0.08; // ~4.6 deg max tilt
+      const posMultiplier = 2.0;   // gentle 2.0 units
+      const dampRate = 2.5;
 
       const targetX = mx * posMultiplier;
-      const targetCamY = targetY + my * (isArcade ? 0 : 5.2);
-      const targetZ = 24.5 - (isArcade ? 0 : Math.min(Math.hypot(mx, my) * 1.5, 2.2));
+      const targetCamY = targetY + my * 1.2;
+      const targetZ = 24.5;
 
       camera.position.x = damp(camera.position.x, targetX, dampRate, delta);
       camera.position.y = damp(camera.position.y, targetCamY, dampRate, delta);
-      camera.position.z = damp(camera.position.z, targetZ, dampRate * 0.8, delta);
+      camera.position.z = damp(camera.position.z, targetZ, dampRate, delta);
 
       camera.rotation.y = damp(camera.rotation.y, -mx * rotYMultiplier, dampRate, delta);
       camera.rotation.x = damp(camera.rotation.x, my * rotXMultiplier, dampRate, delta);
-      camera.rotation.z = damp(camera.rotation.z, -mx * rotZMultiplier, dampRate * 0.9, delta);
+      camera.rotation.z = damp(camera.rotation.z, 0, dampRate, delta); // no roll tilt
     } else {
       // Desktop cursor: buttery smooth, subtle cinematic parallax with zero hitching
-      const targetX = isArcade ? 0 : mx * 1.8;
-      const targetCamY = targetY + (isArcade ? 0 : my * 0.9);
-      const dampRate = isArcade ? 4.5 : 2.4;
+      const targetX = mx * 1.6;
+      const targetCamY = targetY + my * 0.8;
+      const dampRate = 2.2;
 
       camera.position.x = damp(camera.position.x, targetX, dampRate, delta);
       camera.position.y = damp(camera.position.y, targetCamY, dampRate, delta);
       camera.position.z = damp(camera.position.z, 24.5, dampRate, delta);
 
-      camera.rotation.y = damp(camera.rotation.y, isArcade ? 0 : -mx * 0.08, dampRate, delta);
-      camera.rotation.x = damp(camera.rotation.x, isArcade ? 0 : my * 0.05, dampRate, delta);
+      camera.rotation.y = damp(camera.rotation.y, -mx * 0.06, dampRate, delta);
+      camera.rotation.x = damp(camera.rotation.x, my * 0.04, dampRate, delta);
       camera.rotation.z = damp(camera.rotation.z, 0, dampRate, delta);
     }
   });
@@ -291,7 +216,7 @@ const starFragment = `
   }
 `;
 
-const Starfield = ({ palette, reducedMotion, speedScale = 1, arcadeActive }) => {
+const Starfield = ({ palette, reducedMotion, speedScale = 1 }) => {
   const pointsRef = useRef();
 
   const { positions, scales, phases } = useMemo(() => {
@@ -320,13 +245,13 @@ const Starfield = ({ palette, reducedMotion, speedScale = 1, arcadeActive }) => 
   }, [palette, uniforms]);
 
   useFrame(({ camera }, delta) => {
-    const s = arcadeActive?.current ? 0 : (reducedMotion ? 0.2 : speedScale);
-    uniforms.uTime.value += delta * s;
+    const speed = reducedMotion ? 0.2 : speedScale;
+    uniforms.uTime.value += delta * speed;
     const points = pointsRef.current;
     if (!points) return;
     points.position.y = camera.position.y * 0.85;
-    points.rotation.y += delta * 0.012 * s;
-    points.rotation.x += delta * 0.004 * s;
+    points.rotation.y += delta * 0.012 * speed;
+    points.rotation.x += delta * 0.004 * speed;
   });
 
   return (
@@ -349,7 +274,7 @@ const Starfield = ({ palette, reducedMotion, speedScale = 1, arcadeActive }) => 
 };
 
 // 3. Rocket orbiting the sun
-const WireframeSpaceship = ({ palette, config, centerRef, speedScale, arcadeActive }) => {
+const WireframeSpaceship = ({ palette, config, centerRef, speedScale }) => {
   const groupRef = useRef();
   const fireRef = useRef();
   const time = useRef(0);
@@ -367,8 +292,7 @@ const WireframeSpaceship = ({ palette, config, centerRef, speedScale, arcadeActi
   };
 
   useFrame((_, delta) => {
-    const s = arcadeActive?.current ? 0 : speedScale;
-    time.current += delta * s;
+    time.current += delta * speedScale;
     const group = groupRef.current;
     if (!group) return;
     pathAt(time.current, group.position);
@@ -523,7 +447,7 @@ const SUN_DEPTH = -30;
 const SUN_LOOP_SECONDS = 45; // one lap around the screen
 const SUN_START_ANGLE = Math.PI * 0.75; // start near the top-left, then travel clockwise
 
-const CelestialSystem = ({ palette, isDark, speedScale, arcadeActive }) => {
+const CelestialSystem = ({ palette, isDark, speedScale }) => {
   const { size } = useThree();
   const aspect = size.width / size.height;
 
@@ -539,7 +463,7 @@ const CelestialSystem = ({ palette, isDark, speedScale, arcadeActive }) => {
   const time = useRef(0);
 
   useFrame(({ camera }, delta) => {
-    const step = delta * (arcadeActive?.current ? 0 : speedScale);
+    const step = delta * speedScale;
     time.current += step;
     const t = time.current;
 
@@ -624,7 +548,7 @@ const CelestialSystem = ({ palette, isDark, speedScale, arcadeActive }) => {
 
       {ALIENS.map((alien, i) =>
         alien.type === 'spaceship' ? (
-          <WireframeSpaceship key={i} config={alien} palette={palette} centerRef={centerRef} speedScale={speedScale} arcadeActive={arcadeActive} />
+          <WireframeSpaceship key={i} config={alien} palette={palette} centerRef={centerRef} speedScale={speedScale} />
         ) : (
           <mesh key={i} ref={(el) => (alienRefs.current[i] = el)}>
             {alien.type === 'dodecahedron' && <dodecahedronGeometry args={[2.5, 1]} />}
@@ -648,7 +572,7 @@ const DEBRIS_GEOMETRIES = [
   new THREE.DodecahedronGeometry(1.2, 0),
 ];
 
-const Debris = ({ palette, speedScale, arcadeActive }) => {
+const Debris = ({ palette, speedScale }) => {
   const groupRef = useRef();
   const time = useRef(0);
   const items = useMemo(() => Array.from({ length: 18 }, (_, i) => ({
@@ -668,7 +592,7 @@ const Debris = ({ palette, speedScale, arcadeActive }) => {
   useFrame(({ size }, delta) => {
     const group = groupRef.current;
     if (!group) return;
-    const step = delta * (arcadeActive?.current ? 0 : speedScale);
+    const step = delta * speedScale;
     time.current += step;
     const t = time.current;
     const aspect = size.width / size.height;
@@ -699,7 +623,7 @@ const Debris = ({ palette, speedScale, arcadeActive }) => {
 };
 
 // 7. Ringed planet waiting at the bottom of the page (next to the contact section)
-const RingedPlanet = ({ palette, isDark, speedScale, maxScroll, viewportHeight, arcadeActive }) => {
+const RingedPlanet = ({ palette, isDark, speedScale, maxScroll, viewportHeight }) => {
   const ref = useRef();
   const { size } = useThree();
   const isPortrait = size.width < size.height;
@@ -711,7 +635,7 @@ const RingedPlanet = ({ palette, isDark, speedScale, maxScroll, viewportHeight, 
     if (!planet) return;
     // Sit just below the camera's final resting point, on the left side
     planet.position.set(x, -maxScroll.current * unitsPerPixel(viewportHeight) - 6, -22);
-    planet.rotation.y += delta * 0.08 * (arcadeActive?.current ? 0 : speedScale);
+    planet.rotation.y += delta * 0.08 * speedScale;
   });
 
   return (
@@ -736,7 +660,7 @@ const RingedPlanet = ({ palette, isDark, speedScale, maxScroll, viewportHeight, 
 const SpaceBackground = () => {
   const isDark = useIsDark();
   const reducedMotion = usePrefersReducedMotion();
-  const { scroll, maxScroll, viewportHeight, mouse, arcadeActive } = useInputRefs();
+  const { scroll, maxScroll, viewportHeight, mouse } = useInputRefs();
   const palette = isDark ? PALETTE.dark : PALETTE.light;
   const speedScale = reducedMotion ? 0.15 : 1;
 
@@ -750,14 +674,14 @@ const SpaceBackground = () => {
         <fog attach="fog" args={[palette.bg, 32, 130]} />
         <ambientLight intensity={isDark ? 1.4 : 1.1} />
         <directionalLight position={[12, 18, 14]} intensity={isDark ? 1.5 : 1.1} />
-        <CameraRig scroll={scroll} viewportHeight={viewportHeight} mouse={mouse} reducedMotion={reducedMotion} arcadeActive={arcadeActive} />
-        <CyberGrid palette={palette} isDark={isDark} scroll={scroll} speedScale={speedScale} arcadeActive={arcadeActive} />
-        <SpatialDust palette={palette} isDark={isDark} speedScale={speedScale} arcadeActive={arcadeActive} />
-        <SpatialGyro palette={palette} isDark={isDark} position={[16, 7, -10]} speedScale={speedScale} arcadeActive={arcadeActive} />
-        <Starfield palette={palette} reducedMotion={reducedMotion} speedScale={speedScale} arcadeActive={arcadeActive} />
-        <CelestialSystem palette={palette} isDark={isDark} speedScale={speedScale} arcadeActive={arcadeActive} />
-        <Debris palette={palette} speedScale={speedScale} arcadeActive={arcadeActive} />
-        <RingedPlanet palette={palette} isDark={isDark} speedScale={speedScale} maxScroll={maxScroll} viewportHeight={viewportHeight} arcadeActive={arcadeActive} />
+        <CameraRig scroll={scroll} viewportHeight={viewportHeight} mouse={mouse} reducedMotion={reducedMotion} />
+        <CyberGrid palette={palette} isDark={isDark} scroll={scroll} speedScale={speedScale} />
+        <SpatialDust palette={palette} isDark={isDark} speedScale={speedScale} />
+        <SpatialGyro palette={palette} isDark={isDark} position={[16, 7, -10]} speedScale={speedScale} />
+        <Starfield palette={palette} reducedMotion={reducedMotion} speedScale={speedScale} />
+        <CelestialSystem palette={palette} isDark={isDark} speedScale={speedScale} />
+        <Debris palette={palette} speedScale={speedScale} />
+        <RingedPlanet palette={palette} isDark={isDark} speedScale={speedScale} maxScroll={maxScroll} viewportHeight={viewportHeight} />
       </Canvas>
     </div>
   );

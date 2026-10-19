@@ -59,7 +59,7 @@ const gridFragment = `
   }
 `;
 
-const CyberGrid = ({ palette, isDark, scroll, speedScale = 1, arcadeActive }) => {
+const CyberGrid = ({ palette, isDark, scroll, speedScale = 1 }) => {
   const floorRef = useRef();
   const time = useRef(0);
 
@@ -79,8 +79,7 @@ const CyberGrid = ({ palette, isDark, scroll, speedScale = 1, arcadeActive }) =>
   }, [palette, isDark, uniforms]);
 
   useFrame(({ camera, size }, delta) => {
-    const s = arcadeActive?.current ? 0 : speedScale;
-    time.current += delta * s;
+    time.current += delta * speedScale;
     uniforms.uTime.value = time.current;
     uniforms.uScroll.value = scroll.current || 0;
     uniforms.uCameraPos.value.copy(camera.position);
