@@ -58,6 +58,21 @@ const TerminalArcade = () => {
   gameRef.current = game;
   const copy = (key) => t(`arcade.games.${game.id}.${key}`);
 
+  // Broadcast arcade status so the 3D space background freezes motion while playing or interacting
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('arcade-status', {
+      detail: { isPlaying: hud.phase === 'playing' }
+    }));
+  }, [hud.phase]);
+
+  useEffect(() => {
+    return () => {
+      window.dispatchEvent(new CustomEvent('arcade-status', {
+        detail: { isPlaying: false, active: false }
+      }));
+    };
+  }, []);
+
   useEffect(() => {
     paletteRef.current = readPalette(canvasRef.current);
   }, [isDark]);
@@ -132,16 +147,45 @@ const TerminalArcade = () => {
     game.input(stateRef.current, { type, x: event.clientX - rect.left });
   };
 
+  const handlePointerDown = (event) => {
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // ignore
+    }
+    handlePointer('press')(event);
+  };
+
+  const handlePointerUp = (event) => {
+    try {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
   const handleKey = (event) => {
     if (!PRESS_KEYS.includes(event.key)) return;
     event.preventDefault(); // Space would scroll the page
     game.input(stateRef.current, { type: 'press' });
   };
 
+  const notifyArcade = (active) => {
+    window.dispatchEvent(new CustomEvent('arcade-status', { detail: { active } }));
+  };
+
   const { phase, score, lives, maxLives, best } = hud;
 
   return (
-    <section id="arcade" className="relative z-10 py-32 px-4 md:px-8 w-full max-w-6xl mx-auto">
+    <section
+      id="arcade"
+      className="relative z-10 py-32 px-4 md:px-8 w-full max-w-6xl mx-auto"
+      onPointerEnter={() => notifyArcade(true)}
+      onPointerLeave={() => notifyArcade(false)}
+      onTouchStart={() => notifyArcade(true)}
+    >
       <SectionHeading title={t('arcade.title')} />
 
       <Panel className="font-mono text-xs md:text-sm">
@@ -156,16 +200,18 @@ const TerminalArcade = () => {
         </div>
 
         {/* Screen */}
-        <div className="relative">
+        <div className="relative bg-black/25 dark:bg-black/50">
           <canvas
             ref={canvasRef}
             role="application"
             tabIndex={0}
             aria-label={copy('aria')}
             onPointerMove={handlePointer('move')}
-            onPointerDown={handlePointer('press')}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
             onKeyDown={handleKey}
-            className="block w-full h-[320px] md:h-[420px] text-black dark:text-white cursor-crosshair touch-pan-y outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+            className="block w-full h-[320px] md:h-[420px] text-black dark:text-white cursor-crosshair touch-none outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
           />
           <div aria-hidden className="scanlines absolute inset-0 pointer-events-none text-black dark:text-white" />
           {phase !== 'playing' && (
