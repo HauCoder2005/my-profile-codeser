@@ -60,6 +60,26 @@
 }
 
 @layer components {
+  /* Navbar surface: distinct subtle tint & high opacity on both mobile and desktop so scrolling sections never bleed through */
+  .navbar-surface {
+    background: linear-gradient(90deg, rgb(236 228 213 / 0.92) 0%, rgb(242 233 218 / 0.92) 50%, rgb(236 228 213 / 0.92) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .navbar-scrolled {
+    background: linear-gradient(90deg, rgb(230 220 203 / 0.97) 0%, rgb(238 227 210 / 0.97) 50%, rgb(230 220 203 / 0.97) 100%);
+    border-bottom-color: rgb(var(--c-black) / 0.25);
+    box-shadow: 0 4px 20px -4px rgb(var(--c-black) / 0.12);
+  }
+  .dark .navbar-surface {
+    background: linear-gradient(90deg, rgb(18 23 34 / 0.90) 0%, rgb(24 22 32 / 0.90) 50%, rgb(18 23 34 / 0.90) 100%);
+  }
+  .dark .navbar-scrolled {
+    background: linear-gradient(90deg, rgb(22 28 40 / 0.96) 0%, rgb(30 26 38 / 0.96) 50%, rgb(22 28 40 / 0.96) 100%);
+    border-bottom-color: rgb(255 255 255 / 0.24);
+    box-shadow: 0 6px 24px -4px rgb(0 0 0 / 0.75);
+  }
+
   /* High-tech Cyber HUD Panel: translucent glass, specular accent highlight, smooth hover */
   .panel {
     position: relative;

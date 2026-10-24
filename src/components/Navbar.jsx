@@ -31,11 +31,22 @@ const useActiveSection = () => {
 const Navbar = () => {
   const [isDark, setIsDark] = useState(() => !document.documentElement.classList.contains('light'));
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(() => typeof window !== 'undefined' && window.scrollY > 12);
   const { lang, toggleLanguage, t } = useLanguage();
   const active = useActiveSection();
 
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
+
+  useEffect(() => {
+    const onScroll = () => {
+      const next = window.scrollY > 12;
+      setIsScrolled((prev) => (prev !== next ? next : prev));
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -53,7 +64,11 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-8 h-[72px] backdrop-blur-none md:backdrop-blur-md bg-white/92 md:bg-white/60 dark:bg-black/92 md:dark:bg-black/50 border-b border-black/20 dark:border-white/20 transition-colors duration-300">
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-8 h-[72px] navbar-surface ${
+          isScrolled ? 'navbar-scrolled' : ''
+        } border-b border-black/20 dark:border-white/20 transition-all duration-300`}
+      >
 
         {/* Logo */}
         <a
@@ -118,7 +133,7 @@ const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="fixed top-[72px] left-0 right-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-black dark:border-white overflow-hidden xl:hidden"
+            className="fixed top-[72px] left-0 right-0 z-40 navbar-surface navbar-scrolled border-b border-black dark:border-white overflow-hidden xl:hidden"
           >
             <div className="flex flex-col py-2">
               {navLinks.map((item, i) => (

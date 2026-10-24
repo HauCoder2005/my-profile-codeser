@@ -27,16 +27,16 @@ const gridFragment = `
 
   void main() {
     vec2 coord = vWorldPosition.xz;
-    // Dynamic forward drift for a warp/spatial travel feeling
-    coord.y += uTime * 2.2 + uScroll * 0.08;
+    // Smoothly coupled to damped camera Y + continuous forward drift (zero scroll jitter)
+    coord.y += uTime * 1.8 + uScroll * 0.55;
 
     // Major grid lines (4.0 units)
-    vec2 grid4 = abs(fract(coord / 4.0 - 0.5) - 0.5) / fwidth(coord / 4.0);
+    vec2 grid4 = abs(fract(coord * 0.25 - 0.5) - 0.5) / fwidth(coord * 0.25);
     float majorLine = 1.0 - min(min(grid4.x, grid4.y), 1.0);
 
     // Minor grid lines (1.0 unit)
-    vec2 grid1 = abs(fract(coord / 1.0 - 0.5) - 0.5) / fwidth(coord / 1.0);
-    float minorLine = (1.0 - min(min(grid1.x, grid1.y), 1.0)) * 0.35;
+    vec2 grid1 = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
+    float minorLine = (1.0 - min(min(grid1.x, grid1.y), 1.0)) * 0.32;
 
     float gridPattern = max(majorLine, minorLine);
 
@@ -45,21 +45,21 @@ const gridFragment = `
 
     // Fade out near camera so it never clips, and fade into distance horizon
     float nearFade = smoothstep(4.0, 16.0, dist);
-    float farFade = smoothstep(115.0, 32.0, dist);
+    float farFade = smoothstep(105.0, 30.0, dist);
     float depthFade = nearFade * farFade;
 
-    // Glowing horizon band where perspective lines converge
-    float horizonBand = pow(smoothstep(40.0, 105.0, dist), 3.2);
+    // Glowing horizon band where perspective lines converge (cubic instead of pow for mobile GPU speed)
+    float h = smoothstep(38.0, 98.0, dist);
+    float horizonBand = h * h * h;
 
-    vec3 finalColor = mix(uColor, uHorizonColor, horizonBand * 1.5);
-    float finalAlpha = (gridPattern * 0.7 + horizonBand * 0.35) * depthFade * uOpacity;
+    vec3 finalColor = mix(uColor, uHorizonColor, horizonBand * 1.4);
+    float finalAlpha = (gridPattern * 0.68 + horizonBand * 0.32) * depthFade * uOpacity;
 
-    if (finalAlpha < 0.003) discard;
     gl_FragColor = vec4(finalColor, finalAlpha);
   }
 `;
 
-const CyberGrid = ({ palette, isDark, scroll, speedScale = 1 }) => {
+const CyberGrid = ({ palette, isDark, speedScale = 1 }) => {
   const floorRef = useRef();
   const time = useRef(0);
 
@@ -75,13 +75,14 @@ const CyberGrid = ({ palette, isDark, scroll, speedScale = 1 }) => {
   useEffect(() => {
     uniforms.uColor.value.set(palette.grid || palette.fg);
     uniforms.uHorizonColor.value.set(palette.gridHorizon || palette.accent || '#ff6a2b');
-    uniforms.uOpacity.value = isDark ? 0.68 : 0.42;
+    uniforms.uOpacity.value = isDark ? 0.65 : 0.42;
   }, [palette, isDark, uniforms]);
 
   useFrame(({ camera, size }, delta) => {
-    time.current += delta * speedScale;
+    const dt = Math.min(delta, 0.05);
+    time.current += dt * speedScale;
     uniforms.uTime.value = time.current;
-    uniforms.uScroll.value = scroll.current || 0;
+    uniforms.uScroll.value = -camera.position.y;
     uniforms.uCameraPos.value.copy(camera.position);
 
     const isPortrait = size.width < size.height;
@@ -97,7 +98,7 @@ const CyberGrid = ({ palette, isDark, scroll, speedScale = 1 }) => {
   return (
     /* 3D Infinite Perspective Floor Grid */
     <mesh ref={floorRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -13.5, -25]}>
-      <planeGeometry args={[180, 160, 1, 1]} />
+      <planeGeometry args={[130, 110, 1, 1]} />
       <shaderMaterial
         vertexShader={gridVertex}
         fragmentShader={gridFragment}
@@ -105,7 +106,6 @@ const CyberGrid = ({ palette, isDark, scroll, speedScale = 1 }) => {
         transparent
         depthWrite={false}
         extensions={{ derivatives: true }}
-        side={THREE.DoubleSide}
       />
     </mesh>
   );

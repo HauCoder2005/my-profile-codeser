@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const DUST_COUNT = 220;
+const DUST_COUNT = 160;
 
 const dustVertex = `
   attribute vec3 aVelocity;
@@ -14,17 +14,27 @@ const dustVertex = `
   varying float vAlpha;
 
   void main() {
-    vec3 boxSize = vec3(44.0, 32.0, 16.0);
-    vec3 p = position + aVelocity * uTime;
+    vec3 boxSize = vec3(46.0, 36.0, 18.0);
+    // Free-floating 3D velocity + zero-G harmonic turbulence + true depth parallax with camera
+    vec3 swirl = vec3(
+      sin(uTime * 0.45 + position.y * 0.18) * 1.6,
+      cos(uTime * 0.38 + position.x * 0.18) * 1.6,
+      sin(uTime * 0.32 + position.z * 0.22) * 1.0
+    );
+    vec3 p = position + aVelocity * uTime + swirl - vec3(uCamPos.x * 0.45, uCamPos.y * 0.55, 0.0);
     // GPU-accelerated modulo wrap inside 3D volume
     p = mod(p + boxSize * 0.5, boxSize) - boxSize * 0.5;
 
-    // Follow camera in world coordinates
-    vec3 worldPos = vec3(uCamPos.x + p.x, uCamPos.y + p.y, uCamPos.z - 10.0 + p.z);
+    // Smoothly fade near volume boundaries so wrapped particles never pop
+    vec3 edgeDist = (boxSize * 0.5) - abs(p);
+    float edgeFade = smoothstep(0.0, 3.5, min(edgeDist.x, min(edgeDist.y, edgeDist.z)));
+
+    // Position volume relative to camera
+    vec3 worldPos = vec3(uCamPos.x + p.x, uCamPos.y + p.y, uCamPos.z - 11.0 + p.z);
     vec4 mv = viewMatrix * vec4(worldPos, 1.0);
     gl_Position = projectionMatrix * mv;
-    vAlpha = aAlpha;
-    gl_PointSize = clamp(aScale * uPixelRatio * (60.0 / -mv.z), 1.5, 9.0 * uPixelRatio);
+    vAlpha = aAlpha * edgeFade;
+    gl_PointSize = clamp(aScale * uPixelRatio * (56.0 / -mv.z), 1.5, 6.5 * uPixelRatio);
   }
 `;
 
@@ -35,9 +45,9 @@ const dustFragment = `
 
   void main() {
     vec2 c = gl_PointCoord - vec2(0.5);
-    float dist = length(c);
-    if (dist > 0.5) discard;
-    float glow = smoothstep(0.5, 0.05, dist);
+    float distSq = dot(c, c);
+    if (distSq > 0.25) discard;
+    float glow = smoothstep(0.25, 0.01, distSq);
     vec3 color = mix(uColor, uAccent, 0.35);
     gl_FragColor = vec4(color, glow * vAlpha);
   }
@@ -53,15 +63,15 @@ const SpatialDust = ({ palette, isDark, speedScale = 1 }) => {
     const al = new Float32Array(DUST_COUNT);
 
     for (let i = 0; i < DUST_COUNT; i++) {
-      pos[i * 3 + 0] = (Math.random() - 0.5) * 44;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 32;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 16;
+      pos[i * 3 + 0] = (Math.random() - 0.5) * 46;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 36;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 18;
 
-      vel[i * 3 + 0] = (Math.random() - 0.5) * 0.8;
-      vel[i * 3 + 1] = (Math.random() - 0.5) * 0.6;
+      vel[i * 3 + 0] = (Math.random() - 0.5) * 1.1;
+      vel[i * 3 + 1] = (Math.random() - 0.5) * 0.9;
       vel[i * 3 + 2] = (Math.random() - 0.5) * 0.8;
 
-      sc[i] = 1.0 + Math.random() * 2.2;
+      sc[i] = 1.0 + Math.random() * 2.0;
       al[i] = 0.25 + Math.random() * 0.65;
     }
 
@@ -82,7 +92,8 @@ const SpatialDust = ({ palette, isDark, speedScale = 1 }) => {
   }, [palette, uniforms]);
 
   useFrame(({ camera }, delta) => {
-    uniforms.uTime.value += delta * speedScale;
+    const dt = Math.min(delta, 0.05);
+    uniforms.uTime.value += dt * speedScale;
     uniforms.uCamPos.value.copy(camera.position);
   });
 
